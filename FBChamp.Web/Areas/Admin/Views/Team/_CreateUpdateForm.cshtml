@@ -1,0 +1,83 @@
+﻿@model TeamCreateEditModel
+@{
+    ViewBag.Title = "Players";  
+}
+
+<h3 class="text-dark mb-4">@ViewBag.Action team</h3>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive table mt-2">
+            <table class="table my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Club info</th>
+                        <th>Coaches</th>
+                        <th>Players</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <tr style="vertical-align: top;">
+                        <td>
+                            <div>
+                                <partial name="_PhotoFull" model="@Model.PhotoString" />
+                            </div>
+                            <div class="d-sm-flex justify-content-start align-items-start mb-4" asp-validation-summary="All" class="text-danger">
+                                <form asp-action=@ViewBag.Action enctype="multipart/form-data">
+                                    <div>
+                                        <input type="hidden" asp-for="PhotoString" />                                        
+                                    </div>                            
+                                    <div class="mb-3">
+                                        <label asp-for="Name" class="form-label"></label>
+                                        <input asp-for="Name" asp-item="Model.FullName" class="form-control"></>
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="PhotoFile" class="form-label"></label>
+                                        <input asp-for="PhotoFile" type="file" class="form-control" />
+                                        <span asp-validation-for="PhotoFile" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <button class="btn btn-primary btn-sm" type="submit">
+                                            @ViewBag.Action
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        @if (ViewBag.Action != "Create")
+                        {
+                            <td>
+                               <div class="d-sm-flex justify-content-start align-items-start mb-4">
+                                  <a asp-action="AddCoach" asp-route-id="@Model.Id" class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button">
+                                     <i class="fas fa-plus-square text-white-50"></i>
+                                         Add coach
+                                  </a>
+                               </div>
+                               <div>
+                                     <partial name="_CoachesList" model="@Model.CoachesPageModel" />
+                                </div>                            
+                            </td>
+                            <td>
+                               <div class="d-sm-flex justify-content-start align-items-start mb-4">
+                                  <a asp-action="AddPlayer" asp-route-id="@Model.Id" class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button">
+                                     <i class="fas fa-plus-square text-white-50"></i>
+                                        Add player
+                                  </a>
+
+                               </div>
+                               <div>
+                                  <partial name="_PlayersList" model="@Model.PlayersPageModel" /> 
+                               </div>                               
+                            </td>
+                            }
+                  </tr>
+            </table>
+        </div>             
+        
+    </div>
+</div>
+@section Scripts
+{
+    <partial name="_ValidationScripts" />
+}
+

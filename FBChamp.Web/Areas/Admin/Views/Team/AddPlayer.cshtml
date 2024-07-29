@@ -1,0 +1,11 @@
+﻿@model EntityPageModel<PlayerModel>
+@{
+    ViewBag.Title = "Available players";
+    ViewBag.TeamID = @Model.AssignedToId;
+    ViewBag.PanelType = "Assign";
+    ViewBag.Action = "AssignPlayer";
+}
+
+<partial name="_PlayersList" model="@Model" /> 
+
+<back-link>Back to List</back-link>

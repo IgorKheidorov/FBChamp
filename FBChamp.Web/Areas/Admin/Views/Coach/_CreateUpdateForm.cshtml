@@ -1,0 +1,45 @@
+﻿@model CoachCreateEditModel
+
+<h3 class="text-dark mb-4">@ViewBag.Action coach</h3>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 col-lg-9 col-xl-6 col-xxl-5" asp-validation-summary="All" class="text-danger">
+                <div>
+                    <partial name="_PhotoFull" model="@Model.PhotoString" />
+                </div>
+                <form asp-action=@ViewBag.Action enctype="multipart/form-data">
+                    <div>
+                        <input type="hidden" asp-for="PhotoString" />
+                    </div>
+                     <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" asp-item="Model.FullName" class="form-control"></>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="BirthDate" class="form-label"></label>
+                        <input asp-for="BirthDate" asp-item="Model.BirthDate" type="date" class="form-control"></>
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PhotoFile" class="form-label"></label>
+                        <input asp-for="PhotoFile" type="file" class="form-control" />
+                        <span asp-validation-for="PhotoFile" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-primary btn-sm" type="submit">
+                            @ViewBag.Action
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <partial name="_ValidationScripts" />
+}
+

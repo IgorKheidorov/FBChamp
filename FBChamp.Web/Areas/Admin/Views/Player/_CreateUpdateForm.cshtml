@@ -1,0 +1,61 @@
+﻿@model PlayerCreateEditModel
+
+<h3 class="text-dark mb-4">@ViewBag.Action player</h3>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div>
+                    <partial name="_PhotoFull" model="@Model.PhotoString" />
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-9 col-xl-6 col-xxl-5" asp-validation-summary="All" class="text-danger">
+                <form asp-action=@ViewBag.Action enctype="multipart/form-data">
+                     <div>
+                        <input type="hidden" asp-for="PhotoString" />
+                     </div>                   
+                     <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Full name</label>
+                        <input asp-for="Name" asp-item="Model.FullName" class="form-control"/>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="BirthDate" class="form-label"></label>
+                        <input asp-for="BirthDate" asp-item="Model.BirthDate" type="date" class="form-control"/>
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Heigth" class="form-label"></label>
+                        <input asp-for="Heigth" class="form-control" />
+                        <span asp-validation-for="Heigth" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PositionId" class="form-label"></label>
+                        <select asp-for="PositionId" asp-items="Model.Positions" class="form-select"></select>
+                        <span asp-validation-for="PositionId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <input asp-for="Description" asp-item="Model.Description" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PhotoFile" class="form-label"></label>
+                        <input asp-for="PhotoFile" type="file" class="form-control" />
+                        <span asp-validation-for="PhotoFile" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-primary btn-sm" type="submit">
+                            @ViewBag.Action
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <partial name="_ValidationScripts" />
+}
+

@@ -1,0 +1,13 @@
+﻿@model string
+<div class="text-center">
+@{
+    if (!String.IsNullOrEmpty(Model))
+    {
+        <img class="center" style="height: auto; width: 300px; text-align: center;" src="data:image/jpeg;base64,@Model" alt="photo">
+    }
+    else
+    {
+        <img style="height: auto; width: 300px;" src="~/images/no_photo.jpg">
+    }
+}
+</div>

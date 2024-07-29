@@ -1,0 +1,16 @@
+﻿@model List<(string, string)>;
+<div class="card shadow">
+    <div class="card-body">
+        <table class="table my-0" id="dataTable">
+            <tbody>
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td><p class="card-text">@item.Item1</p></td>
+                        <td><p class="card-text">@item.Item2</p></td>
+                    </tr>                    
+                }                
+            </tbody>
+        </table>
+    </div>
+</div>

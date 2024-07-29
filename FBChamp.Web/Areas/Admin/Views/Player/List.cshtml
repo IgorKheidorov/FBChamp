@@ -1,0 +1,14 @@
+﻿@model EntityPageModel<PlayerModel>
+@{
+    ViewBag.Title = "Players";
+    ViewBag.Action = "List";
+    ViewBag.PanelType = "Update";
+}
+<div class="d-sm-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-dark mb-4">Players</h3>
+    <a asp-action="Create" class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button">
+        <i class="fas fa-plus-square text-white-50"></i>
+        Add player
+    </a>
+</div>
+<partial name="_PlayersList" model="@Model" />

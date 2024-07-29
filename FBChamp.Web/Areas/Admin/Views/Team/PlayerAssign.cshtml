@@ -1,0 +1,28 @@
+﻿@model PlayerAssignModel
+@{
+    ViewBag.Title = "PlayerAssign";
+    ViewBag.Action = "PlayerAssign";
+}
+<div>
+    <partial name="_EntityInfo" model="@Model.PlayerModel" />
+</div>
+<div class="card shadow mb-4" style="max-width: 540px;">
+    <div class="indented" style="margin-left:30px; margin-right:30px">
+    <form asp-action=@ViewBag.Action  asp-validation-summary="All" class="text-center">
+        <div>            
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="TeamId" />  
+            <label asp-for="PlayingNumber" class="form-label"></label>
+            <input asp-for="PlayingNumber" class="form-control" />
+            <span asp-validation-for="PlayingNumber" class="text-danger"></span>
+        </div>
+            <div class="mb-3" style="margin-top:20px" >
+            <button class="btn btn-outline-primary btn-sm" type="submit">
+                Add
+            </button>
+        </div>
+    </form>
+    </div>
+</div>
+
+<back-link>Back to List</back-link>

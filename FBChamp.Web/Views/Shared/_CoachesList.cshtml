@@ -1,0 +1,71 @@
+﻿@using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches
+
+@model EntityPageModel<CoachModel>
+@{
+    ViewBag.Title = "Coaches";
+    ViewBag.Profile = "Co";
+}
+<div class="card shadow">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <page-list model="@Model.List" page-url-filter="@Model.Filter">
+                </page-list>
+            </div>
+            <div class="col-md-auto">
+                <form asp-action="List" method="get">
+                    <div class="input-group">
+                        <input class="bg-light form-control border-0 small" name="filter" placeholder="Search for ..." type="search" value="@Model.Filter" />
+                        <button class="btn btn-primary py-0" type="submit" title="Search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="table-responsive table mt-2">
+            <table class="table my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Club</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var coachViewModel in Model.List.Items)
+                    {
+                        <tr style="vertical-align: middle;">
+                            <td>
+                                <div>
+                                    <partial name="_Photo" model="@coachViewModel.PhotoString" />
+                                </div>
+                            </td>
+                            <td>@coachViewModel.Coach.FullName</td>
+                            <td>@coachViewModel.CurrentTeam</td>
+                            <td>@coachViewModel.Role</td>
+                            <td>
+                                @{
+                                    ViewBag.InfoAction = "CoachProfile";
+                                    ViewBag.UnassignAction = "UnassignCoach";
+                                    <partial name="_ActivityPanel" model="@coachViewModel.Coach.Id" />
+                                }                                    
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col">
+                <page-list model="@Model.List" page-url-filter="@Model.Filter">
+                </page-list>
+            </div>
+            <div>
+                <partial name="_ShowFromToLabel" model="@Model.List" />
+            </div>
+        </div>
+    </div>
+</div>

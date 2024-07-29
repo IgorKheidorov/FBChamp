@@ -1,0 +1,12 @@
+﻿@model string
+@{
+    ViewBag.Title = "Error";
+}
+<div class="text-center mt-5">
+    <div class="error mx-auto" data-text="@Model">
+        <p class="m-0">@Model</p>
+    </div>
+    <p class="text-dark mb-5 lead">Error</p>
+    <p class="text-black-50 mb-0">@Model</p>
+    <a asp-controller="WelcomeController" >← Back</a>
+</div>

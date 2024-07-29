@@ -1,0 +1,14 @@
+﻿@using FBChamp.Core.DALModels
+
+@model EntityModel
+<h3 class="text-dark mb-4">@Model.FullName</h3>
+<div class="card shadow mb-4" style="max-width: 540px;">
+    <div class="col-md-8 text-center">
+        <div class="card-body">
+            <partial name="_PhotoFull" model=@Model.GetPhoto() />
+        </div>
+    </div>
+    <div>
+        <partial name="_ShowInfoAsTable" model=@Model.GetInformation() />        
+    </div>
+</div>

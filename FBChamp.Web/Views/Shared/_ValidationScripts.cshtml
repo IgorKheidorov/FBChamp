@@ -1,0 +1,19 @@
+﻿@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    const settings = {
+        validClass: "is-valid",
+        errorClass: "is-invalid"
+    };
+    $.validator.setDefaults(settings);
+    $.validator.unobtrusive.options = settings;
+</script>*@
+
+@*https://www.unpkg.com/aspnet-client-validation/dist/aspnet-validation.min.js*@
+
+<script src="/lib/aspnet-client-validation/dist/aspnet-validation.min.js"></script>
+<script>
+    const vs = new aspnetValidation.ValidationService();
+    vs.bootstrap();
+</script>

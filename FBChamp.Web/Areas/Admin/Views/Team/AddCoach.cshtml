@@ -1,0 +1,7 @@
+﻿@model EntityPageModel<CoachModel>
+@{
+    ViewBag.TeamID = @Model.AssignedToId;
+    ViewBag.PanelType = "Assign";
+    ViewBag.Action = "AssignCoach";
+}
+<partial name="_CoachesList" model="@Model" />
