@@ -1,5 +1,5 @@
 ﻿using FBChamp.Core.DALModels;
-using FBChamp.Core.Repositories;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Common.Helpers;
 
 namespace FBChamp.Web.Common.VewModelsBuilders.Shared;

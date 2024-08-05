@@ -1,7 +1,7 @@
 ﻿using FBChamp.Common.Paging;
 using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Socker;
-using FBChamp.Core.Repositories;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
@@ -26,8 +26,6 @@ public class TeamsPageModelBuilder : ViewModelBuilder
     }
     
     private PagedList<TeamModel> GetPagedList(PageInfo pageInfo, IEnumerable<TeamModel> teamModels) =>
-        new PagedList<TeamModel>((IList<TeamModel>)teamModels.Skip((pageInfo.Page - 1) * pageInfo.PerPage).Take(pageInfo.PerPage), teamModels.Count(), pageInfo);
-    
-    
+        new PagedList<TeamModel>((IList<TeamModel>)teamModels.Skip((pageInfo.Page - 1) * pageInfo.PerPage).Take(pageInfo.PerPage), teamModels.Count(), pageInfo);        
 
 }

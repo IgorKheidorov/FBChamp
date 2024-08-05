@@ -3,7 +3,7 @@ using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Socker;
 using System.Collections.ObjectModel;
 
-namespace FBChamp.Core.Repositories;
+namespace FBChamp.Core.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {
@@ -31,8 +31,8 @@ public interface IUnitOfWork : IDisposable
     #endregion
 
     bool Remove(Guid id, Type type);
-    
+
     bool Commit(IReadOnlyCollection<Entity> entities);
     bool Commit(Entity entities);
-    
+
 }

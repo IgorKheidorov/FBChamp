@@ -1,6 +1,8 @@
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Socker;
 using FBChamp.Infrastructure;
+using Newtonsoft.Json.Serialization;
+using System.Numerics;
 
 namespace IntegrationTests;
 
@@ -11,22 +13,23 @@ public class PlayerRepositoryTests
     [TestMethod]
     public void AddPlayers()
     {
-      /*  UnitOfWork unitOfWork = new UnitOfWork();
-        var initialCount = unitOfWork.PlayerRepository.All().Count();
+        UnitOfWork unitOfWork = new UnitOfWork();
+        var initialCount = unitOfWork.GetAllPlayerModels().Count;
+
+        var models = unitOfWork.GetAllPlayerModels();
         Guid positionId = Guid.NewGuid();
         Guid playerID = Guid.NewGuid();
 
-        List<Task> tasks = new();
-        for (int i = 0; i < 10; i++) 
-        {
-            tasks.Add(Task.Run(() =>
+        List<Task> tasks = Enumerable.Range(0, 100)
+            .Select(x => new Player(playerID, "FulllName" + x, DateTime.Now, 190, positionId, null))
+            .Select(x => new Task(() =>
             {
-                Player player = new Player(playerID, "FulllName" + i++, DateTime.Now, 190, positionId, null);
-                unitOfWork.Commit(new List<Entity>(){ player });
-            }));
-        }
+                unitOfWork.Commit(new List<Entity>() { x });
+            })).ToList();
+
+        tasks.ForEach(x => x.Start());
         Task.WaitAll(tasks.ToArray());
-        var realCount = unitOfWork.PlayerRepository.All().Count();
-        Assert.AreEqual(initialCount + 1, realCount);*/
+        var realCount = unitOfWork.GetAllPlayerModels().Count;
+        Assert.AreEqual(initialCount + 1, realCount);
     }
 }

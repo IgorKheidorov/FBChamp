@@ -1,9 +1,9 @@
-﻿using FBChamp.Core.Repositories;
-using FBChamp.Web.Common.VewModelsBuilders.Admin;
+﻿using FBChamp.Web.Common.VewModelsBuilders.Admin;
 using FBChamp.Web.Common.VewModelsBuilders.Shared;
 using FBChamp.Web.Common.VewModelsBuilders;
 using FBChamp.Web.Common.EntityBuilders.Admin;
 using FBChamp.Web.Common.Interfaces;
+using FBChamp.Core.UnitOfWork;
 
 namespace FBChamp.Web.Common.EntityBuilders;
 

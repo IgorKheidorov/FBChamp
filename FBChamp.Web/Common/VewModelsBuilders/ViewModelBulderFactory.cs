@@ -1,4 +1,4 @@
-﻿using FBChamp.Core.Repositories;
+﻿using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Common.Interfaces;
 using FBChamp.Web.Common.VewModelsBuilders.Admin;
 using FBChamp.Web.Common.VewModelsBuilders.Shared;

@@ -1,6 +1,6 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Socker;
-using FBChamp.Core.Repositories;
+using FBChamp.Core.UnitOfWork;
 using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;

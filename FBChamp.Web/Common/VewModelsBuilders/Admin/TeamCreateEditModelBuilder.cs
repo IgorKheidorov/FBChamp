@@ -1,5 +1,5 @@
 ﻿using FBChamp.Core.DALModels;
-using FBChamp.Core.Repositories;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Players;

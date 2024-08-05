@@ -1,10 +1,10 @@
 ﻿using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.Entities;
-using FBChamp.Core.Repositories;
 using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Web.Common.Helpers;
 using FBChamp.Core.DALModels;
+using FBChamp.Core.UnitOfWork;
 
 namespace FBChamp.Web.Common.EntityBuilders.Admin;
 

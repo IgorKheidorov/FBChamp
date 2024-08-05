@@ -1,9 +1,9 @@
-﻿using FBChamp.Core.Repositories;
-using FBChamp.Web.Areas.Admin.Controllers.Models;
+﻿using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Common.Helpers;
 using FBChamp.Web.Common.Interfaces;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Core.DALModels;
+using FBChamp.Core.UnitOfWork;
 
 namespace FBChamp.Web.Common.VewModelsBuilders.Admin;
 

@@ -1,6 +1,6 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Socker;
-using FBChamp.Core.Repositories;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Teams;
 using FBChamp.Web.Common.Helpers;

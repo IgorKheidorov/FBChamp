@@ -1,4 +1,4 @@
-using FBChamp.Core.Repositories;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.Infrastructure;
 using FBChamp.Web.Common.EntityBuilders;
 using FBChamp.Web.Common.Interfaces;

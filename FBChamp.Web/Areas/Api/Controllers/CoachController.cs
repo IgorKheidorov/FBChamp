@@ -1,24 +1,35 @@
 ﻿using FBChamp.Core.DALModels;
-using FBChamp.Core.Repositories;
-using FBChamp.Infrastructure;
-using FBChamp.Web.Common.Interfaces;
+using FBChamp.Core.Entities;
+using FBChamp.Core.Entities.Socker;
+using FBChamp.Core.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FBChamp.Web.Areas.Api.Controllers;
 
 [Route("api/coaches")]
-[AllowAnonymous]
 public class CoachController : BaseApiController
 {
-    private IUnitOfWork _unitOfWork;
-    public CoachController(IUnitOfWork unitOfWork, IViewModelBuildersFactory factory, IEntityBuildersFactory entityBuilderFactory) : base(factory, entityBuilderFactory)
-    {
-        _unitOfWork = unitOfWork;
-    }
+    public CoachController(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+
+    [HttpGet]    
+    public ActionResult<List<CoachModel>> Coaches()=>    
+        UnitOfWork.GetAllCoachModels().ToList();
 
     [HttpGet]
-    public ActionResult<List<CoachModel>> Coaches()=>    
-        _unitOfWork.GetAllCoachModels().ToList();
+    [Route("{id}")]
+    public ActionResult<CoachModel> GetCoach(Guid id) =>
+        UnitOfWork.GetCoachModel(id);
 
+    [HttpDelete]
+    [Authorize("Admin")]
+    [Route("{id}")]
+    public ActionResult<bool> RemoveCoach(Guid id) =>
+        UnitOfWork.Remove(id, typeof(Coach));
+
+    [HttpPut]
+    [Authorize("Admin")]
+    [Route("{id}")]
+    public ActionResult<bool> UpdateCoach(Guid id, [FromBody] CoachModel coachModel) =>
+        UnitOfWork.Commit(new List<Entity>() { coachModel.Coach });
 }

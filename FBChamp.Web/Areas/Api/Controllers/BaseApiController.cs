@@ -1,4 +1,6 @@
 ﻿using FBChamp.Core.DALModels;
+using FBChamp.Core.UnitOfWork;
+using FBChamp.Infrastructure;
 using FBChamp.Web.Common.Interfaces;
 using FBChamp.Web.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -8,26 +10,15 @@ namespace FBChamp.Web.Areas.Api.Controllers;
 
 [Area("Api")]
 [ApiController]
-[Authorize("Admin")]
-public class BaseApiController : BaseController
+public class BaseApiController 
 {
-    public BaseApiController(IViewModelBuildersFactory factory = null, IEntityBuildersFactory entityFactory = null) : base(factory, entityFactory)
+    private IUnitOfWork _unitOfWork;
+    protected IUnitOfWork UnitOfWork => _unitOfWork;
+
+    public BaseApiController(IUnitOfWork unitOfWork)
     {
+        _unitOfWork = unitOfWork;
     }
 
     public BaseApiController() { }
-
-    protected IActionResult CreateView(string modelTypeName, string parameters, string viewName)
-    {
-        var model = ViewModelBuilderFactory?.GetBuilder(modelTypeName)?.Build(parameters);
-        return model is null ? NotFound() : View(viewName, model);
-    }
-
-    protected bool UpdateRepository(EntityModel model, string entityType) =>
-        (bool)(EntityBuilderFactory?.GetBuilder(entityType)?.Update(model));
-
-
-    protected bool DeleteFromRepository(Guid guid, string entityType) =>
-        EntityBuilderFactory.GetBuilder(entityType).Delete(guid);
-
 }
