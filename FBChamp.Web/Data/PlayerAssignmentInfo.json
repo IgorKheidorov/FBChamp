@@ -1,12 +1,7 @@
 {
-  "0a44b9b8-7093-47ba-a23d-3ad85327f760": {
+  "87b628aa-007d-40e4-a1e0-4da520ec67d7": {
     "TeamId": "ede21a62-1ffb-4fc3-ac24-f5b6cb61267f",
-    "PlayingNumber": 2,
-    "Id": "0a44b9b8-7093-47ba-a23d-3ad85327f760"
-  },
-  "d33c6f52-1173-485f-b660-c59f03048b3a": {
-    "TeamId": "ede21a62-1ffb-4fc3-ac24-f5b6cb61267f",
-    "PlayingNumber": 12,
-    "Id": "d33c6f52-1173-485f-b660-c59f03048b3a"
+    "PlayingNumber": 10,
+    "Id": "87b628aa-007d-40e4-a1e0-4da520ec67d7"
   }
 }

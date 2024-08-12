@@ -4,12 +4,16 @@ using FBChamp.Core.Repositories.Membership;
 using FBChamp.Infrastructure.Repositories.Membership;
 using Microsoft.IdentityModel.Tokens;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.Core.DataValidator;
+using FBChamp.Infrastructure.Validators;
 
 namespace FBChamp.Infrastructure;
 
 public sealed partial class UnitOfWork : IUnitOfWork 
 {
     private bool _isDisposed;
+
+    private IValidateEntity _crudDataValidator;
 
     private PlayerRepository _playerRepository;
     private PlayerPositionsRepository _playerPositionRepository;
@@ -38,10 +42,11 @@ public sealed partial class UnitOfWork : IUnitOfWork
     
     public UnitOfWork()
     {
+        _crudDataValidator = new CRUDDataValidator(this);
     }
 
     // Reload entities due to fail of repositories changes
-    private bool RequestReload()
+    private CRUDResult RequestReload()
     {
        _playerPositionRepository = null;
        _coachRepository = null;
@@ -49,10 +54,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
        _playerAssignmentInfoRepository = null;
        _coachAssignmentInfoRepository = null;
         // false is to indicate the fail
-        return false;
+        return CRUDResult.Failed;
     }
 
-    public bool Commit()
+    private CRUDResult Commit()
     {
         try
         {
@@ -61,11 +66,11 @@ public sealed partial class UnitOfWork : IUnitOfWork
             TeamRepository.Commit();
             PlayerAssignmentInfoRepository.Commit();
             CoachAssignmentInfoRepository.Commit();
-            return true;
+            return CRUDResult.Success;
         }
         catch (Exception)
         {
-            return false;
+            return CRUDResult.Failed;
         }
     }
 
@@ -97,7 +102,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         return coachDeassignResult && playerDeassignResult && TeamRepository.Remove(teamId);
     }
 
-    public bool Remove(Guid id, Type type) =>  type.Name switch
+    public CRUDResult Remove(Guid id, Type type) =>  type.Name switch
     {
         "Player" => RemovePlayer(id),
         "Coach" => RemoveCoach(id),
@@ -122,22 +127,16 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _ => false
     };
 
-    public bool Commit(Entity entity) =>
-        AddOrUpdateEntity(entity as Entity<Guid>) == true ? Commit() : false;
-
-    // Emulate transaction
-    public bool Commit(IReadOnlyCollection<Entity> entities)
+    public CRUDResult Commit(Entity entity)
     {
-        bool readyToCommit = true;
-        foreach (var entity in entities)
+        var validationResult = _crudDataValidator.Validate(entity);
+        if (validationResult != CRUDResult.Success)
         {
-            if (AddOrUpdateEntity(entity as Entity<Guid>) == false)
-            {
-                readyToCommit = false;
-                break;
-            }
+            return validationResult;
         }
-
-        return readyToCommit ? Commit() : RequestReload() || false;
+        
+        return AddOrUpdateEntity(entity as Entity<Guid>) ? Commit() : CRUDResult.Failed;
     }
+    
+
 }

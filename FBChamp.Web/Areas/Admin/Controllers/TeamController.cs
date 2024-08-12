@@ -1,4 +1,5 @@
-﻿using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
+﻿using FBChamp.Core.UnitOfWork;
+using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Teams;
 using FBChamp.Web.Common.Interfaces;
@@ -72,7 +73,7 @@ public class TeamController : BaseAdminController
             return CreateView("PlayerAssignModel", $"PlayerId:{model.Id};TeamId:{model.TeamId}", "PlayerAssign");
         }
 
-        return UpdateRepository(model, "PlayerAssignmentInfo") ?
+        return UpdateRepository(model, "PlayerAssignmentInfo") == CRUDResult.Success ?
             RedirectToAction(nameof(Update), new { id = model.TeamId }) :
             View("_Error", "The playing number is already assigned to other player!");
     }
@@ -110,7 +111,7 @@ public class TeamController : BaseAdminController
             return CreateView("CoachAssignModel", $"CoachId:{model.Id};TeamId:{model.TeamId}", "CoachAssign");
         }
 
-        return UpdateRepository(model, "CoachAssignmentInfo") ?
+        return UpdateRepository(model, "CoachAssignmentInfo") == CRUDResult.Success ?
             RedirectToAction(nameof(Update), new { id = model.TeamId }) :
             View("_Error", "The coach with role is already assigned to the team!");
     }

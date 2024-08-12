@@ -1,11 +1,7 @@
 ﻿using FBChamp.Common.Paging;
 using FBChamp.Core.DALModels;
-using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Areas.Admin.Controllers.Models;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Teams;
 using FBChamp.Web.Common.Helpers;
 
 namespace FBChamp.Web.Common.VewModelsBuilders.Admin;

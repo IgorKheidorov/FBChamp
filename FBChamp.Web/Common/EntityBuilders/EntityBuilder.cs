@@ -1,9 +1,10 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.UnitOfWork;
-using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Common.Interfaces;
 
 namespace FBChamp.Web.Common.EntityBuilders;
+
+
 
 public abstract class EntityBuilder : IEntityBuilder
 {
@@ -11,10 +12,7 @@ public abstract class EntityBuilder : IEntityBuilder
 
     protected EntityBuilder(IUnitOfWork unitOfWork) => UnitOfWork = unitOfWork;
     
-    public abstract bool Update(EntityModel model);
+    public abstract CRUDResult CreateUpdate(EntityModel model);
 
-    public virtual bool Delete(Guid id) 
-    {
-        throw new NotImplementedException();
-    }
+    public abstract CRUDResult Delete(Guid id); 
 }

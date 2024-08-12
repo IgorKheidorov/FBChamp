@@ -1,5 +1,4 @@
 ﻿using FBChamp.Core.DALModels;
-using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
@@ -24,12 +23,12 @@ public class CoachController : BaseApiController
     [HttpDelete]
     [Authorize("Admin")]
     [Route("{id}")]
-    public ActionResult<bool> RemoveCoach(Guid id) =>
+    public ActionResult<CRUDResult> RemoveCoach(Guid id) =>
         UnitOfWork.Remove(id, typeof(Coach));
 
     [HttpPut]
     [Authorize("Admin")]
     [Route("{id}")]
-    public ActionResult<bool> UpdateCoach(Guid id, [FromBody] CoachModel coachModel) =>
-        UnitOfWork.Commit(new List<Entity>() { coachModel.Coach });
+    public ActionResult<CRUDResult> UpdateCoach(Guid id, [FromBody] CoachModel coachModel) =>
+        UnitOfWork.Commit(coachModel.Coach);
 }

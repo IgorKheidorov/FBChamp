@@ -1,4 +1,5 @@
-﻿using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
+﻿using FBChamp.Core.UnitOfWork;
+using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
 using FBChamp.Web.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,8 +30,11 @@ public class PlayerController : BaseAdminController
         {
             return View(model);
         }
-        UpdateRepository(model, "Player");
-        return  RedirectToAction(nameof(List));
+
+        model.Heigth = 700;
+        return  UpdateRepository(model, "Player") == CRUDResult.Success ?
+            RedirectToAction(nameof(List)):
+            View("_Error", "Invalid data for player"); ;
     }
 
     [Route("{id:guid}")]
@@ -56,7 +60,7 @@ public class PlayerController : BaseAdminController
     [HttpPost("delete")]
     public IActionResult Delete(Guid id)
     {
-        bool res = DeleteFromRepository(id, "Player");
+        DeleteFromRepository(id, "Player");
         return RedirectToAction(nameof(List));
     }
 }

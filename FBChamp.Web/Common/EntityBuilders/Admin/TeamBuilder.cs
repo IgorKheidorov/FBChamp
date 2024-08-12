@@ -1,34 +1,36 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.UnitOfWork;
-using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Teams;
-using FBChamp.Web.Common.Helpers;
-using System.Text.Json;
 
 namespace FBChamp.Web.Common.EntityBuilders.Admin;
 
 internal class TeamBuilder : EntityBuilder
 {
     public TeamBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+    
 
-    public override bool Update(EntityModel viewModel)
+    public override CRUDResult CreateUpdate(EntityModel viewModel)
     {
-        var model = viewModel as TeamCreateEditModel;
-
-        if (model is null)
-            return false;
-
-        byte[] photo = Convert.FromBase64String(model.PhotoString ?? "");
-        if (model?.PhotoFile != null && model?.PhotoFile.Length > 0)
+        if (viewModel is TeamCreateEditModel model)
         {
-            var stream = new MemoryStream();
-            Task task = model.PhotoFile.CopyToAsync(stream);
-            task.Wait();
-            var bytes = stream.ToArray();
-            photo = bytes;
-        }
+            byte[] photo = Convert.FromBase64String(model.PhotoString ?? "");
+            if (model?.PhotoFile != null && model?.PhotoFile.Length > 0)
+            {
+                var stream = new MemoryStream();
+                model.PhotoFile.CopyToAsync(stream).Wait();
+                photo = stream.ToArray();
+            }
 
-        return UnitOfWork.Commit(new Team(model.Id, model.FullName, photo));
+            return UnitOfWork.Commit(new Team(model.Id, model.FullName, photo));
+        }
+        else
+        {
+            return CRUDResult.Failed;
+        }
     }
+
+    public override CRUDResult Delete(Guid id)
+        => UnitOfWork.Remove(id, typeof(Team));
+
 }

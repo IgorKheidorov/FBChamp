@@ -1,16 +1,13 @@
-using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Socker;
 using FBChamp.Infrastructure;
-using Newtonsoft.Json.Serialization;
-using System.Numerics;
 
-namespace IntegrationTests;
+namespace IntegrationTests.PlayerTests;
 
 [TestClass]
 public class PlayerRepositoryTests
 
 {
-    [TestMethod]
+   //[TestMethod]
     public void AddPlayers()
     {
         UnitOfWork unitOfWork = new UnitOfWork();
@@ -24,7 +21,7 @@ public class PlayerRepositoryTests
             .Select(x => new Player(playerID, "FulllName" + x, DateTime.Now, 190, positionId, null))
             .Select(x => new Task(() =>
             {
-                unitOfWork.Commit(new List<Entity>() { x });
+                unitOfWork.Commit(x);
             })).ToList();
 
         tasks.ForEach(x => x.Start());

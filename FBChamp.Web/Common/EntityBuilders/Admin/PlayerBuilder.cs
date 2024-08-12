@@ -11,14 +11,15 @@ public class PlayerBuilder: EntityBuilder
 {
     public PlayerBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 
-    public override bool Update(EntityModel viewModel )
+    public override CRUDResult CreateUpdate(EntityModel viewModel )
     {
         var model = viewModel as PlayerCreateEditModel;
 
         if (model is null)
-            return false;
+            return CRUDResult.Failed
+;
 
-        var playerId = model.Id == default ? Guid.NewGuid() : model.Id;
+    var playerId = model.Id == default ? Guid.NewGuid() : model.Id;
 
         return UnitOfWork.Commit(
             new Player( playerId, model.Name, model.BirthDate, 
@@ -27,6 +28,6 @@ public class PlayerBuilder: EntityBuilder
                         model.Description));
     }
 
-    public override bool Delete(Guid id) => UnitOfWork.Remove(id, typeof(Player));
+    public override CRUDResult Delete(Guid id) => UnitOfWork.Remove(id, typeof(Player));
     
 }

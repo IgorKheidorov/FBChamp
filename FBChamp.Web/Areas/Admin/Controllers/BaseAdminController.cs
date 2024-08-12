@@ -1,4 +1,5 @@
 ﻿using FBChamp.Core.DALModels;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Common.Interfaces;
 using FBChamp.Web.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -22,11 +23,11 @@ public class BaseAdminController : BaseController
         return model is null ? NotFound() : View(viewName, model);
     }
 
-    protected bool UpdateRepository(EntityModel model, string entityType)=>
-        (bool)(EntityBuilderFactory?.GetBuilder(entityType)?.Update(model));
+    protected CRUDResult UpdateRepository(EntityModel model, string entityType)=>
+        (CRUDResult)EntityBuilderFactory?.GetBuilder(entityType)?.CreateUpdate(model);
     
 
-    protected bool DeleteFromRepository(Guid guid, string entityType) =>    
+    protected CRUDResult DeleteFromRepository(Guid guid, string entityType) =>    
         EntityBuilderFactory.GetBuilder(entityType).Delete(guid);
     
 

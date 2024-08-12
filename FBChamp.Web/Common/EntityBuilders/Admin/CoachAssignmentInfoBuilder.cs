@@ -1,8 +1,5 @@
 ﻿using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.Entities;
-using FBChamp.Infrastructure;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
-using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Core.DALModels;
 using FBChamp.Core.UnitOfWork;
@@ -13,15 +10,11 @@ internal class CoachAssignmentInfoBuilder: EntityBuilder
 {
     public CoachAssignmentInfoBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
     
-    public override bool Update(EntityModel viewModel)
-    {
-        var model = viewModel as CoachAssignModel;
+    public override CRUDResult CreateUpdate(EntityModel viewModel)=>
+        viewModel is CoachAssignModel model ?
+            UnitOfWork.Commit(new CoachAssignmentInfo(model.Id, model.TeamId, model.Role))
+         : CRUDResult.Failed;    
 
-        return (viewModel is not null) ? UnitOfWork.Commit(new List<Entity>()
-                                     {new CoachAssignmentInfo(model.Id, model.TeamId, model.Role)})
-                                   : false;
-    }
-
-    public override bool Delete(Guid id) => UnitOfWork.Remove(id, typeof(CoachAssignmentInfo));
+    public override CRUDResult Delete(Guid id) => UnitOfWork.Remove(id, typeof(CoachAssignmentInfo));
 
 }

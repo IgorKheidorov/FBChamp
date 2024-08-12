@@ -30,9 +30,6 @@ public interface IUnitOfWork : IDisposable
     ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions();
     #endregion
 
-    bool Remove(Guid id, Type type);
-
-    bool Commit(IReadOnlyCollection<Entity> entities);
-    bool Commit(Entity entities);
-
+    CRUDResult Remove(Guid id, Type type);    
+    CRUDResult Commit(Entity entities);
 }

@@ -1,5 +1,4 @@
-﻿using FBChamp.Core.Repositories;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
+﻿using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 using FBChamp.Web.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
