@@ -1,4 +1,5 @@
-﻿namespace FBChamp.Core.Entities.Socker;
+﻿
+namespace FBChamp.Core.Entities.Socker;
 
 public abstract class Person: Entity<Guid>
 {
