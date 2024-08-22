@@ -1,22 +1,17 @@
-﻿using FBChamp.Web.Areas.Admin.Controllers.Models;
-using FBChamp.Web.Common.Helpers;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
-using FBChamp.Core.DALModels;
-using FBChamp.Web.Areas.Admin.Controllers.Models.Players;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
+using FBChamp.Web.Common.Helpers;
 
-namespace FBChamp.Web.Common.VewModelsBuilders.Shared
+namespace FBChamp.Web.Common.VewModelsBuilders.Shared;
+
+public class CoachCreateEditModelBuilder(IUnitOfWork unitOfWork)
+    : ViewModelBuilder(unitOfWork)
 {
-    public class CoachCreateEditModelBuilder : ViewModelBuilder
+    public override EntityModel Build(string parameters)
     {
-        public CoachCreateEditModelBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+        var coach = UnitOfWork.GetCoachModel(parameters.GetGuidValueFor("CoachId"));
 
-        public override EntityModel Build(string parameters)
-        {
-            var coach = UnitOfWork.GetCoachModel(parameters.GetGuidValueFor("CoachId"));
-            return coach is not null ? new CoachCreateEditModel(coach) : new CoachCreateEditModel();            
-        }
-
+        return coach is not null ? new CoachCreateEditModel(coach) : new CoachCreateEditModel();
     }
 }

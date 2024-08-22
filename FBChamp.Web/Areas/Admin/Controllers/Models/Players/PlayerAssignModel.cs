@@ -1,15 +1,19 @@
-﻿using FBChamp.Core.DALModels;
+﻿using System.ComponentModel.DataAnnotations;
+using FBChamp.Core.DALModels;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace FBChamp.Web.Areas.Admin.Controllers.Models.Players;
 
 public class PlayerAssignModel : EntityModel
 {
-    [HiddenInput][Display(Name = "Player")] public Guid Id { get; set; }
-    [HiddenInput][Display(Name = "Team")] public Guid TeamId { get; set; }
+    [HiddenInput]
+    [Display(Name = "Player")]
+    public Guid Id { get; set; }
 
-    
+    [HiddenInput]
+    [Display(Name = "Team")]
+    public Guid TeamId { get; set; }
+
     [Display(Name = "Number")]
     [Required]
     [Range(1, 99, ErrorMessage = "Please enter a valid playing number")]
@@ -17,14 +21,17 @@ public class PlayerAssignModel : EntityModel
 
     public PlayerModel PlayerModel { get; set; }
 
-    public override string FullName => PlayerModel?.FullName ?? String.Empty;
+    public override string FullName => PlayerModel?.FullName ?? string.Empty;
 
-    public PlayerAssignModel() { }
+    public PlayerAssignModel()
+    {
+    }
+
     public PlayerAssignModel(PlayerModel player, Guid teamId = default, uint playingNumber = 10)
     {
         Id = player.Player.Id;
         PlayerModel = player;
-        TeamId = teamId;        
-        PlayingNumber = playingNumber;        
+        TeamId = teamId;
+        PlayingNumber = playingNumber;
     }
 }

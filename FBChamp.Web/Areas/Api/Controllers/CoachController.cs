@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace FBChamp.Web.Areas.Api.Controllers;
 
 [Route("api/coaches")]
-public class CoachController : BaseApiController
+public class CoachController(IUnitOfWork unitOfWork)
+    : BaseApiController(unitOfWork)
 {
-    public CoachController(IUnitOfWork unitOfWork) : base(unitOfWork) { }
-
-    [HttpGet]    
-    public ActionResult<List<CoachModel>> Coaches()=>    
+    [HttpGet]
+    public ActionResult<List<CoachModel>> Coaches() =>
         UnitOfWork.GetAllCoachModels().ToList();
 
     [HttpGet]

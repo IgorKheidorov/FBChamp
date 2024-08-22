@@ -8,14 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace FBChamp.Web.Areas.Admin.Controllers;
 
 [Route("admin/teams")]
-public class TeamController : BaseAdminController
+public class TeamController(
+    IViewModelBuildersFactory factory,
+    IEntityBuildersFactory entityBuilderFactory)
+    : BaseAdminController(factory, entityBuilderFactory)
 {
     private const int ItemsPerPage = 10;
 
-    public TeamController(IViewModelBuildersFactory factory, IEntityBuildersFactory entityBuilderFactory) : base(factory, entityBuilderFactory)
-    {
-    }
     #region Total team info
+
     public IActionResult List(int page = 1, string filter = null) =>
         CreateView("TeamsPageModel", $"Page:{page};ItemsPerPage:{ItemsPerPage};Filter:{filter}", "List");
 
@@ -34,32 +35,40 @@ public class TeamController : BaseAdminController
         {
             return View(model);
         }
+
         UpdateRepository(model, "Team");
+
         return RedirectToAction(nameof(List));
     }
+
     [HttpGet("update/{id:guid}")]
     public IActionResult Update(Guid id, int page = 1, string filter = "") =>
-        CreateView("TeamCreateEditModel", $"TeamId:{id}; Page:{page};Filter:{filter};ItemsPerPage:2;Mode:Include;", "Update");
+        CreateView("TeamCreateEditModel", $"TeamId:{id}; Page:{page};Filter:{filter};ItemsPerPage:2;Mode:Include;",
+            "Update");
 
     [HttpPost]
     [Route("update/{id:guid}")]
     public IActionResult Update(TeamCreateEditModel model)
     {
         UpdateRepository(model, "Team");
+
         return RedirectToAction(nameof(List), new { id = model.Id });
     }
+
     #endregion
 
     #region Players
+
     [HttpGet]
     [Route("playerprofile/{id}")]
     public IActionResult PlayerProfile(Guid id) =>
-         CreateView("PlayerViewModel", $"PlayerId:{id}", "PlayerProfile");
-            
+        CreateView("PlayerViewModel", $"PlayerId:{id}", "PlayerProfile");
+
     [HttpGet]
     [Route("addplayer/{id}")]
     public IActionResult AddPlayer(Guid id) =>
-       CreateView("PlayersPageModel", $"TeamId:{id};Mode:Assign", "AddPlayer");
+        CreateView("PlayersPageModel", $"TeamId:{id};Mode:Assign", "AddPlayer");
+
     [HttpGet("assignplayer")]
     public IActionResult AssignPlayer(Guid id, Guid teamid) =>
         CreateView("PlayerAssignModel", $"PlayerId:{id};TeamId:{teamid}", "PlayerAssign");
@@ -73,9 +82,9 @@ public class TeamController : BaseAdminController
             return CreateView("PlayerAssignModel", $"PlayerId:{model.Id};TeamId:{model.TeamId}", "PlayerAssign");
         }
 
-        return UpdateRepository(model, "PlayerAssignmentInfo") == CRUDResult.Success ?
-            RedirectToAction(nameof(Update), new { id = model.TeamId }) :
-            View("_Error", "The playing number is already assigned to other player!");
+        return UpdateRepository(model, "PlayerAssignmentInfo") == CRUDResult.Success
+            ? RedirectToAction(nameof(Update), new { id = model.TeamId })
+            : View("_Error", "The playing number is already assigned to other player!");
     }
 
     [HttpPost]
@@ -83,16 +92,19 @@ public class TeamController : BaseAdminController
     public IActionResult UnassignPlayer(Guid id)
     {
         DeleteFromRepository(id, "PlayerAssignmentInfo");
+
         return RedirectToAction(nameof(List));
     }
+
     #endregion
 
     #region Coaches
+
     [HttpGet]
     [Route("addcoach/{id}")]
     public IActionResult AddCoach(Guid id) =>
         CreateView("CoachesPageModel", $"TeamId:{id};Mode:Assign", "AddCoach");
-    
+
     [HttpGet]
     [Route("coachprofile/{id}")]
     public IActionResult CoachProfile(Guid id) =>
@@ -111,9 +123,9 @@ public class TeamController : BaseAdminController
             return CreateView("CoachAssignModel", $"CoachId:{model.Id};TeamId:{model.TeamId}", "CoachAssign");
         }
 
-        return UpdateRepository(model, "CoachAssignmentInfo") == CRUDResult.Success ?
-            RedirectToAction(nameof(Update), new { id = model.TeamId }) :
-            View("_Error", "The coach with role is already assigned to the team!");
+        return UpdateRepository(model, "CoachAssignmentInfo") == CRUDResult.Success
+            ? RedirectToAction(nameof(Update), new { id = model.TeamId })
+            : View("_Error", "The coach with role is already assigned to the team!");
     }
 
     [HttpPost]
@@ -121,10 +133,9 @@ public class TeamController : BaseAdminController
     public IActionResult UnassignCoach(Guid id)
     {
         DeleteFromRepository(id, "CoachAssignmentInfo");
+
         return RedirectToAction(nameof(List));
     }
+
     #endregion
-
-
-
 }

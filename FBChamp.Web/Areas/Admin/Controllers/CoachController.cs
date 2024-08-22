@@ -5,21 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace FBChamp.Web.Areas.Admin.Controllers;
 
 [Route("admin/coaches")]
-public class CoachController : BaseAdminController
+public class CoachController(
+    IViewModelBuildersFactory factory,
+    IEntityBuildersFactory entityBuilderFactory)
+    : BaseAdminController(factory, entityBuilderFactory)
 {
     private const int ItemsPerPage = 10;
 
-    public CoachController(IViewModelBuildersFactory factory, IEntityBuildersFactory entityBuilderFactory) : base(factory, entityBuilderFactory)
-    {
-    }
-
-    public IActionResult List(int page = 1, string filter = null)
-        => CreateView("CoachesPageModel", $"Page:{page};ItemsPerPage:2;Filter:{filter}", "List");
-
+    public IActionResult List(int page = 1, string filter = null) =>
+        CreateView("CoachesPageModel", $"Page:{page};ItemsPerPage:2;Filter:{filter}", "List");
 
     [HttpGet("create")]
-    public IActionResult Create()
-        => CreateView("CoachCreateEditModel", "", "Create");
+    public IActionResult Create() =>
+        CreateView("CoachCreateEditModel", "", "Create");
 
     [HttpPost("create")]
     public IActionResult Create(CoachCreateEditModel model)
@@ -28,7 +26,9 @@ public class CoachController : BaseAdminController
         {
             return View(model);
         }
+
         UpdateRepository(model, "Coach");
+
         return RedirectToAction(nameof(List));
     }
 
@@ -38,7 +38,7 @@ public class CoachController : BaseAdminController
 
     [HttpGet("update/{id:guid}")]
     public IActionResult Update(Guid id) =>
-       CreateView("CoachCreateEditModel", $"CoachId:{id}", "Update");
+        CreateView("CoachCreateEditModel", $"CoachId:{id}", "Update");
 
     [HttpPost("update/{id:guid}")]
     public IActionResult Update(CoachCreateEditModel model)
@@ -49,6 +49,7 @@ public class CoachController : BaseAdminController
         }
 
         UpdateRepository(model, "Coach");
+
         return RedirectToAction(nameof(List));
     }
 }

@@ -1,36 +1,26 @@
-﻿using FBChamp.Web.Common.VewModelsBuilders.Admin;
-using FBChamp.Web.Common.VewModelsBuilders.Shared;
-using FBChamp.Web.Common.VewModelsBuilders;
+﻿using FBChamp.Core.UnitOfWork;
 using FBChamp.Web.Common.EntityBuilders.Admin;
 using FBChamp.Web.Common.Interfaces;
-using FBChamp.Core.UnitOfWork;
 
 namespace FBChamp.Web.Common.EntityBuilders;
 
-public class EntityBuildersFactory : IEntityBuildersFactory
+public class EntityBuildersFactory(IUnitOfWork unitOfWork)
+    : IEntityBuildersFactory
 {
-    private readonly IUnitOfWork _unitOfWorks;
-    private TeamBuilder _teamsBuilder;
+    private CoachAssignmentInfoBuilder _coachAssignmentInfoBuilder;
+    private CoachBuilder _coachBuilder;
     private PlayerAssignmentInfoBuilder _playerAssignmentInfoBuilder;
     private PlayerBuilder _playerBuilder;
-    private CoachBuilder _coachBuilder;
-    private CoachAssignmentInfoBuilder _coachAssignmentInfoBuilder;
+    private TeamBuilder _teamsBuilder;
 
-    public EntityBuildersFactory(IUnitOfWork unitOfWork)
-    {
-        _unitOfWorks = unitOfWork;
-    }
-
-    public IEntityBuilder GetBuilder(string viewModelType) => viewModelType switch
-    {
-        "Team" => _teamsBuilder ??= new TeamBuilder(_unitOfWorks),
-        "PlayerAssignmentInfo" => _playerAssignmentInfoBuilder ??= new PlayerAssignmentInfoBuilder(_unitOfWorks),
-        "Player" => _playerBuilder ??= new PlayerBuilder(_unitOfWorks),
-        "Coach" => _coachBuilder ??= new CoachBuilder(_unitOfWorks),
-        "CoachAssignmentInfo" => _coachAssignmentInfoBuilder ??= new CoachAssignmentInfoBuilder(_unitOfWorks),
-        _ => null
-    };
-
-   
-   
+    public IEntityBuilder GetBuilder(string viewModelType) =>
+        viewModelType switch
+        {
+            "Team" => _teamsBuilder ??= new TeamBuilder(unitOfWork),
+            "PlayerAssignmentInfo" => _playerAssignmentInfoBuilder ??= new PlayerAssignmentInfoBuilder(unitOfWork),
+            "Player" => _playerBuilder ??= new PlayerBuilder(unitOfWork),
+            "Coach" => _coachBuilder ??= new CoachBuilder(unitOfWork),
+            "CoachAssignmentInfo" => _coachAssignmentInfoBuilder ??= new CoachAssignmentInfoBuilder(unitOfWork),
+            _ => null
+        };
 }

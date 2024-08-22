@@ -1,12 +1,12 @@
-﻿using FBChamp.Web.Common.Helpers;
-using FBChamp.Core.DALModels;
+﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.Web.Common.Helpers;
 
 namespace FBChamp.Web.Common.VewModelsBuilders.Shared;
 
-public class CoachViewModelBuilder : ViewModelBuilder
+public class CoachViewModelBuilder(IUnitOfWork unitOfWork)
+    : ViewModelBuilder(unitOfWork)
 {
-    public CoachViewModelBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
-
-    public override EntityModel Build(string parameters) => UnitOfWork.GetCoachModel(parameters.GetGuidValueFor("CoachId"));
+    public override EntityModel Build(string parameters) =>
+        UnitOfWork.GetCoachModel(parameters.GetGuidValueFor("CoachId"));
 }

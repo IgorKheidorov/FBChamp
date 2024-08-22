@@ -11,24 +11,25 @@ namespace FBChamp.Web.Areas.Admin.Controllers;
 [Authorize("Admin")]
 public class BaseAdminController : BaseController
 {
-    public BaseAdminController(IViewModelBuildersFactory factory = null, IEntityBuildersFactory entityFactory = null) : base(factory, entityFactory)
+    public BaseAdminController()
     {
     }
 
-    public BaseAdminController() { }
+    public BaseAdminController(IViewModelBuildersFactory factory = null, IEntityBuildersFactory entityFactory = null)
+        : base(factory, entityFactory)
+    {
+    }
 
     protected IActionResult CreateView(string modelTypeName, string parameters, string viewName)
     {
         var model = ViewModelBuilderFactory?.GetBuilder(modelTypeName)?.Build(parameters);
+
         return model is null ? NotFound() : View(viewName, model);
     }
 
-    protected CRUDResult UpdateRepository(EntityModel model, string entityType)=>
+    protected CRUDResult UpdateRepository(EntityModel model, string entityType) =>
         (CRUDResult)EntityBuilderFactory?.GetBuilder(entityType)?.CreateUpdate(model);
-    
 
-    protected CRUDResult DeleteFromRepository(Guid guid, string entityType) =>    
+    protected CRUDResult DeleteFromRepository(Guid guid, string entityType) =>
         EntityBuilderFactory.GetBuilder(entityType).Delete(guid);
-    
-
 }

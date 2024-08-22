@@ -1,9 +1,8 @@
 ﻿using FBChamp.Core.DALModels;
 
-namespace FBChamp.Web.Common.Interfaces
+namespace FBChamp.Web.Common.Interfaces;
+
+public interface IViewModelBuilder
 {
-    public interface IViewModelBuilder
-    {
-        EntityModel Build(string item);
-    }
+    EntityModel Build(string item);
 }

@@ -6,22 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace FBChamp.Web.Areas.Admin.Controllers;
 
 [Route("admin/players")]
-public class PlayerController : BaseAdminController
+public class PlayerController(
+    IViewModelBuildersFactory factory,
+    IEntityBuildersFactory entityBuilderFactory)
+    : BaseAdminController(factory, entityBuilderFactory)
 {
     private const int ItemsPerPage = 10;
 
-    public PlayerController(IViewModelBuildersFactory factory, IEntityBuildersFactory entityBuilderFactory) : base(factory, entityBuilderFactory)
-    {
-    }
-
-    public IActionResult List(int page = 1, string filter = null)
-    {
-        return CreateView("PlayersPageModel", $"Page:{page};ItemsPerPage:2;Filter:{filter}", "List");
-    }
+    public IActionResult List(int page = 1, string filter = null) =>
+        CreateView("PlayersPageModel", $"Page:{page};ItemsPerPage:2;Filter:{filter}", "List");
 
     [HttpGet("create")]
-    public IActionResult Create()
-        => CreateView("PlayerCreateEditModel", "", "Create");
+    public IActionResult Create() =>
+        CreateView("PlayerCreateEditModel", "", "Create");
 
     [HttpPost("create")]
     public IActionResult Create(PlayerCreateEditModel model)
@@ -31,29 +28,31 @@ public class PlayerController : BaseAdminController
             return View(model);
         }
 
-        model.Heigth = 700;
-        return  UpdateRepository(model, "Player") == CRUDResult.Success ?
-            RedirectToAction(nameof(List)):
-            View("_Error", "Invalid data for player"); ;
+        model.Height = 700;
+
+        return UpdateRepository(model, "Player") == CRUDResult.Success
+            ? RedirectToAction(nameof(List))
+            : View("_Error", "Invalid data for player");
     }
 
     [Route("{id:guid}")]
     public IActionResult Profile(Guid id) =>
         CreateView("PlayerViewModel", $"PlayerId:{id}", "Profile");
-    
+
     [HttpGet("update/{id:guid}")]
     public IActionResult Update(Guid id) =>
-       CreateView("PlayerCreateEditModel", $"PlayerId:{id}", "Update");
+        CreateView("PlayerCreateEditModel", $"PlayerId:{id}", "Update");
 
     [HttpPost("update/{id:guid}")]
     public IActionResult Update(PlayerCreateEditModel model)
     {
-         if (!ModelState.IsValid)
-         {
-             return View(model);
-         }
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
         UpdateRepository(model, "Player");
+
         return RedirectToAction(nameof(List));
     }
 
@@ -61,6 +60,7 @@ public class PlayerController : BaseAdminController
     public IActionResult Delete(Guid id)
     {
         DeleteFromRepository(id, "Player");
+
         return RedirectToAction(nameof(List));
     }
 }

@@ -4,10 +4,9 @@ using FBChamp.Web.Common.Helpers;
 
 namespace FBChamp.Web.Common.VewModelsBuilders.Shared;
 
-internal class PlayerViewModelBuilder : ViewModelBuilder
+internal class PlayerViewModelBuilder(IUnitOfWork unitOfWork)
+    : ViewModelBuilder(unitOfWork)
 {
-    public PlayerViewModelBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
-
     public override EntityModel Build(string parameters) =>
         UnitOfWork.GetPlayerModel(parameters.GetGuidValueFor("PlayerId"));
 }

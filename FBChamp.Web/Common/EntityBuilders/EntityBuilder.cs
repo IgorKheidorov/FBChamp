@@ -4,15 +4,12 @@ using FBChamp.Web.Common.Interfaces;
 
 namespace FBChamp.Web.Common.EntityBuilders;
 
-
-
-public abstract class EntityBuilder : IEntityBuilder
+public abstract class EntityBuilder(IUnitOfWork unitOfWork)
+    : IEntityBuilder
 {
-    protected readonly IUnitOfWork UnitOfWork;
+    protected readonly IUnitOfWork UnitOfWork = unitOfWork;
 
-    protected EntityBuilder(IUnitOfWork unitOfWork) => UnitOfWork = unitOfWork;
-    
     public abstract CRUDResult CreateUpdate(EntityModel model);
 
-    public abstract CRUDResult Delete(Guid id); 
+    public abstract CRUDResult Delete(Guid id);
 }

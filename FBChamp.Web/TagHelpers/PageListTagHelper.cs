@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Encodings.Web;
+﻿using System.Text.Encodings.Web;
 using FBChamp.Common.Paging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,10 +9,9 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace FBChamp.Web.TagHelpers;
 
-public sealed class PageListTagHelper : TagHelper
+public sealed class PageListTagHelper(IUrlHelperFactory helperFactory)
+    : TagHelper
 {
-    private readonly IUrlHelperFactory _helperFactory;
-
     [ViewContext]
     [HtmlAttributeNotBound]
     public ViewContext ViewContext { get; set; }
@@ -23,17 +21,18 @@ public sealed class PageListTagHelper : TagHelper
     [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
     public Dictionary<string, string> PageUrlValues { get; } = [];
 
-    public PageListTagHelper(IUrlHelperFactory helperFactory) => _helperFactory = helperFactory;
-
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         output.TagName = "ul";
         output.AddClass("pagination", HtmlEncoder.Default);
-        var urlHelper = _helperFactory.GetUrlHelper(ViewContext);
+
+        var urlHelper = helperFactory.GetUrlHelper(ViewContext);
         var back = CreatePageButton("«", Model.Page - 1, urlHelper, Model.CanPrevious);
+
         output.Content.AppendHtml(back);
 
         var previousPageIsEllipsis = false;
+
         for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
         {
             if (pageNumber == Model.Page)
@@ -66,11 +65,14 @@ public sealed class PageListTagHelper : TagHelper
         {
             return null;
         }
+
         var tag = new TagBuilder("li");
         tag.AddCssClass("page-item");
+
         var link = new TagBuilder("a");
         link.AddCssClass("page-link");
         link.InnerHtml.Append(caption);
+
         tag.InnerHtml.AppendHtml(link);
 
         if (isActive)

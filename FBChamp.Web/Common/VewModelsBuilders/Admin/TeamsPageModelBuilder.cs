@@ -6,10 +6,9 @@ using FBChamp.Web.Common.Helpers;
 
 namespace FBChamp.Web.Common.VewModelsBuilders.Admin;
 
-public class TeamsPageModelBuilder : ViewModelBuilder
+public class TeamsPageModelBuilder(IUnitOfWork unitOfWork)
+    : ViewModelBuilder(unitOfWork)
 {
-    public TeamsPageModelBuilder(IUnitOfWork unitOfWork) : base(unitOfWork) { }
-
     public override EntityModel Build(string parameters)
     {
         var page = parameters.GetIntValueFor("Page") ?? 1;
@@ -17,11 +16,12 @@ public class TeamsPageModelBuilder : ViewModelBuilder
         var filter = parameters.GetValueFor("Filter");
 
         var teamModels = UnitOfWork.GetAllTeamModels();
-       
+
         return new EntityPageModel<TeamModel>(GetPagedList(new PageInfo(page, itemsPerPage), teamModels), filter);
     }
-    
-    private PagedList<TeamModel> GetPagedList(PageInfo pageInfo, IEnumerable<TeamModel> teamModels) =>
-        new PagedList<TeamModel>((IList<TeamModel>)teamModels.Skip((pageInfo.Page - 1) * pageInfo.PerPage).Take(pageInfo.PerPage), teamModels.Count(), pageInfo);        
 
+    private PagedList<TeamModel> GetPagedList(PageInfo pageInfo, IEnumerable<TeamModel> teamModels) =>
+        new((IList<TeamModel>)teamModels
+            .Skip((pageInfo.Page - 1) * pageInfo.PerPage)
+            .Take(pageInfo.PerPage), teamModels.Count(), pageInfo);
 }

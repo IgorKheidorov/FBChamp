@@ -3,39 +3,35 @@ using FBChamp.Web.Common.Interfaces;
 using FBChamp.Web.Common.VewModelsBuilders.Admin;
 using FBChamp.Web.Common.VewModelsBuilders.Shared;
 
-namespace FBChamp.Web.Common.VewModelsBuilders
-{
-    public class ViewModelBuldersFactory : IViewModelBuildersFactory
-    {
-        private readonly IUnitOfWork _unitOfWorks;
-        private PlayerCreateEditModelBuilder _playerViewEditModelBuilder;
-        private TeamsPageModelBuilder _teamsPageModelBuilder;
-        private TeamCreateEditModelBuilder _teamViewEditModelBuilder;
-        private PlayersPageModelBuilder _playersPageModelBuilder;
-        private PlayerViewModelBuilder _playerViewModelBuilder;
-        private PlayerAssignModelBuilder _playerAssighModelBuilder;
-        private CoachesPageModelBuilder _coachesPageModelBuilder;
-        private CoachViewModelBuilder _coachViewModelBuilder;
-        private CoachAssignModelBuilder _coachAssighModelBuilder;
-        private CoachCreateEditModelBuilder _coachCreateEditModelBuilder;
+namespace FBChamp.Web.Common.VewModelsBuilders;
 
-        public ViewModelBuldersFactory(IUnitOfWork unitOfWork)
+public class ViewModelBuildersFactory(IUnitOfWork unitOfWork)
+    : IViewModelBuildersFactory
+{
+    private CoachAssignModelBuilder _coachAssignModelBuilder;
+    private CoachCreateEditModelBuilder _coachCreateEditModelBuilder;
+    private CoachesPageModelBuilder _coachesPageModelBuilder;
+    private CoachViewModelBuilder _coachViewModelBuilder;
+    private PlayerAssignModelBuilder _playerAssignModelBuilder;
+    private PlayersPageModelBuilder _playersPageModelBuilder;
+    private PlayerCreateEditModelBuilder _playerViewEditModelBuilder;
+    private PlayerViewModelBuilder _playerViewModelBuilder;
+    private TeamsPageModelBuilder _teamsPageModelBuilder;
+    private TeamCreateEditModelBuilder _teamViewEditModelBuilder;
+
+    public IViewModelBuilder GetBuilder(string builderType) =>
+        builderType switch
         {
-            _unitOfWorks = unitOfWork;
-        }
-        public IViewModelBuilder GetBuilder(string builderType) => builderType switch
-        {
-            "TeamsPageModel" => _teamsPageModelBuilder ??= new TeamsPageModelBuilder(_unitOfWorks),
-            "TeamCreateEditModel" => _teamViewEditModelBuilder ??= new TeamCreateEditModelBuilder(_unitOfWorks, this),
-            "PlayersPageModel" => _playersPageModelBuilder ??= new PlayersPageModelBuilder(_unitOfWorks),
-            "PlayerViewModel" => _playerViewModelBuilder ??= new PlayerViewModelBuilder(_unitOfWorks),
-            "PlayerAssignModel" => _playerAssighModelBuilder ??= new PlayerAssignModelBuilder(_unitOfWorks),
-            "PlayerCreateEditModel" => _playerViewEditModelBuilder ??= new PlayerCreateEditModelBuilder(_unitOfWorks),
-            "CoachesPageModel" => _coachesPageModelBuilder ??= new CoachesPageModelBuilder(_unitOfWorks, this),
-            "CoachViewModel" => _coachViewModelBuilder ??= new CoachViewModelBuilder(_unitOfWorks),
-            "CoachAssignModel" => _coachAssighModelBuilder ??= new CoachAssignModelBuilder(_unitOfWorks, this),
-            "CoachCreateEditModel" => _coachCreateEditModelBuilder ??= new CoachCreateEditModelBuilder(_unitOfWorks),
+            "TeamsPageModel" => _teamsPageModelBuilder ??= new TeamsPageModelBuilder(unitOfWork),
+            "TeamCreateEditModel" => _teamViewEditModelBuilder ??= new TeamCreateEditModelBuilder(unitOfWork, this),
+            "PlayersPageModel" => _playersPageModelBuilder ??= new PlayersPageModelBuilder(unitOfWork),
+            "PlayerViewModel" => _playerViewModelBuilder ??= new PlayerViewModelBuilder(unitOfWork),
+            "PlayerAssignModel" => _playerAssignModelBuilder ??= new PlayerAssignModelBuilder(unitOfWork),
+            "PlayerCreateEditModel" => _playerViewEditModelBuilder ??= new PlayerCreateEditModelBuilder(unitOfWork),
+            "CoachesPageModel" => _coachesPageModelBuilder ??= new CoachesPageModelBuilder(unitOfWork, this),
+            "CoachViewModel" => _coachViewModelBuilder ??= new CoachViewModelBuilder(unitOfWork),
+            "CoachAssignModel" => _coachAssignModelBuilder ??= new CoachAssignModelBuilder(unitOfWork, this),
+            "CoachCreateEditModel" => _coachCreateEditModelBuilder ??= new CoachCreateEditModelBuilder(unitOfWork),
             _ => null
         };
-    }
 }

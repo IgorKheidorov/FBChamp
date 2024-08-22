@@ -1,18 +1,15 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.UnitOfWork;
-using FBChamp.Web.Areas.Admin.Controllers.Models;
 using FBChamp.Web.Common.Interfaces;
 
-namespace FBChamp.Web.Common.VewModelsBuilders
+namespace FBChamp.Web.Common.VewModelsBuilders;
+
+public abstract class ViewModelBuilder(IUnitOfWork unitOfWork)
+    : IViewModelBuilder
 {
-    public abstract class ViewModelBuilder : IViewModelBuilder
-    {
-        protected readonly char Separator = ';';
+    protected readonly char Separator = ';';
 
-        protected readonly IUnitOfWork UnitOfWork;
+    protected readonly IUnitOfWork UnitOfWork = unitOfWork;
 
-        protected ViewModelBuilder(IUnitOfWork unitOfWork) => UnitOfWork = unitOfWork;
-
-        public abstract EntityModel Build(string item);
-    }
+    public abstract EntityModel Build(string item);
 }

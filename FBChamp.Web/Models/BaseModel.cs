@@ -5,8 +5,11 @@ namespace FBChamp.Web.Models;
 public class BaseModel
 {
     public Guid Id { get; init; }
+
     public string Name { get; init; }
+
     public int VisualOrder { get; init; }
+
     public string Description { get; init; }
 
     protected BaseModel()

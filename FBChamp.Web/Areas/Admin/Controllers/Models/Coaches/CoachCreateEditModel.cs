@@ -1,13 +1,17 @@
-﻿using FBChamp.Core.DALModels;
+﻿using System.ComponentModel.DataAnnotations;
+using FBChamp.Core.DALModels;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace FBChamp.Web.Areas.Admin.Controllers.Models.Coaches;
 
-public class CoachCreateEditModel: EntityModel
+public class CoachCreateEditModel : EntityModel
 {
-    [HiddenInput][Display(Name = "Coach")] public Guid Id { get; set; }
-    [HiddenInput] public string PhotoString { get; set; }
+    [HiddenInput]
+    [Display(Name = "Coach")]
+    public Guid Id { get; set; }
+
+    [HiddenInput]
+    public string PhotoString { get; set; }
 
     [Required]
     public string Name { get; set; }
