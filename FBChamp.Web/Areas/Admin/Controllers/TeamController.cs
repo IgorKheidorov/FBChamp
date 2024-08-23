@@ -18,15 +18,21 @@ public class TeamController(
     #region Total team info
 
     public IActionResult List(int page = 1, string filter = null) =>
-        CreateView("TeamsPageModel", $"Page:{page};ItemsPerPage:{ItemsPerPage};Filter:{filter}", "List");
+        CreateView("TeamsPageModel",
+            $"Page:{page};ItemsPerPage:{ItemsPerPage};Filter:{filter}",
+            "List");
 
     [HttpGet("create")]
     public IActionResult Create() =>
-        CreateView("TeamCreateEditModel", "", "Create");
+        CreateView("TeamCreateEditModel",
+            "",
+            "Create");
 
     [HttpGet("profile")]
     public IActionResult Profile(Guid id) =>
-        CreateView("TeamCreateEditModel", "", "Profile");
+        CreateView("TeamCreateEditModel",
+            "",
+            "Profile");
 
     [HttpPost("create")]
     public IActionResult Create(TeamCreateEditModel model)
@@ -43,7 +49,8 @@ public class TeamController(
 
     [HttpGet("update/{id:guid}")]
     public IActionResult Update(Guid id, int page = 1, string filter = "") =>
-        CreateView("TeamCreateEditModel", $"TeamId:{id}; Page:{page};Filter:{filter};ItemsPerPage:2;Mode:Include;",
+        CreateView("TeamCreateEditModel",
+            $"TeamId:{id}; Page:{page};Filter:{filter};ItemsPerPage:2;Mode:Include;",
             "Update");
 
     [HttpPost]
@@ -62,16 +69,22 @@ public class TeamController(
     [HttpGet]
     [Route("playerprofile/{id}")]
     public IActionResult PlayerProfile(Guid id) =>
-        CreateView("PlayerViewModel", $"PlayerId:{id}", "PlayerProfile");
+        CreateView("PlayerViewModel",
+            $"PlayerId:{id}",
+            "PlayerProfile");
 
     [HttpGet]
     [Route("addplayer/{id}")]
     public IActionResult AddPlayer(Guid id) =>
-        CreateView("PlayersPageModel", $"TeamId:{id};Mode:Assign", "AddPlayer");
+        CreateView("PlayersPageModel",
+            $"TeamId:{id};Mode:Assign",
+            "AddPlayer");
 
     [HttpGet("assignplayer")]
     public IActionResult AssignPlayer(Guid id, Guid teamid) =>
-        CreateView("PlayerAssignModel", $"PlayerId:{id};TeamId:{teamid}", "PlayerAssign");
+        CreateView("PlayerAssignModel",
+            $"PlayerId:{id};TeamId:{teamid}",
+            "PlayerAssign");
 
     [HttpPost]
     [Route("assignplayer")]
@@ -79,7 +92,9 @@ public class TeamController(
     {
         if (!ModelState.IsValid)
         {
-            return CreateView("PlayerAssignModel", $"PlayerId:{model.Id};TeamId:{model.TeamId}", "PlayerAssign");
+            return CreateView("PlayerAssignModel",
+                $"PlayerId:{model.Id};TeamId:{model.TeamId}",
+                "PlayerAssign");
         }
 
         return UpdateRepository(model, "PlayerAssignmentInfo") == CRUDResult.Success
@@ -103,16 +118,22 @@ public class TeamController(
     [HttpGet]
     [Route("addcoach/{id}")]
     public IActionResult AddCoach(Guid id) =>
-        CreateView("CoachesPageModel", $"TeamId:{id};Mode:Assign", "AddCoach");
+        CreateView("CoachesPageModel",
+            $"TeamId:{id};Mode:Assign",
+            "AddCoach");
 
     [HttpGet]
     [Route("coachprofile/{id}")]
     public IActionResult CoachProfile(Guid id) =>
-        CreateView("CoachViewModel", $"CoachId:{id}", "CoachProfile");
+        CreateView("CoachViewModel",
+            $"CoachId:{id}",
+            "CoachProfile");
 
     [HttpGet("assigncoach")]
     public IActionResult AssignCoach(Guid id, Guid teamid) =>
-        CreateView("CoachAssignModel", $"CoachId:{id};TeamId:{teamid}", "CoachAssign");
+        CreateView("CoachAssignModel",
+            $"CoachId:{id};TeamId:{teamid}",
+            "CoachAssign");
 
     [HttpPost]
     [Route("assigncoach")]
@@ -120,7 +141,9 @@ public class TeamController(
     {
         if (!ModelState.IsValid)
         {
-            return CreateView("CoachAssignModel", $"CoachId:{model.Id};TeamId:{model.TeamId}", "CoachAssign");
+            return CreateView("CoachAssignModel",
+                $"CoachId:{model.Id};TeamId:{model.TeamId}",
+                "CoachAssign");
         }
 
         return UpdateRepository(model, "CoachAssignmentInfo") == CRUDResult.Success

@@ -13,11 +13,15 @@ public class CoachController(
     private const int ItemsPerPage = 10;
 
     public IActionResult List(int page = 1, string filter = null) =>
-        CreateView("CoachesPageModel", $"Page:{page};ItemsPerPage:2;Filter:{filter}", "List");
+        CreateView("CoachesPageModel",
+            $"Page:{page};ItemsPerPage:2;Filter:{filter}",
+            "List");
 
     [HttpGet("create")]
     public IActionResult Create() =>
-        CreateView("CoachCreateEditModel", "", "Create");
+        CreateView("CoachCreateEditModel",
+            "",
+            "Create");
 
     [HttpPost("create")]
     public IActionResult Create(CoachCreateEditModel model)
@@ -34,11 +38,15 @@ public class CoachController(
 
     [Route("{id:guid}")]
     public IActionResult Profile(Guid id) =>
-        CreateView("CoachViewModel", $"CoachId:{id}", "Profile");
+        CreateView("CoachViewModel",
+            $"CoachId:{id}",
+            "Profile");
 
     [HttpGet("update/{id:guid}")]
     public IActionResult Update(Guid id) =>
-        CreateView("CoachCreateEditModel", $"CoachId:{id}", "Update");
+        CreateView("CoachCreateEditModel",
+            $"CoachId:{id}",
+            "Update");
 
     [HttpPost("update/{id:guid}")]
     public IActionResult Update(CoachCreateEditModel model)

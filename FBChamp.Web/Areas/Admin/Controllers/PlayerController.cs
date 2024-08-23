@@ -14,11 +14,15 @@ public class PlayerController(
     private const int ItemsPerPage = 10;
 
     public IActionResult List(int page = 1, string filter = null) =>
-        CreateView("PlayersPageModel", $"Page:{page};ItemsPerPage:2;Filter:{filter}", "List");
+        CreateView("PlayersPageModel",
+            $"Page:{page};ItemsPerPage:2;Filter:{filter}",
+            "List");
 
     [HttpGet("create")]
     public IActionResult Create() =>
-        CreateView("PlayerCreateEditModel", "", "Create");
+        CreateView("PlayerCreateEditModel",
+            "",
+            "Create");
 
     [HttpPost("create")]
     public IActionResult Create(PlayerCreateEditModel model)
@@ -28,8 +32,6 @@ public class PlayerController(
             return View(model);
         }
 
-        model.Height = 700;
-
         return UpdateRepository(model, "Player") == CRUDResult.Success
             ? RedirectToAction(nameof(List))
             : View("_Error", "Invalid data for player");
@@ -37,11 +39,15 @@ public class PlayerController(
 
     [Route("{id:guid}")]
     public IActionResult Profile(Guid id) =>
-        CreateView("PlayerViewModel", $"PlayerId:{id}", "Profile");
+        CreateView("PlayerViewModel",
+            $"PlayerId:{id}",
+            "Profile");
 
     [HttpGet("update/{id:guid}")]
     public IActionResult Update(Guid id) =>
-        CreateView("PlayerCreateEditModel", $"PlayerId:{id}", "Update");
+        CreateView("PlayerCreateEditModel",
+            $"PlayerId:{id}",
+            "Update");
 
     [HttpPost("update/{id:guid}")]
     public IActionResult Update(PlayerCreateEditModel model)
