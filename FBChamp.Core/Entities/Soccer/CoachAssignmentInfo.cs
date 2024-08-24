@@ -1,10 +1,11 @@
-﻿namespace FBChamp.Core.Entities.Socker;
+﻿namespace FBChamp.Core.Entities.Soccer;
 
 public class CoachAssignmentInfo : Entity<Guid>
 {
     public Guid TeamId { get; set; }
+
     public string Role { get; set; }
-    
+
     public CoachAssignmentInfo()
     {
     }

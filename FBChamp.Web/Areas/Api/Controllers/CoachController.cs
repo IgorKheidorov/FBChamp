@@ -1,5 +1,5 @@
 ﻿using FBChamp.Core.DALModels;
-using FBChamp.Core.Entities.Socker;
+using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

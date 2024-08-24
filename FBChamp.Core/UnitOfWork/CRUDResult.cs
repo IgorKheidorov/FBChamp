@@ -3,7 +3,7 @@
 public enum CRUDResult
 {
     Success,
-    EnityValidationFailed,
+    EntityValidationFailed,
     InvalidOperation,
     ObjectDoesNotExists,
     Failed

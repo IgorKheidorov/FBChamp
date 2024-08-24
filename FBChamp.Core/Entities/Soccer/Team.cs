@@ -1,9 +1,11 @@
-﻿namespace FBChamp.Core.Entities.Socker;
+﻿namespace FBChamp.Core.Entities.Soccer;
 
 public class Team : Entity<Guid>
 {
     public string Name { get; set; }
+
     public byte[] Photo { get; set; }
+
     public string Description { get; set; }
 
     public Team() 

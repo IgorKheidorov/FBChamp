@@ -1,13 +1,17 @@
-﻿using FBChamp.Core.Entities.Socker;
+﻿using FBChamp.Core.Entities.Soccer;
 
 namespace FBChamp.Core.DALModels;
 
 public class TeamModel: EntityModel
 {
     public Team Team { get; }
+
     public CoachModel Coach { get; }
+
     public IEnumerable<PlayerModel> Players { get; }
+
     public string PhotoString { get; }
+
     public override string FullName => Team.Name;
 
     public TeamModel(Team team, CoachModel coach, IEnumerable<PlayerModel> players)

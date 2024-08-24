@@ -1,4 +1,4 @@
-﻿using FBChamp.Core.Entities.Socker;
+﻿using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Repositories.Membership;
 using System.Collections.Concurrent;
 using System.Text.Json;
