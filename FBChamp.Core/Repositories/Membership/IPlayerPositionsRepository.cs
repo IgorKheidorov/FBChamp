@@ -3,6 +3,5 @@
 namespace FBChamp.Core.Repositories.Membership;
 
 public interface IPlayerPositionsRepository : IRepository<PlayerPosition, Guid>
-{
-    
+{  
 }

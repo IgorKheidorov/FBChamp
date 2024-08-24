@@ -2,7 +2,8 @@
 
 public class PlayerPosition: VisibleEntity
 {
-    public PlayerPosition(string name, int visualOrder, string description) : base(name, visualOrder, description)
+    public PlayerPosition(string name, int visualOrder, string description) 
+        : base(name, visualOrder, description)
     {
     }
 }

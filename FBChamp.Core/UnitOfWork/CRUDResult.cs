@@ -1,5 +1,4 @@
-﻿
-namespace FBChamp.Core.UnitOfWork;
+﻿namespace FBChamp.Core.UnitOfWork;
 
 public enum CRUDResult
 {

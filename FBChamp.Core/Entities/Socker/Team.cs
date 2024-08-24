@@ -6,11 +6,13 @@ public class Team : Entity<Guid>
     public byte[] Photo { get; set; }
     public string Description { get; set; }
 
-    public Team() { }
-
-    public Team(Guid guid, string name, byte[] photo)
+    public Team() 
     {
-        Id = guid;
+    }
+
+    public Team(Guid id, string name, byte[] photo)
+    {
+        Id = id;
         Name = name;
         Photo = photo;
     }    

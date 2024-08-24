@@ -1,5 +1,4 @@
-﻿
-namespace FBChamp.Core.Entities.Socker;
+﻿namespace FBChamp.Core.Entities.Socker;
 
 public abstract class Person: Entity<Guid>
 {
@@ -14,7 +13,7 @@ public abstract class Person: Entity<Guid>
     {
         Id = id;
         FullName = fullName;
-        Photo = photo?? new byte[0];
+        Photo = photo ?? Array.Empty<byte>();
         BirthDate = birthDate.Date;
         Description = description is not null ? description : "No information";
     }

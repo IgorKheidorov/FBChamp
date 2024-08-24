@@ -4,5 +4,4 @@ namespace FBChamp.Core.Repositories.Membership;
 
 public interface ITeamRepository : IRepository<Team, Guid>
 {
- 
 }
