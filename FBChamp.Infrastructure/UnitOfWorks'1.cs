@@ -1,11 +1,11 @@
-﻿using FBChamp.Core.Entities.Socker;
+﻿using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
+using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Repositories.Membership;
-using FBChamp.Infrastructure.Repositories.Membership;
-using Microsoft.IdentityModel.Tokens;
 using FBChamp.Core.UnitOfWork;
-using FBChamp.Core.DataValidator;
+using FBChamp.Infrastructure.Repositories.Membership;
 using FBChamp.Infrastructure.Validators;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FBChamp.Infrastructure;
 

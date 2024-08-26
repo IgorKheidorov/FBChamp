@@ -1,11 +1,14 @@
-﻿namespace FBChamp.Core.Entities.Socker;
+﻿namespace FBChamp.Core.Entities.Soccer;
 
 public class PlayerAssignmentInfo : Entity<Guid> // guid is PlayerId
 {
     public Guid TeamId { get; set; }
+
     public uint PlayingNumber { get; set; }
 
-    public PlayerAssignmentInfo() { }
+    public PlayerAssignmentInfo()
+    {
+    }
 
     public PlayerAssignmentInfo(Guid playerId, Guid teamId, uint playingNumber)
     {

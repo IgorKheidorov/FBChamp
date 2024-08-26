@@ -11,5 +11,5 @@ public interface IValidateEntity
     /// <returns></returns>
     Type GetValidatedType();
 
-    CRUDResult Validate(Entity entities);
+    CRUDResult Validate(Entity entity);
 }

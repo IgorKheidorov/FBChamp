@@ -1,6 +1,5 @@
 ﻿using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
-using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.UnitOfWork;
 
 namespace FBChamp.Infrastructure.Validators;

@@ -1,8 +1,7 @@
 ﻿using FBChamp.Core.DataValidator;
-using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.Entities;
+using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.UnitOfWork;
-using FBChamp.Infrastructure.BusinessRules;
 
 namespace FBChamp.Infrastructure.Validators;
 

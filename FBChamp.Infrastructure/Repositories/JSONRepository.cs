@@ -1,4 +1,5 @@
-﻿using FBChamp.Core.Exceptions;
+﻿using FBChamp.Core.Entities;
+using FBChamp.Core.Exceptions;
 using FBChamp.Core.Repositories;
 using FBChamp.Infrastructure.Helpers;
 using System.Collections.Concurrent;
