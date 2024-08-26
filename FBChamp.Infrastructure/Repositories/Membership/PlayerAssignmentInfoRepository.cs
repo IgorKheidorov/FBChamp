@@ -1,7 +1,5 @@
-﻿using FBChamp.Core.Entities;
-using FBChamp.Core.Entities.Socker;
+﻿using FBChamp.Core.Entities.Socker;
 using FBChamp.Core.Repositories.Membership;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FBChamp.Infrastructure.Repositories.Membership;
 
