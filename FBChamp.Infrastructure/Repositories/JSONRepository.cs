@@ -11,19 +11,26 @@ namespace FBChamp.Infrastructure.Repositories;
 internal abstract class JSONRepository<TEntity,TKey> : IRepository<TEntity>
     where TEntity : Entity<TKey>
 {      
-    private string FullFileName => Path.Combine("..\\", Directory.GetCurrentDirectory(), "Data", JSONFileName);
     private JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
+    private string FullFileName => Path.Combine("..\\", Directory.GetCurrentDirectory(), "Data", JSONFileName);
 
     protected readonly ConcurrentDictionary<TKey, TEntity> EntityList = new ConcurrentDictionary<TKey, TEntity>();
     protected virtual string JSONFileName => "NoName.json";
-
+    
     protected JSONRepository()
     {
         Load();
     }
 
-    // Possibility to initialize empty repository by pre-defined values
     protected virtual void Inflate() { }
+
+    protected virtual TEntity InternalFind(Expression<Func<TEntity, bool>> predicate) =>
+        MakeInclusions()?.SingleOrDefault(predicate);
+
+    protected virtual IEnumerable<TEntity> InternalFilter(Expression<Func<TEntity, bool>> predicate) =>
+        MakeInclusions().Where(predicate).ToList();
+
+    protected virtual IQueryable<TEntity> MakeInclusions() => EntityList.Values.AsQueryable<TEntity>();
 
     public void Load()    
     {
@@ -95,14 +102,6 @@ internal abstract class JSONRepository<TEntity,TKey> : IRepository<TEntity>
 
     public bool Remove(TKey key) =>
       key is null ? false : Remove(Find(key));
-
-    protected virtual TEntity InternalFind(Expression<Func<TEntity, bool>> predicate) =>
-        MakeInclusions()?.SingleOrDefault(predicate);
-    
-    protected virtual IEnumerable<TEntity> InternalFilter(Expression<Func<TEntity, bool>> predicate)=>
-        MakeInclusions().Where(predicate).ToList();
-    
-    protected virtual IQueryable<TEntity> MakeInclusions() => EntityList.Values.AsQueryable<TEntity>();
 
     public virtual TEntity Find(TKey id) => Find(x => x.Id.Equals(id));
 }

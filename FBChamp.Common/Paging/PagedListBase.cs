@@ -3,11 +3,15 @@
 public abstract class PagedListBase
 {
     public int Total { get; }
+
     public int Page { get; }
+    
     public int PerPage { get; }
 
     public int TotalPages => Total % PerPage == 0 ? Total / PerPage : Total / PerPage + 1;
+    
     public bool CanNext => Page < TotalPages;
+    
     public bool CanPrevious => Page > 1;
 
     protected PagedListBase(int total, PageInfo pageInfo)

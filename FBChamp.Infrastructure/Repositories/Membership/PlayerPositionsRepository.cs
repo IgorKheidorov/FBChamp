@@ -38,7 +38,9 @@ internal class PlayerPositionsRepository: JSONRepository<PlayerPosition, Guid>, 
                 }
         }";
         context = context.Replace('\'','\"');
-       foreach (var item in JsonSerializer.Deserialize<ConcurrentDictionary<Guid,PlayerPosition>>(context)!)
+       
+        foreach (var item in JsonSerializer
+            .Deserialize<ConcurrentDictionary<Guid,PlayerPosition>>(context)!)
         {
             EntityList.TryAdd(item.Key, item.Value);
         }

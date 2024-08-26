@@ -1,5 +1,4 @@
-﻿
-namespace FBChamp.Infrastructure.BusinessRules;
+﻿namespace FBChamp.Infrastructure.BusinessRules;
 
 public static class DataRestrictions
 {
