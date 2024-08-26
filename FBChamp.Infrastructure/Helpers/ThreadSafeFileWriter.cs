@@ -11,11 +11,13 @@ public static class ThreadSafeFileWriter
             var hasHandle = false;
             try
             {
-                // Wait for the muted to be available
                 hasHandle = mutex.WaitOne(Timeout.Infinite, false);
-                // Do the file read
+                
                 if (!File.Exists(filePathAndName))
+                {
                     return string.Empty;
+                }
+
                 return File.ReadAllText(filePathAndName);
             }
             catch (Exception)
@@ -27,7 +29,9 @@ public static class ThreadSafeFileWriter
                 // Very important! Release the mutex
                 // Or the code will be locked forever
                 if (hasHandle)
+                {
                     mutex.ReleaseMutex();
+                }
             }
         }
     }
@@ -49,7 +53,9 @@ public static class ThreadSafeFileWriter
             finally
             {
                 if (hasHandle)
+                {
                     mutex.ReleaseMutex();
+                }
             }
         }
     }
