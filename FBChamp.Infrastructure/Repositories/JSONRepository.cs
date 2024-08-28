@@ -15,7 +15,7 @@ internal abstract class JSONRepository<TEntity,TKey> : IRepository<TEntity>
     private string FullFileName => Path.Combine("..\\", Directory.GetCurrentDirectory(), "Data", JSONFileName);
 
     protected readonly ConcurrentDictionary<TKey, TEntity> EntityList = new ConcurrentDictionary<TKey, TEntity>();
-    protected virtual string JSONFileName => "NoName.json";
+    protected abstract string JSONFileName { get; set; }
     
     protected JSONRepository()
     {
