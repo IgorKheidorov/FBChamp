@@ -1,9 +1,18 @@
 ﻿namespace FBChamp.Core.Entities.Soccer;
 
-public class Player(Guid id, string fullName, DateTime birthDate, float? height, Guid positionId, byte[] photo, string description = null) 
+public class Player(
+    Guid id,
+    string fullName,
+    DateTime birthDate,
+    float height,
+    Guid positionId,
+    byte[] photo,
+    string description = null)
     : Person(id, fullName, birthDate, photo, description)
 {
     public Guid PositionId { get; set; } = positionId;
 
-    public float? Height { get; set; } = height;
+    public float Height { get; set; } = height;
+
+    // TODO: After completing the location task (FBCHAMP-49), add the Country property.
 }
