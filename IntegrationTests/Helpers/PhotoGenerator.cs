@@ -1,6 +1,6 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
+using Color = System.Drawing.Color;
 
 namespace IntegrationTests.Helpers;
 
@@ -8,15 +8,13 @@ internal class PhotoGenerator
 {
     public byte[] Generate(int width, int height)
     {
-        using var image = new Image<Rgba32>(width, height);
+        using var bitmap = new Bitmap(width, height);
+        using var graphics = Graphics.FromImage(bitmap);
 
-        var color = new Rgba32(100, 100, 100, 255);
-
-        image.Mutate(ctx => ctx.BackgroundColor(color));
+        graphics.Clear(Color.White);
 
         using var stream = new MemoryStream();
-
-        image.SaveAsJpeg(stream);
+        bitmap.Save(stream, ImageFormat.Jpeg);
 
         return stream.ToArray();
     }

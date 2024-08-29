@@ -1,6 +1,7 @@
 ﻿using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.Repositories;
 using FBChamp.Core.Repositories.Membership;
 using FBChamp.Core.UnitOfWork;
 using FBChamp.Infrastructure.Repositories.Membership;
@@ -137,6 +138,26 @@ public sealed partial class UnitOfWork : IUnitOfWork
         
         return AddOrUpdateEntity(entity as Entity<Guid>) ? Commit() : CRUDResult.Failed;
     }
-    
 
+    public bool Exists(Guid id, Type type) =>
+        type.Name switch
+        {
+            nameof(Player) => Exists(id, PlayerRepository),
+            nameof(Team) => Exists(id, TeamRepository),
+            nameof(Coach) => Exists(id, CoachRepository),
+            nameof(PlayerPosition) => Exists(id, PlayerPositionsRepository),
+            _ => false
+        };
+
+    private bool Exists<T>(Guid id, IRepository<T> repository) where T : Entity<Guid>
+    {
+        if (id == Guid.Empty)
+        {
+            return false;
+        }
+
+        var existing = repository.Find(x => x.Id == id);
+
+        return existing is not null;
+    }
 }

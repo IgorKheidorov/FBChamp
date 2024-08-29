@@ -3,12 +3,10 @@ using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.UnitOfWork;
 using FBChamp.Infrastructure.BusinessRules;
-using FBChamp.Infrastructure.Repositories.Membership;
-using SixLabors.ImageSharp;
 
 namespace FBChamp.Infrastructure.Validators;
 
-public class PlayerValidator : IValidateEntity
+public class PlayerValidator(IUnitOfWork unitOfWork) : IValidateEntity
 {
     public Type GetValidatedType() => typeof(Player);
 
@@ -41,45 +39,24 @@ public class PlayerValidator : IValidateEntity
             age--;
         }
 
-        return age is >= 16 and <= 50;
+        return age is >= DataRestrictions.MinPlayerAge and <= DataRestrictions.MaxPlayerAge;
     }
 
     private bool ValidateHeight(float height) =>
-        height is > 150f and < 210f;
+        height is > DataRestrictions.MinPlayerHeight and < DataRestrictions.MaxPlayerHeight;
 
     private bool ValidateDescription(string description) =>
-        description.Length < 256;
+        description.Length < DataRestrictions.MaxDescriptionLength;
 
-    private bool ValidatePosition(Guid positionId)
-    {
-        if (positionId == Guid.Empty)
-        {
-            return false;
-        }
-
-        var positionRepository = new PlayerPositionsRepository();
-
-        var position = positionRepository.Find(positionId);
-
-        return position is not null;
-    }
+    private bool ValidatePosition(Guid positionId) =>
+        unitOfWork.Exists(positionId, typeof(PlayerPosition));
 
     private bool ValidatePhoto(byte[] photo)
     {
-        if (photo is null || photo.Length == 0)
-        {
-            return false;
-        }
+        var photoValidator = new PhotoValidator();
 
-        try
-        {
-            using var image = Image.Load(photo);
-
-            return image.Width == 300 && image.Height == 500;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        return photoValidator.Validate(photo,
+            DataRestrictions.PlayerPhotoWidth,
+            DataRestrictions.PlayerPhotoHeight);
     }
 }
