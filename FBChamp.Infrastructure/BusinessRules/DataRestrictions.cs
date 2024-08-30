@@ -8,6 +8,6 @@ public static class DataRestrictions
     public const float MinPlayerHeight = 150f;
     public const float MaxPlayerHeight = 210f;
     public const int MaxDescriptionLength = 256;
-    public const int PlayerPhotoWidth = 300;
-    public const int PlayerPhotoHeight = 500;
+    public const int PersonPhotoWidth = 300;
+    public const int PersonPhotoHeight = 500;
 }

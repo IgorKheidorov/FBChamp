@@ -56,7 +56,7 @@ public class PlayerValidator(IUnitOfWork unitOfWork) : IValidateEntity
         var photoValidator = new PhotoValidator();
 
         return photoValidator.Validate(photo,
-            DataRestrictions.PlayerPhotoWidth,
-            DataRestrictions.PlayerPhotoHeight);
+            DataRestrictions.PersonPhotoWidth,
+            DataRestrictions.PersonPhotoHeight);
     }
 }

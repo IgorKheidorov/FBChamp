@@ -1,4 +1,5 @@
-﻿using FBChamp.Core.DataValidator;
+﻿using System.Data;
+using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Repositories;
@@ -156,8 +157,6 @@ public sealed partial class UnitOfWork : IUnitOfWork
             return false;
         }
 
-        var existing = repository.Find(x => x.Id == id);
-
-        return existing is not null;
+        return repository.Find(x => x.Id == id) is not null;
     }
 }
