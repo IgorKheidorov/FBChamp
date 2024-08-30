@@ -8,6 +8,7 @@ internal class PhotoGenerator
 {
     public byte[] Generate(int width, int height)
     {
+#pragma warning disable CA1416
         using var bitmap = new Bitmap(width, height);
         using var graphics = Graphics.FromImage(bitmap);
 
@@ -17,5 +18,6 @@ internal class PhotoGenerator
         bitmap.Save(stream, ImageFormat.Jpeg);
 
         return stream.ToArray();
+#pragma warning restore CA1416
     }
 }

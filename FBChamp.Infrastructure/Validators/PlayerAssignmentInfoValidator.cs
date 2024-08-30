@@ -7,20 +7,20 @@ namespace FBChamp.Infrastructure.Validators;
 
 public class PlayerAssignmentInfoValidator : IValidateEntity
 {
-    private readonly IUnitOfWork _unitOfWork;
+    IUnitOfWork _unitOfWork;
 
-    public PlayerAssignmentInfoValidator(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
-
+    public PlayerAssignmentInfoValidator(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork; 
+    
     public Type GetValidatedType() => typeof(PlayerAssignmentInfo);
 
     public CRUDResult Validate(Entity entity)
     {
         if (entity is PlayerAssignmentInfo assignmentInfo)
         {
-            //Exists for existing player and team
+            //Check for existing player and team
             var player = _unitOfWork.GetPlayerModel(assignmentInfo.Id);
 
-            if (player is null || _unitOfWork.GetTeamModel(assignmentInfo.TeamId) is null)
+            if (player is null || _unitOfWork.GetTeamModel(assignmentInfo.TeamId) is null) 
             {
                 return CRUDResult.InvalidOperation;
             }
@@ -31,9 +31,10 @@ public class PlayerAssignmentInfoValidator : IValidateEntity
                 return CRUDResult.Failed;
             }
 
-            // Exists if playing number is already assigned
-            if (_unitOfWork.GetAssignedPlayerModels(assignmentInfo.TeamId)
-                    .Where(x => x.PlayingNumber == assignmentInfo.PlayingNumber.ToString()).Count() != 0)
+            // Check if playing number is already assigned
+            if (_unitOfWork.GetAssignedPlayerModels(assignmentInfo.TeamId).
+                    Where(x => x.PlayingNumber == assignmentInfo.PlayingNumber.ToString()).
+                    Count() != 0)
                 return CRUDResult.Failed;
 
             return CRUDResult.Success;

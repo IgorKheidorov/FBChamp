@@ -16,8 +16,9 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerInvalidNameLengthTest()
+    [DataRow(257)]
+    [DataRow(300)]
+    public void PlayerInvalidNameLengthTest(int nameLength)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
@@ -26,8 +27,8 @@ public class PlayerValidatorTests
         var photo = photoGenerator.Generate(300, 500);
 
         var player = new Player(Guid.NewGuid(),
-            new string('a', 257),
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new string('a', nameLength),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo);
@@ -38,8 +39,10 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerValidNameLengthTest()
+    [DataRow(255)]
+    [DataRow(100)]
+    [DataRow(20)]
+    public void PlayerValidNameLengthTest(int nameLength)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
@@ -48,8 +51,8 @@ public class PlayerValidatorTests
         var photo = photoGenerator.Generate(300, 500);
 
         var player = new Player(Guid.NewGuid(),
-            new string('a', 255),
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new string('a', nameLength),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo);
@@ -60,18 +63,20 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerInvalidHigherAgeTest()
+    [DataRow(1950, 2, 1)]
+    [DataRow(2015, 2, 1)]
+    public void PlayerInvalidAgeTest(int year, int month, int day)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
 
         var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
         var photo = photoGenerator.Generate(300, 500);
+        var birthDate = new DateTime(year, month, day);
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(1950, 2, 1, new GregorianCalendar()),
+            birthDate,
             180,
             positionId,
             photo);
@@ -82,40 +87,21 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerInvalidLowerAgeTest()
+    [DataRow(2000, 2, 1)]
+    [DataRow(1985, 2, 1)]
+    [DataRow(2008, 2, 1)]
+    public void PlayerValidAgeTest(int year, int month, int day)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
 
         var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
         var photo = photoGenerator.Generate(300, 500);
+        var birthDay = new DateTime(year, month, day);
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2015, 2, 1, new GregorianCalendar()),
-            180,
-            positionId,
-            photo);
-
-        var result = unitOfWork.Commit(player);
-
-        Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
-    }
-
-    [TestMethod]
-    [DataRow]
-    public void PlayerValidAgeTest()
-    {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
-
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
-
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            birthDay,
             180,
             positionId,
             photo);
@@ -126,8 +112,11 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerInvalidHeightTest()
+    [DataRow(251)]
+    [DataRow(350)]
+    [DataRow(115)]
+    [DataRow(149)]
+    public void PlayerInvalidHeightTest(int height)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
@@ -137,8 +126,8 @@ public class PlayerValidatorTests
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
-            251,
+            new DateTime(2000, 2, 1),
+            height,
             positionId,
             photo);
 
@@ -148,8 +137,9 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerValidHeightTest()
+    [DataRow(170)]
+    [DataRow(209)]
+    public void PlayerValidHeightTest(int height)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
@@ -159,8 +149,8 @@ public class PlayerValidatorTests
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
-            209,
+            new DateTime(2000, 2, 1),
+            height,
             positionId,
             photo);
 
@@ -170,8 +160,9 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerInvalidDescriptionLengthTest()
+    [DataRow(257)]
+    [DataRow(400)]
+    public void PlayerInvalidDescriptionLengthTest(int descriptionLength)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
@@ -181,11 +172,11 @@ public class PlayerValidatorTests
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo,
-            new string('a', 257));
+            new string('a', descriptionLength));
 
         var result = unitOfWork.Commit(player);
 
@@ -193,8 +184,10 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerValidDescriptionLengthTest()
+    [DataRow(255)]
+    [DataRow(100)]
+    [DataRow(20)]
+    public void PlayerValidDescriptionLengthTest(int descriptionLength)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
@@ -204,11 +197,11 @@ public class PlayerValidatorTests
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo,
-            new string('a', 255));
+            new string('a', descriptionLength));
 
         var result = unitOfWork.Commit(player);
 
@@ -216,7 +209,6 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
     public void PlayerInvalidPositionTest()
     {
         var unitOfWork = new UnitOfWork();
@@ -227,7 +219,7 @@ public class PlayerValidatorTests
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo);
@@ -249,7 +241,7 @@ public class PlayerValidatorTests
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo);
@@ -260,18 +252,20 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
-    public void PlayerInvalidPhotoSizeTest()
+    [DataRow(100, 100)]
+    [DataRow(100, 500)]
+    [DataRow(300, 100)]
+    public void PlayerInvalidPhotoSizeTest(int width, int height)
     {
         var unitOfWork = new UnitOfWork();
         var photoGenerator = new PhotoGenerator();
 
         var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(100, 100);
+        var photo = photoGenerator.Generate(width, height);
 
         var player = new Player(Guid.NewGuid(),
             "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
+            new DateTime(2000, 2, 1),
             180,
             positionId,
             photo);
@@ -282,7 +276,6 @@ public class PlayerValidatorTests
     }
 
     [TestMethod]
-    [DataRow]
     public void PlayerValidPhotoSizeTest()
     {
         var unitOfWork = new UnitOfWork();
