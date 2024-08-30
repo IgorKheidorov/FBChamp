@@ -4,18 +4,14 @@ namespace FBChamp.Core.Entities.Soccer;
 
 public class League : Entity<Guid>
 {
-    [Required]
     public string FullName { get; set; }
 
     public byte[] Photo {  get; set; }
 
-    [Required]
     public int NumberOfTeams { get; set; }
 
-    [Required]
     public DateTime SeasonStartDate { get; set; }
 
-    [Required]
     public DateTime SeasonFinishDate { get; set; }
 
     public string Description { get; set; }
@@ -28,7 +24,7 @@ public class League : Entity<Guid>
     {
         Id = id;
         FullName = fullName;
-        Photo = photo;
+        Photo = photo ?? Array.Empty<byte>();
         NumberOfTeams = numberOfTeams;
         SeasonStartDate = seasonStartDate;
         SeasonFinishDate = seasonFinishDate;

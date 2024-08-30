@@ -20,7 +20,12 @@ public interface IUnitOfWork : IDisposable
     #region Team
     TeamModel GetTeamModel(Guid id);
 
+    ReadOnlyCollection<TeamModel> GetAssignedTeamsModels(Guid leagueId);
+
+    bool DeassignTeam(Guid leagueId);
+
     ReadOnlyCollection<TeamModel> GetAllTeamModels();
+
     #endregion
 
     #region Coach
@@ -37,6 +42,13 @@ public interface IUnitOfWork : IDisposable
     ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions();
     #endregion
 
+    #region League
+
+    LeagueModel GetLeagueModel(Guid id);
+
+    ReadOnlyCollection<LeagueModel> GetAllLeagueModels();
+
+    #endregion
     CRUDResult Remove(Guid id, Type type);    
 
     CRUDResult Commit(Entity entities);

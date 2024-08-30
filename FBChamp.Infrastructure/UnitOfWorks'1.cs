@@ -21,6 +21,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private TeamRepository _teamRepository;
     private PlayerAssignmentInfoRepository _playerAssignmentInfoRepository;
     private CoachAssignmentInfoRepository _coachAssignmentInfoRepository;
+    private LeagueRepository _leagueRepository;
+    private TeamAssignmentInfoRepository _teamAssignmentInfoRepository;
 
     private IPlayerRepository PlayerRepository =>
         _playerRepository ??= new PlayerRepository();
@@ -39,6 +41,12 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     private ICoachAssignmentInfoRepository CoachAssignmentInfoRepository =>
         _coachAssignmentInfoRepository ??= new CoachAssignmentInfoRepository();
+
+    private ILeagueRepository LeagueRepository =>
+        _leagueRepository ??= new LeagueRepository();
+
+    private ITeamAssignmentInfoRepository TeamAssignmentInfoRepository =>
+        _teamAssignmentInfoRepository ??=new TeamAssignmentInfoRepository();
     
     public UnitOfWork()
     {
@@ -53,6 +61,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
        _teamRepository = null;
        _playerAssignmentInfoRepository = null;
        _coachAssignmentInfoRepository = null;
+       _leagueRepository = null;
+       _teamAssignmentInfoRepository = null;
         // false is to indicate the fail
         return CRUDResult.Failed;
     }
@@ -66,6 +76,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
             TeamRepository.Commit();
             PlayerAssignmentInfoRepository.Commit();
             CoachAssignmentInfoRepository.Commit();
+            LeagueRepository.Commit();
+            TeamAssignmentInfoRepository.Commit();
             return CRUDResult.Success;
         }
         catch (Exception)
@@ -102,12 +114,31 @@ public sealed partial class UnitOfWork : IUnitOfWork
         return coachDeassignResult && playerDeassignResult && TeamRepository.Remove(teamId);
     }
 
+    private bool RemoveLeague(Guid leagueId)
+    {
+        var league = LeagueRepository.Find(leagueId);
+
+        if(league == null)
+        {
+            return false;
+        }
+
+        DeassignTeam(leagueId);
+
+        // TO DO: 
+        //  We have to delete not finished matches       
+
+        LeagueRepository.Remove(leagueId);
+        return true;
+    }
+
     public CRUDResult Remove(Guid id, Type type) =>  type.Name switch
     {
         "Player" => RemovePlayer(id),
         "Coach" => RemoveCoach(id),
         "Team" => RemoveTeam(id),
         "PlayerAssignmentInfo" => DeassignPlayer(id),
+        "League" => RemoveLeague(id),
         _ => false
     } ? Commit() : RequestReload();
     
@@ -124,6 +155,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "Coach" => CoachRepository.AddOrUpdate(entity as Coach),
         "PlayerAssignmentInfo" => PlayerAssignmentInfoRepository.AddOrUpdate(entity as PlayerAssignmentInfo),
         "CoachAssignmentInfo" => CoachAssignmentInfoRepository.AddOrUpdate(entity as CoachAssignmentInfo),
+        "League" => LeagueRepository.AddOrUpdate(entity as League),
         _ => false
     };
 
