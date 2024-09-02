@@ -93,7 +93,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         (PlayerAssignmentInfoRepository.Find(playerId) is not null ? DeassignPlayer(playerId) : true);
 
     private bool RemoveCoach(Guid coachId) =>
-        CoachAssignmentInfoRepository.Remove(coachId) &&
+        CoachRepository.Remove(coachId) &&
         (CoachAssignmentInfoRepository.Find(coachId) is not null ? CoachAssignmentInfoRepository.Remove(coachId) : true);
 
     private bool RemoveTeam(Guid teamId) 
