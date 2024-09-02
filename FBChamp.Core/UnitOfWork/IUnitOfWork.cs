@@ -61,8 +61,5 @@ public interface IUnitOfWork : IDisposable
 
     ReadOnlyCollection<LeagueModel> GetAllLeagueModels();
 
-    #endregion
-    CRUDResult Remove(Guid id, Type type);    
-
-    CRUDResult Commit(Entity entities);
+    #endregion  
 }
