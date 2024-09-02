@@ -23,7 +23,7 @@ public class PlayerCreateEditModel : EntityModel
 
     [Required]
     [Range(0.0, 250, ErrorMessage = "Please enter a valid height")]
-    public float? Height { get; set; }
+    public float Height { get; set; }
 
     [Required]
     public Guid PositionId { get; set; }

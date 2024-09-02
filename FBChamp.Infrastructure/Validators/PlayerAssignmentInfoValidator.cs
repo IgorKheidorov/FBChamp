@@ -33,8 +33,8 @@ public class PlayerAssignmentInfoValidator : IValidateEntity
 
             // Check if playing number is already assigned
             if (_unitOfWork.GetAssignedPlayerModels(assignmentInfo.TeamId).
-                Where(x => x.PlayingNumber == assignmentInfo.PlayingNumber.ToString()).
-                Count() != 0)
+                    Where(x => x.PlayingNumber == assignmentInfo.PlayingNumber.ToString()).
+                    Count() != 0)
                 return CRUDResult.Failed;
 
             return CRUDResult.Success;
