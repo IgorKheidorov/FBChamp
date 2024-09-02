@@ -125,13 +125,14 @@ public sealed partial class UnitOfWork : IUnitOfWork
             return false;
         }
 
-        DeassignTeam(leagueId);
+        var assignedTeams = GetAssignedTeamsId(leagueId);
+
+        bool allTeamsDeassigned = assignedTeams.All(teamId => DeassignTeam(teamId));
 
         // TO DO: 
-        //  We have to delete not finished matches       
+        //  We have to delete not finished matches  
 
-        LeagueRepository.Remove(leagueId);
-        return true;
+        return allTeamsDeassigned && LeagueRepository.Remove(leagueId);
     }
 
     public CRUDResult Remove(Guid id, Type type) =>  type.Name switch
@@ -141,6 +142,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "Team" => RemoveTeam(id),
         "PlayerAssignmentInfo" => DeassignPlayer(id),
         "League" => RemoveLeague(id),
+        "TeamAssignmentInfo" => DeassignTeam(id),
         _ => false
     } ? Commit() : RequestReload();
     
@@ -158,6 +160,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "PlayerAssignmentInfo" => PlayerAssignmentInfoRepository.AddOrUpdate(entity as PlayerAssignmentInfo),
         "CoachAssignmentInfo" => CoachAssignmentInfoRepository.AddOrUpdate(entity as CoachAssignmentInfo),
         "League" => LeagueRepository.AddOrUpdate(entity as League),
+        "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         _ => false
     };
 

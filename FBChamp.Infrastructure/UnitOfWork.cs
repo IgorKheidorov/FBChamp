@@ -1,6 +1,7 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.Infrastructure.Repositories.Membership;
 using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;
@@ -58,6 +59,13 @@ public sealed partial class UnitOfWork : IUnitOfWork
        .Select(id => GetTeamModel(id))
        .ToList()
        .AsReadOnly();
+
+    public ReadOnlyCollection<TeamModel> GetUnassignedTeamModel() =>
+        TeamRepository.All()
+        .Where(t => !TeamAssignmentInfoRepository.All().Select(ta => ta.Id).Contains(t.Id))
+        .Select(x => GetTeamModel(x.Id))
+        .ToList()
+        .AsReadOnly();
 
     public bool DeassignTeam(Guid leagueId) =>
         TeamAssignmentInfoRepository.Remove(leagueId);
@@ -132,4 +140,6 @@ public sealed partial class UnitOfWork : IUnitOfWork
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
+
+
 }

@@ -37,6 +37,8 @@ public interface IUnitOfWork : IDisposable
 
     ReadOnlyCollection<TeamModel> GetAssignedTeamsModels(Guid leagueId);
 
+    ReadOnlyCollection<TeamModel> GetUnassignedTeamModel();
+
     bool DeassignTeam(Guid leagueId);
 
     ReadOnlyCollection<TeamModel> GetAllTeamModels();
