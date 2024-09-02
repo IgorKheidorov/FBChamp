@@ -46,7 +46,22 @@ public sealed partial class UnitOfWork : IUnitOfWork
     #region Team
     public ReadOnlyCollection<TeamModel> GetAllTeamModels() =>    
         TeamRepository.All().ToList().Select(team => GetTeamModel(team.Id)).ToList().AsReadOnly();
-    
+
+    private List<Guid> GetAssignedTeamsId(Guid leagueId) =>
+      TeamAssignmentInfoRepository.All()
+      .Where(x => x.LeagueId == leagueId)
+      .Select(x => x.Id)
+      .ToList();
+
+    public ReadOnlyCollection<TeamModel> GetAssignedTeamsModels(Guid leagueId) =>
+        GetAssignedTeamsId(leagueId)
+       .Select(id => GetTeamModel(id))
+       .ToList()
+       .AsReadOnly();
+
+    public bool DeassignTeam(Guid leagueId) =>
+        TeamAssignmentInfoRepository.Remove(leagueId);
+
     public TeamModel GetTeamModel(Guid id) =>
         new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id),GetAssignedPlayerModels(id));
 
@@ -98,6 +113,22 @@ public sealed partial class UnitOfWork : IUnitOfWork
     public bool DeassignCoach(Guid coachId) =>
       _coachAssignmentInfoRepository.Remove(coachId);
 
+    #endregion
+
+    #region League
+
+    public LeagueModel GetLeagueModel(Guid id) =>
+        LeagueRepository.Find(id) is var league &&
+        league != null
+        ? new LeagueModel(league, GetAssignedTeamsModels(id))
+        : null;
+
+    public ReadOnlyCollection<LeagueModel> GetAllLeagueModels() =>
+        LeagueRepository
+        .All()
+        .Select(l =>  GetLeagueModel(l.Id))
+        .ToList()
+        .AsReadOnly();
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
