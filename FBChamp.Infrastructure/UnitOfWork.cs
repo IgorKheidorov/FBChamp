@@ -67,8 +67,11 @@ public sealed partial class UnitOfWork : IUnitOfWork
         .ToList()
         .AsReadOnly();
 
-    public bool DeassignTeam(Guid leagueId) =>
-        TeamAssignmentInfoRepository.Remove(leagueId);
+    private bool DeassignTeams(Guid leagueId) =>
+         TeamAssignmentInfoRepository.Remove(leagueId);
+
+    public bool DeassignTeam(Guid teamId) =>
+        TeamAssignmentInfoRepository.Remove(teamId);
 
     public TeamModel GetTeamModel(Guid id) =>
         new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id),GetAssignedPlayerModels(id));

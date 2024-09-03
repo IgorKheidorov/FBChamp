@@ -127,7 +127,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
         var assignedTeams = GetAssignedTeamsId(leagueId);
 
-        bool allTeamsDeassigned = assignedTeams.All(teamId => DeassignTeam(teamId));
+        bool allTeamsDeassigned = assignedTeams.All(leagueId => DeassignTeams(leagueId));
 
         // TO DO: 
         //  We have to delete not finished matches  

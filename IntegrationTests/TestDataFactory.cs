@@ -19,7 +19,7 @@ public static class TestDataFactory
         League1 = new League(Guid.NewGuid(), "League1", photo, 1, DateTime.Now, DateTime.Now.AddMonths(6), "Description1");
         League2 = new League(Guid.NewGuid(), "League2", photo, 8, DateTime.Now, DateTime.Now.AddMonths(6), "Description2");
 
-        Team1 = new Team(Guid.NewGuid(), "TeamOne", photo);
+        Team1 = new Team(Guid.Parse("da40e247-708d-4982-9498-1121e2e3e351"), "TeamOne", photo);
         Team2 = new Team(Guid.NewGuid(), "TeamTwo", photo);
 
         TeamAssignmentInfoOne = new TeamAssignmentInfo(Team1.Id, Guid.NewGuid());
