@@ -59,7 +59,17 @@ public interface IUnitOfWork : IDisposable
 
     LeagueModel GetLeagueModel(Guid id);
 
-    ReadOnlyCollection<LeagueModel> GetAllLeagueModels();
+    #region Location
+    
+    ReadOnlyCollection<LocationModel> GetAllLocationModels();
+    
+    LocationModel GetLocationModel(Guid id);
+
+
+    #endregion
+
+
+    CRUDResult Remove(Guid id, Type type);    
 
     #endregion  
 }
