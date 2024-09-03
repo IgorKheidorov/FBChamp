@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
@@ -67,6 +67,16 @@ public interface IUnitOfWork : IDisposable
 
 
     #endregion
+
+    #region Location
+    
+    ReadOnlyCollection<LocationModel> GetAllLocationModels();
+    
+    LocationModel GetLocationModel(Guid id);
+
+
+    #endregion
+
 
 
     CRUDResult Remove(Guid id, Type type);    

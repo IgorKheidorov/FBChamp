@@ -1,5 +1,6 @@
 using System.Data;
 using FBChamp.Core.DALModels;
+using FBChamp.Core.DALModels;
 using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
@@ -27,6 +28,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private CoachAssignmentInfoRepository _coachAssignmentInfoRepository;
     private LeagueRepository _leagueRepository;
     private TeamAssignmentInfoRepository _teamAssignmentInfoRepository;
+    private LocationAssignmentInfoRepository _locationAssignmentInfoRepository;
     private LocationAssignmentInfoRepository _locationAssignmentInfoRepository;
 
     private IPlayerRepository PlayerRepository =>
@@ -82,6 +84,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
             LeagueRepository.Commit();
             TeamAssignmentInfoRepository.Commit();
+            LocationAssignmentInfoRepository.Commit();
+
             return CRUDResult.Success;
         }
         catch (Exception)
@@ -212,4 +216,23 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
         return repository.Find(x => x.Id == id) is not null;
     }
+    #region Location
+
+    ReadOnlyCollection<LocationModel> IUnitOfWork.GetAllLocationModels() => LocationAssignmentInfoRepository
+        .All()
+        .Select(location => new LocationModel(location.Id))
+        .ToList()
+        .AsReadOnly();
+
+    LocationModel IUnitOfWork.GetLocationModel(Guid id)
+    {
+        {
+            var location = LocationAssignmentInfoRepository.Find(id);
+            return location != null ? new LocationModel(location.Id, location.City, location.CountryId, location.Country) : null;
+        }
+    }
+
+    #endregion
+
+
 }

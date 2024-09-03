@@ -151,6 +151,24 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     #endregion
 
+    #region Location
+
+    ReadOnlyCollection<LocationModel> IUnitOfWork.GetAllLocationModels() => LocationAssignmentInfoRepository
+        .All()
+        .Select(location => new LocationModel(location.Id))
+        .ToList()
+        .AsReadOnly();
+
+    LocationModel IUnitOfWork.GetLocationModel(Guid id)
+    {
+        {
+            var location = LocationAssignmentInfoRepository.Find(id);
+            return location != null ? new LocationModel(location.Id, location.City, location.CountryId, location.Country) : null;
+        }
+    }
+
+    #endregion
+
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
 
     
