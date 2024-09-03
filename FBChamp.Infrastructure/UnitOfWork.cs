@@ -1,6 +1,8 @@
-﻿using FBChamp.Core.DALModels;
+using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.Repositories.Membership;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.Infrastructure.Repositories.Membership;
 using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;
@@ -131,5 +133,25 @@ public sealed partial class UnitOfWork : IUnitOfWork
         .AsReadOnly();
     #endregion
 
+    #region Location
+
+    ReadOnlyCollection<LocationModel> IUnitOfWork.GetAllLocationModels() => LocationAssignmentInfoRepository
+        .All()
+        .Select(location => new LocationModel(location.Id))
+        .ToList()
+        .AsReadOnly();
+
+    LocationModel IUnitOfWork.GetLocationModel(Guid id)
+    {
+        {
+            var location = LocationAssignmentInfoRepository.Find(id);
+            return location != null ? new LocationModel(location.Id, location.City, location.CountryId, location.Country) : null;
+        }
+    }
+
+    #endregion
+
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
+
+    
 }
