@@ -37,6 +37,16 @@ public interface IUnitOfWork : IDisposable
     ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions();
     #endregion
 
+    #region Location
+    
+    ReadOnlyCollection<LocationModel> GetAllLocationModels();
+    
+    LocationModel GetLocationModel(Guid id);
+
+
+    #endregion
+
+
     CRUDResult Remove(Guid id, Type type);    
 
     CRUDResult Commit(Entity entities);
