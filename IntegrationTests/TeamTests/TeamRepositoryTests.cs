@@ -7,6 +7,12 @@ namespace IntegrationTests.TeamTests;
 [TestClass]
 public class TeamRepositoryTests
 {
+    [TestInitialize]
+    public void Initialize()
+    {
+        Infrastructure.CleanUp();
+    }
+
     [TestMethod]
     public void AddTeams()
     {
@@ -32,6 +38,29 @@ public class TeamRepositoryTests
         var realCount = unitOfWork.GetAllTeamModels().Count;
 
         Assert.AreEqual(initialCount + 1, realCount);
+    }
+
+    [TestMethod]
+    public void AddUniqueStadiums()
+    {
+        UnitOfWork unitOfWork = new UnitOfWork();
+        var initialCount = unitOfWork.GetAllTeamModels().Count;
+        var photoGenerator = new PhotoGenerator();
+        var photo = photoGenerator.Generate(300, 500);
+
+        List<Task> tasks = Enumerable.Range(0, 100)
+            .Select(x => new Team(Guid.NewGuid(), "Name" + x, Guid.NewGuid(), photo, Guid.NewGuid()))
+            .Select(x => new Task(() =>
+            {
+                unitOfWork.Commit(x);
+            })).ToList();
+
+        tasks.ForEach(x => x.Start());
+        Task.WaitAll(tasks.ToArray());
+
+        var realCount = unitOfWork.GetAllTeamModels().Count;
+
+        Assert.AreEqual(initialCount + 100, realCount);
     }
 
     [TestMethod]
@@ -68,15 +97,19 @@ public class TeamRepositoryTests
         unitOfWork.Commit(team);
         var retrievedTeam = unitOfWork.GetTeamModel(teamId);
 
-        Assert.AreEqual("Name", retrievedTeam.Team.Name);
-
+        Guid newLocationId = Guid.NewGuid();
+        Guid newStadiumId = Guid.NewGuid();
         retrievedTeam.Team.Name = "NewName";
+        retrievedTeam.Team.LocationId = newLocationId;
+        retrievedTeam.Team.StadiumId = newStadiumId;
 
         unitOfWork.Commit(retrievedTeam.Team);
         var updatedTeam = unitOfWork.GetTeamModel(teamId);
 
         Assert.IsNotNull(updatedTeam);
         Assert.AreEqual("NewName", updatedTeam.Team.Name);
+        Assert.AreEqual(newLocationId, updatedTeam.Team.LocationId);
+        Assert.AreEqual(newStadiumId, updatedTeam.Team.StadiumId);
     }
 
     [TestMethod]
