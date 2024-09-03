@@ -1,4 +1,5 @@
-﻿using FBChamp.Core.DataValidator;
+﻿using FBChamp.Core.DALModels;
+using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Repositories.Membership;
@@ -6,6 +7,7 @@ using FBChamp.Core.UnitOfWork;
 using FBChamp.Infrastructure.Repositories.Membership;
 using FBChamp.Infrastructure.Validators;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;
 
@@ -21,6 +23,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private TeamRepository _teamRepository;
     private PlayerAssignmentInfoRepository _playerAssignmentInfoRepository;
     private CoachAssignmentInfoRepository _coachAssignmentInfoRepository;
+    private LocationAssignmentInfoRepository _locationAssignmentInfoRepository;
 
     private IPlayerRepository PlayerRepository =>
         _playerRepository ??= new PlayerRepository();
@@ -39,7 +42,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     private ICoachAssignmentInfoRepository CoachAssignmentInfoRepository =>
         _coachAssignmentInfoRepository ??= new CoachAssignmentInfoRepository();
-    
+
+    private ILocationAssignmentInfoRepository LocationAssignmentInfoRepository =>
+        _locationAssignmentInfoRepository ??= new LocationAssignmentInfoRepository();
+
     public UnitOfWork()
     {
         _crudDataValidator = new CRUDDataValidator(this);
@@ -66,6 +72,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
             TeamRepository.Commit();
             PlayerAssignmentInfoRepository.Commit();
             CoachAssignmentInfoRepository.Commit();
+            LocationAssignmentInfoRepository.Commit();
+
             return CRUDResult.Success;
         }
         catch (Exception)
@@ -137,6 +145,24 @@ public sealed partial class UnitOfWork : IUnitOfWork
         
         return AddOrUpdateEntity(entity as Entity<Guid>) ? Commit() : CRUDResult.Failed;
     }
-    
+
+    #region Location
+
+    ReadOnlyCollection<LocationModel> IUnitOfWork.GetAllLocationModels() => LocationAssignmentInfoRepository
+        .All()
+        .Select(location => new LocationModel(location.Id))
+        .ToList()
+        .AsReadOnly();
+
+    LocationModel IUnitOfWork.GetLocationModel(Guid id)
+    {
+        {
+            var location = LocationAssignmentInfoRepository.Find(id);
+            return location != null ? new LocationModel(location.Id, location.City, location.CountryId, location.Country) : null;
+        }
+    }
+
+    #endregion
+
 
 }
