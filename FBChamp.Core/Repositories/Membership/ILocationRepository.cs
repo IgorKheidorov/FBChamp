@@ -1,6 +1,8 @@
-﻿namespace FBChamp.Core.Repositories.Membership
+﻿using FBChamp.Core.Entities.Soccer;
+
+namespace FBChamp.Core.Repositories.Membership
 {
-    public interface ILocationRepository : IRepository
+    public interface ILocationRepository : IRepository<Location, Guid>
     {
 
     }

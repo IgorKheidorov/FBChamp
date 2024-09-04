@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
@@ -25,6 +25,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private CoachAssignmentInfoRepository _coachAssignmentInfoRepository;
     private LeagueRepository _leagueRepository;
     private TeamAssignmentInfoRepository _teamAssignmentInfoRepository;
+    private LocationRepository _locationRepository;
 
     private IPlayerRepository PlayerRepository =>
         _playerRepository ??= new PlayerRepository();
@@ -49,7 +50,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     private ITeamAssignmentInfoRepository TeamAssignmentInfoRepository =>
         _teamAssignmentInfoRepository ??=new TeamAssignmentInfoRepository();
-    
+
+    private ILocationRepository LocationRepository =>
+        _locationRepository ??= new LocationRepository();
+
     public UnitOfWork()
     {
         _crudDataValidator = new CRUDDataValidator(this);
@@ -179,6 +183,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
             nameof(Team) => Exists(id, TeamRepository),
             nameof(Coach) => Exists(id, CoachRepository),
             nameof(PlayerPosition) => Exists(id, PlayerPositionsRepository),
+            nameof(Location) => Exists(id, LocationRepository),
             _ => false
         };
 
