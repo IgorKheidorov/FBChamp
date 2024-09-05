@@ -10,20 +10,17 @@ public class PlayerMatchAssignment : Entity<Guid>
 
     public string Role { get; set; }
 
-    public DateTime TimeOfGoal { get; set; }
-
     public PlayerMatchAssignment()
     {
     }
 
     public PlayerMatchAssignment(Guid playerId, Guid matchId, DateTime startTime,
-                                DateTime finishTime, string role, DateTime timeOfGoal)
+                                DateTime finishTime, string role)
     {
         Id = playerId;
         MatchId = matchId;
         StartTime = startTime;
         FinishTime = finishTime;
         Role = role;
-        TimeOfGoal = timeOfGoal;
     }
 }

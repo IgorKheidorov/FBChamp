@@ -6,39 +6,25 @@ public class PlayerMatchAssignmentModel : EntityModel
 {
     public PlayerMatchAssignment PlayerMatchAssignment { get; }
 
-    public string PlayerName { get; }
-
     public string Role { get; }
 
-    public string Duration { get; }
-
-    public override string FullName => PlayerName;
+    public DateTime Duration => DateTime.MinValue.Add(PlayerMatchAssignment.FinishTime - PlayerMatchAssignment.StartTime);
 
     public PlayerMatchAssignmentModel()
     {
     }
 
-    public PlayerMatchAssignmentModel(PlayerMatchAssignment playerMatchAssignment, string playerName)
+    public PlayerMatchAssignmentModel(PlayerMatchAssignment playerMatchAssignment)
     {
         ArgumentNullException.ThrowIfNull(playerMatchAssignment);
-        PlayerName = playerName ?? "Unknown Player";
-        Role = playerMatchAssignment.Role ?? "Unknown Role";
-        Duration = CalculateDuration(playerMatchAssignment.StartTime, playerMatchAssignment.FinishTime);
-    }
-
-    private string CalculateDuration(DateTime startTime, DateTime finishTime)
-    {
-        TimeSpan duration = finishTime - startTime;
-        return $"{duration.Hours}h {duration.Minutes}m";
+        Role = playerMatchAssignment.Role;
     }
 
     public override IEnumerable<(string, string)> GetInformation() => new List<(string, string)>()
     {
-        ("Player Name",PlayerName),
         ("Role", Role),
         ("Start Time", PlayerMatchAssignment.StartTime.ToShortDateString()),
         ("Finish Time", PlayerMatchAssignment.FinishTime.ToShortDateString()),
-        ("Time of Goal", PlayerMatchAssignment.TimeOfGoal.ToShortDateString()),
-        ("Duration", Duration)
+        ("Duration", $"{Duration.Hour}h {Duration.Minute}m")
     };
 }
