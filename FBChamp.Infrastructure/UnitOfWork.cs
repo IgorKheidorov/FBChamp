@@ -178,7 +178,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     public MatchStatisticsModel GetMatchStatisticsModel(Guid matchId)
     {
-        var matchStatistics = MatchStatisticsRepository.Find(matchId);
+        var matchStatistics = MatchStatisticsRepository.Find(m => m.MatchId == matchId);
 
         if(matchStatistics is null)
         {
