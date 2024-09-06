@@ -10,4 +10,7 @@ public static class DataRestrictions
     public const int MaxDescriptionLength = 256;
     public const int PersonPhotoWidth = 300;
     public const int PersonPhotoHeight = 500;
+    public const int MinCoachAge = 18;
+    public const int MaxCoachAge = 100;
+    public const string NoAssignmentString = "No assignment";
 }

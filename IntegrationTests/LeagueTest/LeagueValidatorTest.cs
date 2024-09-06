@@ -198,6 +198,37 @@ public class LeagueValidatorTest
         Assert.AreEqual(result, CRUDResult.Failed, "The method should return false when the league does not exist.");
     }
 
+    [TestMethod]
+    public void RemoveLeague_ShouldRemoveLeagueSuccessfully_AndDeassignAllTeamsInLeague()
+    {
+        var unassignedTeamAssignmentOne = TeamAssignmentInfoOne;
+        var unassignedTeamAssignmentTwo = TeamAssignmentInfoTwo;
+        var leagueToAssign = League1;
+
+        leagueToAssign!.NumberOfTeams = 3;
+
+        unassignedTeamAssignmentOne!.LeagueId = leagueToAssign!.Id;
+        unassignedTeamAssignmentTwo!.LeagueId = leagueToAssign!.Id;
+
+        _unitOfWork!.Commit(unassignedTeamAssignmentOne);
+        _unitOfWork!.Commit(unassignedTeamAssignmentTwo);
+
+        var assignedTeamsBeforeRemoval = _unitOfWork.GetAssignedTeamsModels(leagueToAssign.Id);
+        Assert.AreEqual(2, assignedTeamsBeforeRemoval.Count, "There should be 2 assigned teams in the league before removal.");
+
+        var result = _unitOfWork!.Remove(leagueToAssign.Id, typeof(League));
+
+        var assignedTeamsAfterRemoval = _unitOfWork.GetAssignedTeamsModels(leagueToAssign.Id);
+
+        Assert.AreEqual(0, assignedTeamsAfterRemoval.Count, "There should be no assigned teams in the league after removal.");
+
+        var allTeams = _unitOfWork.GetAllTeamModels();
+        var allTeamIds = allTeams.Select(t => t.Team.Id).ToList();
+        var assignedTeamsIds = assignedTeamsAfterRemoval.Select(t => t.Team.Id).ToList();
+        Assert.IsTrue(allTeamIds.Contains(unassignedTeamAssignmentOne.Id) && allTeamIds.Contains(unassignedTeamAssignmentTwo.Id), "Teams should still exist in the system.");
+        Assert.IsFalse(assignedTeamsIds.Contains(unassignedTeamAssignmentOne.Id) || assignedTeamsIds.Contains(unassignedTeamAssignmentTwo.Id), "Teams should not be assigned to any league after removal.");
+    }
+
     [TestCleanup]
     public void Dispose()
     {
