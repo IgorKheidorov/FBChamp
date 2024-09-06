@@ -8,10 +8,10 @@ namespace FBChamp.Infrastructure;
 public sealed partial class UnitOfWork : IUnitOfWork
 {
     #region Players
-    public PlayerModel GetPlayerModel(Guid id) 
+    public PlayerModel GetPlayerModel(Guid id)
     {
         var player = PlayerRepository.Find(id);
-        if (player is null) 
+        if (player is null)
         {
             return null;
         }
@@ -30,8 +30,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
         .Select(x => x.Id).ToList();
 
     public ReadOnlyCollection<PlayerModel> GetAssignedPlayerModels(Guid teamGuid) =>
-            GetAssignedPlayerIds(teamGuid).Select(id => GetPlayerModel(id)).ToList().AsReadOnly();    
-    
+            GetAssignedPlayerIds(teamGuid).Select(id => GetPlayerModel(id)).ToList().AsReadOnly();
+
     public ReadOnlyCollection<PlayerModel> GetUnassignedPlayerModels() =>
         PlayerRepository.All()
             .Where(x => !PlayerAssignmentInfoRepository.All().Select(x => x.Id).Contains(x.Id))
@@ -44,7 +44,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     #endregion
 
     #region Team
-    public ReadOnlyCollection<TeamModel> GetAllTeamModels() =>    
+    public ReadOnlyCollection<TeamModel> GetAllTeamModels() =>
         TeamRepository.All().ToList().Select(team => GetTeamModel(team.Id)).ToList().AsReadOnly();
 
     private List<Guid> GetAssignedTeamsId(Guid leagueId) =>
@@ -67,7 +67,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
        TeamAssignmentInfoRepository.Remove(teamId);
 
     public TeamModel GetTeamModel(Guid id) =>
-        new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id),GetAssignedPlayerModels(id));
+        new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id), GetAssignedPlayerModels(id));
 
     public ReadOnlyCollection<TeamModel> GetUnassignedTeamModel() =>
         TeamRepository.All()
@@ -88,7 +88,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     public CoachModel GetAssignedCoachModel(Guid teamID)
     {
         var coachInfo = CoachAssignmentInfoRepository.Find(x => x.TeamId == teamID);
-        return coachInfo is null ? null : new CoachModel(CoachRepository.Find(x => x.Id == coachInfo.Id), 
+        return coachInfo is null ? null : new CoachModel(CoachRepository.Find(x => x.Id == coachInfo.Id),
                                                          TeamRepository.Find(x => x.Id == teamID).Name,
                                                          coachInfo.Role);
     }
@@ -111,12 +111,12 @@ public sealed partial class UnitOfWork : IUnitOfWork
             return null;
         }
         var coachInfo = CoachAssignmentInfoRepository.Find(x => x.Id == id);
-        var teamName = coachInfo is not null ? TeamRepository.Find(x => x.Id == coachInfo.TeamId)?.Name : null;        
-        
+        var teamName = coachInfo is not null ? TeamRepository.Find(x => x.Id == coachInfo.TeamId)?.Name : null;
+
         return new CoachModel(coach, teamName, coachInfo?.Role);
     }
 
-    public ReadOnlyCollection<CoachModel> GetAllCoachModels()=>
+    public ReadOnlyCollection<CoachModel> GetAllCoachModels() =>
         CoachRepository.All()
         .Select(x => GetCoachModel(x.Id))
         .ToList().AsReadOnly();
@@ -137,9 +137,17 @@ public sealed partial class UnitOfWork : IUnitOfWork
     public ReadOnlyCollection<LeagueModel> GetAllLeagueModels() =>
         LeagueRepository
         .All()
-        .Select(l =>  GetLeagueModel(l.Id))
+        .Select(l => GetLeagueModel(l.Id))
         .ToList()
         .AsReadOnly();
+    #endregion
+
+    #region Stadium
+    public StadiumModel GetStadiumModel(Guid id) =>
+        new StadiumModel(StadiumRepository.Find(x => x.Id == id), null);
+
+    public ReadOnlyCollection<StadiumModel> GetAllStadiumModels() =>
+        StadiumRepository.All().ToList().Select(stadium => GetStadiumModel(stadium.Id)).ToList().AsReadOnly();
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
