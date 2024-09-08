@@ -4,6 +4,7 @@ public enum CRUDResult
 {
     Success,
     EntityValidationFailed,
+    EntityAlreadyExists,
     InvalidOperation,
     ObjectDoesNotExists,
     Failed

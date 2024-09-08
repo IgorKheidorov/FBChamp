@@ -156,6 +156,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "League" => RemoveLeague(id),
         "TeamAssignmentInfo" => DeassignTeam(id),
         "Stadium" => RemoveTeam(id),
+        "CoachAssignmentInfo" => DeassignCoach(id),
         _ => false
     } ? Commit() : RequestReload();
 
