@@ -27,6 +27,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private TeamAssignmentInfoRepository _teamAssignmentInfoRepository;
     private LocationRepository _locationRepository;
     private StadiumRepository _stadiumRepository;
+    private MatchRepository _matchRepository;
+    private MatchStatisticsRepository _matchStatisticsRepository;
+    private PlayerMatchAssignmentRepository _playerMatchAssignmentRepository;
 
     private IPlayerRepository PlayerRepository =>
         _playerRepository ??= new PlayerRepository();
@@ -58,6 +61,15 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private IStadiumRepository StadiumRepository =>
         _stadiumRepository ??= new StadiumRepository();
 
+    private IMatchRepository MatchRepository =>
+        _matchRepository ??= new MatchRepository();
+
+    private IMatchStatisticsRepository MatchStatisticsRepository =>
+        _matchStatisticsRepository ??= new MatchStatisticsRepository();
+
+    private IPlayerMatchAssignmentRepository PlayerMatchAssignmentRepository =>
+        _playerMatchAssignmentRepository ??=new PlayerMatchAssignmentRepository();
+
     public UnitOfWork()
     {
         _crudDataValidator = new CRUDDataValidator(this);
@@ -74,6 +86,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _leagueRepository = null;
         _teamAssignmentInfoRepository = null;
         _stadiumRepository = null;
+        _matchRepository = null;
+        _matchStatisticsRepository = null;
+        _playerPositionRepository = null;
         // false is to indicate the fail
         return CRUDResult.Failed;
     }
@@ -90,6 +105,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
             LeagueRepository.Commit();
             TeamAssignmentInfoRepository.Commit();
             StadiumRepository.Commit();
+            MatchRepository.Commit();
+            MatchStatisticsRepository.Commit();
+            PlayerMatchAssignmentRepository.Commit();
             return CRUDResult.Success;
         }
         catch (Exception)
@@ -151,6 +169,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private bool RemoveStadium(Guid stadiumId) =>
         StadiumRepository.Remove(stadiumId);
 
+    private bool RemoveMatch(Guid matchId) =>
+        MatchRepository.Remove(matchId);
+
     public CRUDResult Remove(Guid id, Type type) => type.Name switch
     {
         "Player" => RemovePlayer(id),
@@ -160,6 +181,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "League" => RemoveLeague(id),
         "TeamAssignmentInfo" => DeassignTeam(id),
         "Stadium" => RemoveTeam(id),
+        "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
         _ => false
     } ? Commit() : RequestReload();
@@ -180,6 +202,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "League" => LeagueRepository.AddOrUpdate(entity as League),
         "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
+        "Match" => MatchRepository.AddOrUpdate(entity as Match),
         _ => false
     };
 
@@ -202,6 +225,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
             nameof(Coach) => Exists(id, CoachRepository),
             nameof(PlayerPosition) => Exists(id, PlayerPositionsRepository),
             nameof(Location) => Exists(id, LocationRepository),
+            nameof(Match) => Exists(id, MatchRepository),
+            nameof(League) => Exists(id, LeagueRepository),
+            nameof(Stadium) => Exists(id, StadiumRepository),
             _ => false
         };
 

@@ -41,6 +41,30 @@ public sealed partial class UnitOfWork : IUnitOfWork
     public bool DeassignPlayer(Guid playerId) =>
         PlayerAssignmentInfoRepository.Remove(playerId);
 
+    private List<Guid> GetAssignedPlayerIdsForMatch(Guid matchId) => 
+        PlayerMatchAssignmentRepository.All()
+        .Where(p => p.MatchId == matchId)
+        .Select(x => x.Id)
+        .ToList();
+
+    public PlayerMatchAssignmentModel GetPlayerMatchAssignmentModel(Guid playerId)
+    {
+        var playerAssignment = PlayerMatchAssignmentRepository.Find(playerId);
+
+        if(playerAssignment is null)
+        {
+            return null;
+        }
+
+        return new PlayerMatchAssignmentModel(playerAssignment);
+    }
+
+    public ReadOnlyCollection<PlayerMatchAssignmentModel> GetAssignedPlayerModelsForMatch(Guid matchId) =>
+        GetAssignedPlayerIdsForMatch(matchId)
+        .Select(id => GetPlayerMatchAssignmentModel(id))
+        .ToList()
+        .AsReadOnly();
+
     #endregion
 
     #region Team
@@ -63,8 +87,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
     // We have to delete
     // * not finished matches with participating of this team
     // * deassign all players and all coaches
-    public bool DeassignTeam(Guid teamId) =>
-       TeamAssignmentInfoRepository.Remove(teamId);
+    public bool DeassignTeam(Guid teamId) => 
+         TeamAssignmentInfoRepository.Remove(teamId);
 
     public TeamModel GetTeamModel(Guid id) =>
         new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id), GetAssignedPlayerModels(id));
@@ -148,6 +172,49 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     public ReadOnlyCollection<StadiumModel> GetAllStadiumModels() =>
         StadiumRepository.All().ToList().Select(stadium => GetStadiumModel(stadium.Id)).ToList().AsReadOnly();
+    #endregion
+
+    #region Match
+
+    public MatchStatisticsModel GetMatchStatisticsModel(Guid matchId)
+    {
+        var matchStatistics = MatchStatisticsRepository.Find(m => m.MatchId == matchId);
+
+        if(matchStatistics is null)
+        {
+            return null;
+        }
+
+        return new MatchStatisticsModel(matchStatistics);
+    }
+
+    public MatchModel GetMatchModel(Guid matchId)
+    {
+        var match = MatchRepository.Find(matchId);
+
+        if(match is null)
+        {
+            return null;
+        }
+
+        var hostTeam = GetTeamModel(match.HostTeamId);
+        var guestTeam = GetTeamModel(match.GuestTeamId);
+
+        var stadiumModel = GetStadiumModel(match.StadiumId);
+
+        var playerAssignments = GetAssignedPlayerModelsForMatch(matchId);
+
+        var matchStatistics = GetMatchStatisticsModel(matchId);
+
+        return new MatchModel(match, hostTeam, guestTeam, stadiumModel, playerAssignments, matchStatistics);
+    }
+
+    public ReadOnlyCollection<MatchModel> GetAllMatchModels() =>
+        MatchRepository.All()
+        .Select(x => GetMatchModel(x.Id))
+        .ToList()
+        .AsReadOnly();
+
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();

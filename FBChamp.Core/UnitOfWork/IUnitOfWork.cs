@@ -29,6 +29,10 @@ public interface IUnitOfWork : IDisposable
 
     ReadOnlyCollection<PlayerModel> GetAllPlayerModels();
 
+    ReadOnlyCollection<PlayerMatchAssignmentModel> GetAssignedPlayerModelsForMatch(Guid matchId);
+
+    PlayerMatchAssignmentModel GetPlayerMatchAssignmentModel(Guid playerId);
+
     #endregion
 
     #region Team
@@ -69,5 +73,13 @@ public interface IUnitOfWork : IDisposable
     StadiumModel GetStadiumModel(Guid id);
 
     ReadOnlyCollection<StadiumModel> GetAllStadiumModels();
+    #endregion
+
+    #region Match
+    MatchModel GetMatchModel(Guid matchId);
+    ReadOnlyCollection<MatchModel> GetAllMatchModels();
+
+    MatchStatisticsModel GetMatchStatisticsModel(Guid matchId);
+
     #endregion
 }
