@@ -10,12 +10,9 @@ public class Goal : Entity<Guid>
 
     public DateTime Time { get; set; }
 
-    public Goal()
+    public Goal(Guid id, Guid matchId, Guid goalAuthorId, List<Guid> assistantIds, DateTime time)
     {
-    }
-
-    public Goal(Guid matchId, Guid goalAuthorId, List<Guid> assistantIds, DateTime time)
-    {
+        Id = id;
         MatchId = matchId;
         GoalAuthorId = goalAuthorId;
         AssistantIds = assistantIds;

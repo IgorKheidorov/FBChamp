@@ -63,11 +63,21 @@ public interface IUnitOfWork : IDisposable
 
     ReadOnlyCollection<LeagueModel> GetAllLeagueModels();
 
-    #endregion  
+    #endregion
 
     #region Stadium
+
     StadiumModel GetStadiumModel(Guid id);
 
     ReadOnlyCollection<StadiumModel> GetAllStadiumModels();
+
+    #endregion
+
+    #region Goal
+
+    GoalModel GetGoalModel(Guid id);
+
+    ReadOnlyCollection<GoalModel> GetAllGoalModels();
+
     #endregion
 }
