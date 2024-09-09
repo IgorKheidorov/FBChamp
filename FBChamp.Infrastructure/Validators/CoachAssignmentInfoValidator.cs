@@ -24,16 +24,11 @@ public class CoachAssignmentInfoValidator(IUnitOfWork unitOfWork) : IValidateEnt
             return CRUDResult.ObjectDoesNotExists;
         }
 
-        if (assignmentInfo.Role is null)
+        if (assignmentInfo.Role is null &&
+            team.Coach is not null &&
+            string.Equals(assignmentInfo.Role, team.Coach.Role))
         {
             return CRUDResult.EntityValidationFailed;
-        }
-
-        if (team.Coach is not null &&
-            team.Coach.Coach.Id == assignmentInfo.Id &&
-            string.Equals(coach.CurrentTeam, team.Team.Name))
-        {
-            return CRUDResult.EntityAlreadyExists;
         }
 
         return CRUDResult.Success;
