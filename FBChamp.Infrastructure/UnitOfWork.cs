@@ -47,9 +47,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
         .Select(x => x.Id)
         .ToList();
 
-    public PlayerMatchAssignmentModel GetPlayerMatchAssignmentModel(Guid id)
+    public PlayerMatchAssignmentModel GetPlayerMatchAssignmentModel(Guid playerId)
     {
-        var playerAssignment = PlayerMatchAssignmentRepository.Find(id);
+        var playerAssignment = PlayerMatchAssignmentRepository.Find(playerId);
 
         if(playerAssignment is null)
         {
@@ -87,8 +87,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
     // We have to delete
     // * not finished matches with participating of this team
     // * deassign all players and all coaches
-    public bool DeassignTeam(Guid teamId) =>
-       TeamAssignmentInfoRepository.Remove(teamId);
+    public bool DeassignTeam(Guid teamId) => 
+         TeamAssignmentInfoRepository.Remove(teamId);
 
     public TeamModel GetTeamModel(Guid id) =>
         new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id), GetAssignedPlayerModels(id));
@@ -188,9 +188,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
         return new MatchStatisticsModel(matchStatistics);
     }
 
-    public MatchModel GetMatchModel(Guid id)
+    public MatchModel GetMatchModel(Guid matchId)
     {
-        var match = MatchRepository.Find(id);
+        var match = MatchRepository.Find(matchId);
 
         if(match is null)
         {
@@ -202,9 +202,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
         var stadiumModel = GetStadiumModel(match.StadiumId);
 
-        var playerAssignments = GetAssignedPlayerModelsForMatch(id);
+        var playerAssignments = GetAssignedPlayerModelsForMatch(matchId);
 
-        var matchStatistics = GetMatchStatisticsModel(id);
+        var matchStatistics = GetMatchStatisticsModel(matchId);
 
         return new MatchModel(match, hostTeam, guestTeam, stadiumModel, playerAssignments, matchStatistics);
     }
@@ -218,6 +218,4 @@ public sealed partial class UnitOfWork : IUnitOfWork
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
-
- 
 }
