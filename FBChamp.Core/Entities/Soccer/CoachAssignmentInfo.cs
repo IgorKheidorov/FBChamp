@@ -6,10 +6,6 @@ public class CoachAssignmentInfo : Entity<Guid>
 
     public string Role { get; set; }
 
-    public CoachAssignmentInfo()
-    {
-    }
-
     public CoachAssignmentInfo(Guid coachId, Guid teamId, string role)
     {
         Id = coachId;
