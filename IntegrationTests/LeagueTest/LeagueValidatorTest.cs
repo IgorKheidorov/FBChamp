@@ -229,6 +229,20 @@ public class LeagueValidatorTest
         Assert.IsFalse(assignedTeamsIds.Contains(unassignedTeamAssignmentOne.Id) || assignedTeamsIds.Contains(unassignedTeamAssignmentTwo.Id), "Teams should not be assigned to any league after removal.");
     }
 
+    [TestMethod]
+    public void RemoveLeague_ShouldRemoveLeagueSuccessfully_AndRemoveNotFinishedMatches()
+    {
+        var league = League1!;
+        var matchOne = Match1!;
+
+        var result = _unitOfWork!.Remove(league.Id, typeof(League));
+
+        Assert.AreEqual(CRUDResult.Success, result);
+
+        var unfinishedMatchDeleted = _unitOfWork.GetMatchModel(matchOne.Id);
+        Assert.IsNull(unfinishedMatchDeleted, "Unfinished match should be deleted after league removal.");
+    }
+
     [TestCleanup]
     public void Dispose()
     {

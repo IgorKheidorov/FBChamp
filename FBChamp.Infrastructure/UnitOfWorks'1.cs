@@ -2,6 +2,7 @@ using System.Data;
 using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.Repositories;
 using FBChamp.Core.Repositories.Membership;
 using FBChamp.Core.UnitOfWork;
@@ -160,10 +161,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
         bool allTeamsDeassigned = assignedTeams.All(leagueId => DeassignTeams(leagueId));
 
-        // TO DO: 
-        //  We have to delete not finished matches       
+        var unfinishedMatches = GetUnfinishedMatchesIds(leagueId);
+        bool allMatchesRemoved = unfinishedMatches.All(matchId => RemoveMatch(matchId));
 
-        return allTeamsDeassigned && LeagueRepository.Remove(leagueId);
+        return allTeamsDeassigned && allMatchesRemoved && LeagueRepository.Remove(leagueId);
     }
 
     private bool RemoveStadium(Guid stadiumId) =>
@@ -171,6 +172,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     private bool RemoveMatch(Guid matchId) =>
         MatchRepository.Remove(matchId);
+
+    private bool RemoveMatchStatistics(Guid matchStatisticsId) =>
+        MatchStatisticsRepository.Remove(matchStatisticsId);
 
     public CRUDResult Remove(Guid id, Type type) => type.Name switch
     {
@@ -183,6 +187,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "Stadium" => RemoveTeam(id),
         "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
+        "MatchStatistics" => RemoveMatchStatistics(id),
         _ => false
     } ? Commit() : RequestReload();
 
@@ -203,6 +208,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
         "Match" => MatchRepository.AddOrUpdate(entity as Match),
+        "MatchStatistics" => MatchStatisticsRepository.AddOrUpdate(entity as MatchStatistics),
         _ => false
     };
 
