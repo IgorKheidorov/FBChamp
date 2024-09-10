@@ -238,8 +238,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
             return null;
         }
         
-        // TODO: Replace with MatchRepository, when itroduced as property
-        var match =  new MatchRepository().Find(x => x.Id == goal.MatchId);
+        var match =  MatchRepository.Find(x => x.Id == goal.MatchId);
         var goalAuthor = PlayerRepository.Find(x => x.Id == goal.GoalAuthorId);
         var assistants = PlayerRepository.All().Where(x => goal.AssistantIds.Contains(x.Id)).ToList();
 

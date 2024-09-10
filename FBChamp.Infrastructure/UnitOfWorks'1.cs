@@ -243,8 +243,6 @@ public sealed partial class UnitOfWork : IUnitOfWork
             nameof(Coach) => Exists(id, CoachRepository),
             nameof(PlayerPosition) => Exists(id, PlayerPositionsRepository),
             nameof(Location) => Exists(id, LocationRepository),
-            // TODO: Uncomment when MatchCRUD is introduced
-            //nameof(Match) => Exists(id, MatchRepository),
             nameof(Match) => Exists(id, MatchRepository),
             nameof(League) => Exists(id, LeagueRepository),
             nameof(Stadium) => Exists(id, StadiumRepository),
