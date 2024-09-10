@@ -2,6 +2,7 @@ using System.Data;
 using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.Repositories;
 using FBChamp.Core.Repositories.Membership;
 using FBChamp.Core.UnitOfWork;
@@ -28,6 +29,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private LocationRepository _locationRepository;
     private StadiumRepository _stadiumRepository;
     private GoalRepository _goalRepository;
+    private MatchRepository _matchRepository;
+    private MatchStatisticsRepository _matchStatisticsRepository;
+    private PlayerMatchAssignmentRepository _playerMatchAssignmentRepository;
 
     private IPlayerRepository PlayerRepository =>
         _playerRepository ??= new PlayerRepository();
@@ -59,6 +63,15 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private IStadiumRepository StadiumRepository =>
         _stadiumRepository ??= new StadiumRepository();
 
+    private IMatchRepository MatchRepository =>
+        _matchRepository ??= new MatchRepository();
+
+    private IMatchStatisticsRepository MatchStatisticsRepository =>
+        _matchStatisticsRepository ??= new MatchStatisticsRepository();
+
+    private IPlayerMatchAssignmentRepository PlayerMatchAssignmentRepository =>
+        _playerMatchAssignmentRepository ??=new PlayerMatchAssignmentRepository();
+
     private IGoalRepository GoalRepository =>
         _goalRepository ??= new GoalRepository();
 
@@ -79,6 +92,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _teamAssignmentInfoRepository = null;
         _stadiumRepository = null;
         _goalRepository = null;
+        _matchRepository = null;
+        _matchStatisticsRepository = null;
+        _playerPositionRepository = null;
         // false is to indicate the fail
         return CRUDResult.Failed;
     }
@@ -97,6 +113,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
             StadiumRepository.Commit();
             GoalRepository.Commit();
 
+            MatchRepository.Commit();
+            MatchStatisticsRepository.Commit();
+            PlayerMatchAssignmentRepository.Commit();
             return CRUDResult.Success;
         }
         catch (Exception)
@@ -149,14 +168,20 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
         bool allTeamsDeassigned = assignedTeams.All(leagueId => DeassignTeams(leagueId));
 
-        // TO DO: 
-        //  We have to delete not finished matches       
+        var unfinishedMatches = GetUnfinishedMatchesIds(leagueId);
+        bool allMatchesRemoved = unfinishedMatches.All(matchId => RemoveMatch(matchId));
 
-        return allTeamsDeassigned && LeagueRepository.Remove(leagueId);
+        return allTeamsDeassigned && allMatchesRemoved && LeagueRepository.Remove(leagueId);
     }
 
     private bool RemoveStadium(Guid stadiumId) =>
         StadiumRepository.Remove(stadiumId);
+
+    private bool RemoveMatch(Guid matchId) =>
+        MatchRepository.Remove(matchId);
+
+    private bool RemoveMatchStatistics(Guid matchStatisticsId) =>
+        MatchStatisticsRepository.Remove(matchStatisticsId);
 
     private bool RemoveGoal(Guid goalId) =>
         GoalRepository.Remove(goalId);
@@ -170,8 +195,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "League" => RemoveLeague(id),
         "TeamAssignmentInfo" => DeassignTeam(id),
         "Stadium" => RemoveTeam(id),
+        "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
         "Goal" => RemoveGoal(id),
+        "MatchStatistics" => RemoveMatchStatistics(id),
         _ => false
     } ? Commit() : RequestReload();
 
@@ -192,6 +219,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
         "Goal" => GoalRepository.AddOrUpdate(entity as Goal),
+        "Match" => MatchRepository.AddOrUpdate(entity as Match),
+        "MatchStatistics" => MatchStatisticsRepository.AddOrUpdate(entity as MatchStatistics),
         _ => false
     };
 
@@ -216,6 +245,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
             nameof(Location) => Exists(id, LocationRepository),
             // TODO: Uncomment when MatchCRUD is introduced
             //nameof(Match) => Exists(id, MatchRepository),
+            nameof(Match) => Exists(id, MatchRepository),
+            nameof(League) => Exists(id, LeagueRepository),
+            nameof(Stadium) => Exists(id, StadiumRepository),
             _ => false
         };
 
