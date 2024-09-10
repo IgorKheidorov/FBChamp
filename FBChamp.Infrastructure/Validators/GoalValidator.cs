@@ -20,6 +20,7 @@ public class GoalValidator(IUnitOfWork unitOfWork) : IValidateEntity
         };
 
     private bool Validate(Goal goal) =>
+        ValidateScoringTeamIdNotEmpty(goal) &&
         ValidateMatch(goal.MatchId) &&
         ValidateGoal(goal);
 
@@ -33,6 +34,9 @@ public class GoalValidator(IUnitOfWork unitOfWork) : IValidateEntity
             GoalType.Technical when ValidateTechnicalGoal(goal) => true,
             _ => false
         };
+
+    private bool ValidateScoringTeamIdNotEmpty(Goal goal) =>
+        goal.ScoringTeamId != Guid.Empty;
 
     // Validates if the MatchId is valid and the match exists in the database
     private bool ValidateMatch(Guid matchId) =>
