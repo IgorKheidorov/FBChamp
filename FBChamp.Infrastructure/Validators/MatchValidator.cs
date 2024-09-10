@@ -24,30 +24,11 @@ public class MatchValidator : IValidateEntity
             _ => CRUDResult.InvalidOperation,
         };
 
-    private bool ValidateProperties(Match match)
-    {
-        if (!IsTeamExists(match.HostTeamId))
-        {
-            return false;
-        }
-
-        if (!IsTeamExists(match.GuestTeamId))
-        {
-            return false;
-        }
-
-        if (!IsLeagueExists(match.LeagueId))
-        {
-            return false;
-        }
-
-        if (!IsStadiumExists(match.StadiumId))
-        {
-            return false;
-        }
-
-        return true;
-    }
+    private bool ValidateProperties(Match match) =>
+          IsTeamExists(match.HostTeamId) &&
+          IsTeamExists(match.GuestTeamId) &&
+          IsLeagueExists(match.LeagueId) &&
+          IsStadiumExists(match.StadiumId);
 
     private bool IsTeamExists(Guid teamId) =>
         _unitOfWork.Exists(teamId, typeof(Team));

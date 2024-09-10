@@ -1,5 +1,6 @@
 ﻿using FBChamp.Core.DALModels;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.UnitOfWork;
 using System.Collections.ObjectModel;
 
@@ -214,6 +215,12 @@ public sealed partial class UnitOfWork : IUnitOfWork
         .Select(x => GetMatchModel(x.Id))
         .ToList()
         .AsReadOnly();
+
+    private List<Guid> GetUnfinishedMatchesIds(Guid leagueId) =>
+         MatchRepository.All()
+        .Where(m => m.LeagueId == leagueId && m.Status != MatchStatus.Finished)
+        .Select(x => x.Id)
+        .ToList();
 
     #endregion
 
