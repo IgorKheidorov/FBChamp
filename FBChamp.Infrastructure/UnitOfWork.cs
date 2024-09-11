@@ -92,9 +92,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     {
         var assignedPlayers = GetAssignedPlayerIdsForMatch(matchId);
 
-        foreach(var playerId in assignedPlayers)
+        foreach (var playerId in assignedPlayers)
         {
-            if(!DessingPlayerForMatch(playerId))
+            if (!DessingPlayerForMatch(playerId))
             {
                 return false;
             }
@@ -121,17 +121,17 @@ public sealed partial class UnitOfWork : IUnitOfWork
     {
         var matches = MatchRepository.Filter(m => m.GuestTeamId == teamId || m.HostTeamId == teamId).ToList();
 
-        if(matches is null || !matches.Any())
+        if (matches is null || !matches.Any())
         {
             return TeamAssignmentInfoRepository.Remove(teamId);
         }
 
-        foreach(var match in matches)
+        foreach (var match in matches)
         {
             DeassignPlayersFromMatch(match.Id);
             DeassignCoachesFromTeams(match.HostTeamId, match.GuestTeamId);
 
-            if(match.Status != MatchStatus.Finished)
+            if (match.Status != MatchStatus.Finished)
             {
                 MatchRepository.Remove(match.Id);
             }
