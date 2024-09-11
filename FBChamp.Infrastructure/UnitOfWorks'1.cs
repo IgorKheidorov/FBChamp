@@ -89,6 +89,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _matchRepository = null;
         _matchStatisticsRepository = null;
         _playerPositionRepository = null;
+        _playerMatchAssignmentRepository = null;
         // false is to indicate the fail
         return CRUDResult.Failed;
     }
@@ -171,6 +172,15 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     private bool RemoveMatch(Guid matchId) =>
         MatchRepository.Remove(matchId);
+
+    public bool AssignPlayerToMatch(Guid playerId, Guid matchId, DateTime startTime, DateTime finishTime, string role) =>
+        PlayerMatchAssignmentRepository.AddOrUpdate(new PlayerMatchAssignment(playerId, matchId, startTime, finishTime, role));
+
+    public bool DeAssignPlayerFromMatch(Guid playerId) =>
+        PlayerMatchAssignmentRepository.Remove(playerId);
+
+    public bool GetPlayerFromMatch(Guid playerId) =>
+        PlayerMatchAssignmentRepository.Find(playerId) is not null;
 
     public CRUDResult Remove(Guid id, Type type) => type.Name switch
     {

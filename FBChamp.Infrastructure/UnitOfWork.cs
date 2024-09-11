@@ -217,5 +217,15 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     #endregion
 
+    #region PlayerAssignmentToMatch
+
+    public PlayerMatchAssignment GetPlayerMatchAssignment(Guid playerId) =>
+        PlayerMatchAssignmentRepository.Find(playerId);
+
+
+
+
+    #endregion
+
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
 }
