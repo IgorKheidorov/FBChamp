@@ -2,7 +2,6 @@
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.UnitOfWork;
-using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;
@@ -274,4 +273,27 @@ public sealed partial class UnitOfWork : IUnitOfWork
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
+
+    #region Goal
+
+    public GoalModel GetGoalModel(Guid id)
+    {
+        var goal = GoalRepository.Find(x => x.Id == id);
+
+        if (goal is null)
+        {
+            return null;
+        }
+        
+        var match =  MatchRepository.Find(x => x.Id == goal.MatchId);
+        var goalAuthor = PlayerRepository.Find(x => x.Id == goal.GoalAuthorId);
+        var assistants = PlayerRepository.All().Where(x => goal.AssistantIds.Contains(x.Id)).ToList();
+
+        return new GoalModel(goal, match, goalAuthor, assistants);
+    }
+
+    public ReadOnlyCollection<GoalModel> GetAllGoalModels() =>
+        GoalRepository.All().ToList().Select(goal => GetGoalModel(goal.Id)).ToList().AsReadOnly();
+
+    #endregion
 }
