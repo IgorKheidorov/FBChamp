@@ -33,6 +33,8 @@ public interface IUnitOfWork : IDisposable
 
     PlayerMatchAssignmentModel GetPlayerMatchAssignmentModel(Guid playerId);
 
+    bool DessingPlayerForMatch(Guid playerId);
+
     #endregion
 
     #region Team

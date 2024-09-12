@@ -85,12 +85,60 @@ public sealed partial class UnitOfWork : IUnitOfWork
        .ToList()
        .AsReadOnly();
 
-    // To Do:
-    // We have to delete
-    // * not finished matches with participating of this team
-    // * deassign all players and all coaches
-    public bool DeassignTeam(Guid teamId) => 
-         TeamAssignmentInfoRepository.Remove(teamId);
+    public bool DessingPlayerForMatch(Guid playerId) =>
+           PlayerMatchAssignmentRepository.Remove(playerId);
+
+    private bool DeassignPlayersFromMatch(Guid matchId)
+    {
+        var assignedPlayers = GetAssignedPlayerIdsForMatch(matchId);
+
+        foreach(var playerId in assignedPlayers)
+        {
+            if(!DessingPlayerForMatch(playerId))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool DeassignCoachesFromTeams(Guid hostTeamId, Guid guestTeamId)
+    {
+        var assignedCoachesHostTeam = GetAssignedCoachIds(hostTeamId);
+        var assignedCoachesGuestTeam = GetAssignedCoachIds(guestTeamId);
+
+        var coachDeassignResultHostTeam = assignedCoachesHostTeam.IsNullOrEmpty() ? true :
+           assignedCoachesHostTeam.Select(x => DeassignCoach(x)).Where(x => x == false).Count() == 0;
+
+        var coachDeassignResultGuestTeam = assignedCoachesGuestTeam.IsNullOrEmpty() ? true :
+             assignedCoachesGuestTeam.Select(x => DeassignCoach(x)).Where(x => x == false).Count() == 0;
+
+        return coachDeassignResultHostTeam && coachDeassignResultGuestTeam;
+    }
+
+    public bool DeassignTeam(Guid teamId)
+    {
+        var matches = MatchRepository.Filter(m => m.GuestTeamId == teamId || m.HostTeamId == teamId).ToList();
+
+        if(matches is null || !matches.Any())
+        {
+            return TeamAssignmentInfoRepository.Remove(teamId);
+        }
+
+        foreach(var match in matches)
+        {
+            DeassignPlayersFromMatch(match.Id);
+            DeassignCoachesFromTeams(match.HostTeamId, match.GuestTeamId);
+
+            if(match.Status != MatchStatus.Finished)
+            {
+                MatchRepository.Remove(match.Id);
+            }
+        }
+
+        return TeamAssignmentInfoRepository.Remove(teamId);
+    }
 
     public TeamModel GetTeamModel(Guid id) =>
         new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id), GetAssignedPlayerModels(id));

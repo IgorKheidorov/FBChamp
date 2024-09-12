@@ -194,7 +194,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "PlayerAssignmentInfo" => DeassignPlayer(id),
         "League" => RemoveLeague(id),
         "TeamAssignmentInfo" => DeassignTeam(id),
-        "Stadium" => RemoveTeam(id),
+        "Stadium" => RemoveStadium(id),
         "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
         "Goal" => RemoveGoal(id),
