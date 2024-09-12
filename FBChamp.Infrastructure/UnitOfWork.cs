@@ -2,7 +2,7 @@
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.UnitOfWork;
-using FBChamp.Infrastructure.Repositories.Membership;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;
