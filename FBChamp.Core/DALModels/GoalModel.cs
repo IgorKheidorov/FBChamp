@@ -2,12 +2,18 @@
 
 namespace FBChamp.Core.DALModels;
 
-public class GoalModel : EntityModel
+public class GoalModel(
+    Goal goal,
+    Match match,
+    Player goalAuthor,
+    List<Player> assistants)
+    : EntityModel
 {
-    public Goal Goal { get; set; }
+    public Goal Goal { get; set; } = goal;
 
-    public GoalModel(Goal goal)
-    {
-        Goal = goal;
-    }
+    public Match Match { get; set; } = match;
+
+    public Player GoalAuthor { get; set; } = goalAuthor;
+
+    public List<Player> Assistants { get; set; } = assistants;
 }

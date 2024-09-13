@@ -2,6 +2,7 @@ using System.Data;
 using FBChamp.Core.DataValidator;
 using FBChamp.Core.Entities;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.Repositories;
 using FBChamp.Core.Repositories.Membership;
 using FBChamp.Core.UnitOfWork;
@@ -27,6 +28,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private TeamAssignmentInfoRepository _teamAssignmentInfoRepository;
     private LocationRepository _locationRepository;
     private StadiumRepository _stadiumRepository;
+    private GoalRepository _goalRepository;
     private MatchRepository _matchRepository;
     private MatchStatisticsRepository _matchStatisticsRepository;
     private PlayerMatchAssignmentRepository _playerMatchAssignmentRepository;
@@ -70,6 +72,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private IPlayerMatchAssignmentRepository PlayerMatchAssignmentRepository =>
         _playerMatchAssignmentRepository ??=new PlayerMatchAssignmentRepository();
 
+    private IGoalRepository GoalRepository =>
+        _goalRepository ??= new GoalRepository();
+
     public UnitOfWork()
     {
         _crudDataValidator = new CRUDDataValidator(this);
@@ -86,6 +91,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _leagueRepository = null;
         _teamAssignmentInfoRepository = null;
         _stadiumRepository = null;
+        _goalRepository = null;
         _matchRepository = null;
         _matchStatisticsRepository = null;
         _playerPositionRepository = null;
@@ -106,6 +112,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
             LeagueRepository.Commit();
             TeamAssignmentInfoRepository.Commit();
             StadiumRepository.Commit();
+            GoalRepository.Commit();
+
             MatchRepository.Commit();
             MatchStatisticsRepository.Commit();
             PlayerMatchAssignmentRepository.Commit();
@@ -161,10 +169,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
         bool allTeamsDeassigned = assignedTeams.All(leagueId => DeassignTeams(leagueId));
 
-        // TO DO: 
-        //  We have to delete not finished matches       
+        var unfinishedMatches = GetUnfinishedMatchesIds(leagueId);
+        bool allMatchesRemoved = unfinishedMatches.All(matchId => RemoveMatch(matchId));
 
-        return allTeamsDeassigned && LeagueRepository.Remove(leagueId);
+        return allTeamsDeassigned && allMatchesRemoved && LeagueRepository.Remove(leagueId);
     }
 
     private bool RemoveStadium(Guid stadiumId) =>
@@ -182,6 +190,12 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     public bool GetPlayerFromMatch(Guid playerId) =>
         PlayerMatchAssignmentRepository.Find(playerId) is not null;
+        
+    private bool RemoveMatchStatistics(Guid matchStatisticsId) =>
+        MatchStatisticsRepository.Remove(matchStatisticsId);
+
+    private bool RemoveGoal(Guid goalId) =>
+        GoalRepository.Remove(goalId);
 
     public CRUDResult Remove(Guid id, Type type) => type.Name switch
     {
@@ -191,10 +205,11 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "PlayerAssignmentInfo" => DeassignPlayer(id),
         "League" => RemoveLeague(id),
         "TeamAssignmentInfo" => DeassignTeam(id),
-        "Stadium" => RemoveTeam(id),
         "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
         "PlayerMatchAssignment" => DeAssignPlayerFromMatch(id),
+        "Goal" => RemoveGoal(id),
+        "MatchStatistics" => RemoveMatchStatistics(id),
         _ => false
     } ? Commit() : RequestReload();
 
@@ -214,8 +229,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "League" => LeagueRepository.AddOrUpdate(entity as League),
         "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
+        "Goal" => GoalRepository.AddOrUpdate(entity as Goal),
         "Match" => MatchRepository.AddOrUpdate(entity as Match),
         "PlayerMatchAssignment" => PlayerMatchAssignmentRepository.AddOrUpdate(entity as PlayerMatchAssignment),
+        "MatchStatistics" => MatchStatisticsRepository.AddOrUpdate(entity as MatchStatistics),
         _ => false
     };
 

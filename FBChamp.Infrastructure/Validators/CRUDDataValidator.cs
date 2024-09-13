@@ -23,6 +23,8 @@ public class CRUDDataValidator : IValidateEntity
         _validators.Add(new MatchValidator(_unitOfWork));
         _validators.Add(new CoachAssignmentInfoValidator(_unitOfWork));
         _validators.Add(new PlayerMatchAssignmentValidator(_unitOfWork));
+        _validators.Add(new MatchStatisticsValidator(_unitOfWork));
+        _validators.Add(new GoalValidator(_unitOfWork));
     }
 
     public Type GetValidatedType() => typeof(CRUDDataValidator);

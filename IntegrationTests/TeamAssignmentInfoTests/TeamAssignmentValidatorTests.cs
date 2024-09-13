@@ -92,6 +92,25 @@ public class TeamAssignmentValidatorTests
         Assert.AreEqual(CRUDResult.Success, result);
     }
 
+    [TestMethod]
+    public void DeassignTeamInLeague_ShouldDeassignAllPlayersCoachesNotFinishedMatches()
+    {
+        var teamToDelete = TeamAssignmentInfoOne!;
+
+        _unitOfWork!.Remove(teamToDelete.Id,typeof(TeamAssignmentInfo));
+
+        var playerAssignetToMatch = _unitOfWork.GetPlayerMatchAssignmentModel(PlayerMatchAssignment1!.Id);
+
+        Assert.IsNull(playerAssignetToMatch);
+
+        var coaches = _unitOfWork!.GetCoachModel(Coach1!.Id);
+        var teams = _unitOfWork!.GetTeamModel(Team1!.Id);
+
+        Assert.IsNotNull(teams.Coach);
+        Assert.AreEqual(teams.Coach.Coach.Id, coaches.Coach.Id);
+        Assert.AreEqual(coaches.CurrentTeam, "TeamOne");
+    }
+
     [TestCleanup]
     public void Dispose()
     {
