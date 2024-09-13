@@ -173,10 +173,11 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private bool RemoveMatch(Guid matchId) =>
         MatchRepository.Remove(matchId);
 
-    public bool AssignPlayerToMatch(Guid playerId, Guid matchId, DateTime startTime, DateTime finishTime, string role) =>
-        PlayerMatchAssignmentRepository.AddOrUpdate(new PlayerMatchAssignment(playerId, matchId, startTime, finishTime, role));
+    public bool AssignPlayerToMatch(PlayerMatchAssignment playerMatchAssignment) =>
+        PlayerMatchAssignmentRepository.AddOrUpdate(playerMatchAssignment);
 
     public bool DeAssignPlayerFromMatch(Guid playerId) =>
+        PlayerMatchAssignmentRepository.Find(playerId) is not null &&
         PlayerMatchAssignmentRepository.Remove(playerId);
 
     public bool GetPlayerFromMatch(Guid playerId) =>
@@ -193,6 +194,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "Stadium" => RemoveTeam(id),
         "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
+        "PlayerMatchAssignment" => DeAssignPlayerFromMatch(id),
         _ => false
     } ? Commit() : RequestReload();
 
@@ -213,6 +215,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
         "Match" => MatchRepository.AddOrUpdate(entity as Match),
+        "PlayerMatchAssignment" => PlayerMatchAssignmentRepository.AddOrUpdate(entity as PlayerMatchAssignment),
         _ => false
     };
 
@@ -238,6 +241,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
             nameof(Match) => Exists(id, MatchRepository),
             nameof(League) => Exists(id, LeagueRepository),
             nameof(Stadium) => Exists(id, StadiumRepository),
+            nameof(PlayerMatchAssignment) => Exists(id, PlayerMatchAssignmentRepository),
             _ => false
         };
 
