@@ -1,0 +1,23 @@
+﻿using System.Drawing;
+using System.Drawing.Imaging;
+using Color = System.Drawing.Color;
+
+namespace FBChamp.DataGenerators.Helpers;
+
+internal class PhotoGenerator
+{
+    public byte[] Generate(int width, int height)
+    {
+#pragma warning disable CA1416
+        using var bitmap = new Bitmap(width, height);
+        using var graphics = Graphics.FromImage(bitmap);
+
+        graphics.Clear(Color.White);
+
+        using var stream = new MemoryStream();
+        bitmap.Save(stream, ImageFormat.Jpeg);
+
+        return stream.ToArray();
+#pragma warning restore CA1416
+    }
+}

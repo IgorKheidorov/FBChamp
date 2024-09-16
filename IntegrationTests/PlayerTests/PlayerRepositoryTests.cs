@@ -1,5 +1,7 @@
 using System.Globalization;
 using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using FBChamp.Infrastructure;
 using IntegrationTests.Helpers;
 
@@ -7,8 +9,21 @@ namespace IntegrationTests.PlayerTests;
 
 [TestClass]
 public class PlayerRepositoryTests
-
 {
+    private readonly IUnitOfWork _unitOfWork = new UnitOfWork();
+
+    [TestInitialize]
+    public void Initialize()
+    {
+        Infrastructure.CleanUp();
+
+        var dataGenerator = new DataGenerator(_unitOfWork);
+        dataGenerator.GeneratePlayer(new Dictionary<string, string>
+        {
+            { "Count", "2" }
+        });
+    }
+
     [TestMethod]
     public void AddPlayers()
     {

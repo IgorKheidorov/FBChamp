@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FBChamp.DataGenerators\FBChamp.DataGenerators.csproj" />
     <ProjectReference Include="..\FBChamp.Infrastructure\FBChamp.Infrastructure.csproj" />
   </ItemGroup>
 
