@@ -10,7 +10,6 @@ public class StadiumModel : EntityModel
 
     public StadiumModel(Stadium stadium, string description = null)
     {
-        ArgumentNullException.ThrowIfNull(stadium);
         Stadium = stadium;
         Description = description;
     }

@@ -16,7 +16,6 @@ public class CoachModel: EntityModel
 
     public CoachModel(Coach coach, string currentTeam, string role)
     {
-        ArgumentNullException.ThrowIfNull(coach);
         Coach = coach;
         Role = role ?? "No role";
         CurrentTeam = currentTeam ?? "No assignment";

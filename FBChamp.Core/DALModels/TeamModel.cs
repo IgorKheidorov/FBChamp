@@ -16,7 +16,6 @@ public class TeamModel: EntityModel
 
     public TeamModel(Team team, CoachModel coach, IEnumerable<PlayerModel> players)
     {
-        ArgumentNullException.ThrowIfNull(team);
         Team = team;
         Coach = coach;
         Players = players ?? Enumerable.Empty<PlayerModel>();
