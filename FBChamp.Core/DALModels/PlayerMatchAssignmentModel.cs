@@ -16,7 +16,6 @@ public class PlayerMatchAssignmentModel : EntityModel
 
     public PlayerMatchAssignmentModel(PlayerMatchAssignment playerMatchAssignment)
     {
-        ArgumentNullException.ThrowIfNull(playerMatchAssignment);
         Role = playerMatchAssignment.Role;
     }
 

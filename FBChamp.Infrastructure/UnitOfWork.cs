@@ -2,6 +2,7 @@
 using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.Entities.Soccer.Enums;
 using FBChamp.Core.UnitOfWork;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 
 namespace FBChamp.Infrastructure;
@@ -84,12 +85,60 @@ public sealed partial class UnitOfWork : IUnitOfWork
        .ToList()
        .AsReadOnly();
 
-    // To Do:
-    // We have to delete
-    // * not finished matches with participating of this team
-    // * deassign all players and all coaches
-    public bool DeassignTeam(Guid teamId) => 
-         TeamAssignmentInfoRepository.Remove(teamId);
+    public bool DessingPlayerForMatch(Guid playerId) =>
+           PlayerMatchAssignmentRepository.Remove(playerId);
+
+    private bool DeassignPlayersFromMatch(Guid matchId)
+    {
+        var assignedPlayers = GetAssignedPlayerIdsForMatch(matchId);
+
+        foreach(var playerId in assignedPlayers)
+        {
+            if(!DessingPlayerForMatch(playerId))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool DeassignCoachesFromTeams(Guid hostTeamId, Guid guestTeamId)
+    {
+        var assignedCoachesHostTeam = GetAssignedCoachIds(hostTeamId);
+        var assignedCoachesGuestTeam = GetAssignedCoachIds(guestTeamId);
+
+        var coachDeassignResultHostTeam = assignedCoachesHostTeam.IsNullOrEmpty() ? true :
+           assignedCoachesHostTeam.Select(x => DeassignCoach(x)).Where(x => x == false).Count() == 0;
+
+        var coachDeassignResultGuestTeam = assignedCoachesGuestTeam.IsNullOrEmpty() ? true :
+             assignedCoachesGuestTeam.Select(x => DeassignCoach(x)).Where(x => x == false).Count() == 0;
+
+        return coachDeassignResultHostTeam && coachDeassignResultGuestTeam;
+    }
+
+    public bool DeassignTeam(Guid teamId)
+    {
+        var matches = MatchRepository.Filter(m => m.GuestTeamId == teamId || m.HostTeamId == teamId).ToList();
+
+        if(matches is null || !matches.Any())
+        {
+            return TeamAssignmentInfoRepository.Remove(teamId);
+        }
+
+        foreach(var match in matches)
+        {
+            DeassignPlayersFromMatch(match.Id);
+            DeassignCoachesFromTeams(match.HostTeamId, match.GuestTeamId);
+
+            if(match.Status != MatchStatus.Finished)
+            {
+                MatchRepository.Remove(match.Id);
+            }
+        }
+
+        return TeamAssignmentInfoRepository.Remove(teamId);
+    }
 
     public TeamModel GetTeamModel(Guid id) =>
         new TeamModel(TeamRepository.Find(x => x.Id == id), GetAssignedCoachModel(id), GetAssignedPlayerModels(id));
@@ -225,4 +274,27 @@ public sealed partial class UnitOfWork : IUnitOfWork
     #endregion
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
+
+    #region Goal
+
+    public GoalModel GetGoalModel(Guid id)
+    {
+        var goal = GoalRepository.Find(x => x.Id == id);
+
+        if (goal is null)
+        {
+            return null;
+        }
+        
+        var match =  MatchRepository.Find(x => x.Id == goal.MatchId);
+        var goalAuthor = PlayerRepository.Find(x => x.Id == goal.GoalAuthorId);
+        var assistants = PlayerRepository.All().Where(x => goal.AssistantIds.Contains(x.Id)).ToList();
+
+        return new GoalModel(goal, match, goalAuthor, assistants);
+    }
+
+    public ReadOnlyCollection<GoalModel> GetAllGoalModels() =>
+        GoalRepository.All().ToList().Select(goal => GetGoalModel(goal.Id)).ToList().AsReadOnly();
+
+    #endregion
 }

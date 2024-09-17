@@ -28,6 +28,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private TeamAssignmentInfoRepository _teamAssignmentInfoRepository;
     private LocationRepository _locationRepository;
     private StadiumRepository _stadiumRepository;
+    private GoalRepository _goalRepository;
     private MatchRepository _matchRepository;
     private MatchStatisticsRepository _matchStatisticsRepository;
     private PlayerMatchAssignmentRepository _playerMatchAssignmentRepository;
@@ -71,6 +72,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private IPlayerMatchAssignmentRepository PlayerMatchAssignmentRepository =>
         _playerMatchAssignmentRepository ??=new PlayerMatchAssignmentRepository();
 
+    private IGoalRepository GoalRepository =>
+        _goalRepository ??= new GoalRepository();
+
     public UnitOfWork()
     {
         _crudDataValidator = new CRUDDataValidator(this);
@@ -87,6 +91,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _leagueRepository = null;
         _teamAssignmentInfoRepository = null;
         _stadiumRepository = null;
+        _goalRepository = null;
         _matchRepository = null;
         _matchStatisticsRepository = null;
         _playerPositionRepository = null;
@@ -106,6 +111,8 @@ public sealed partial class UnitOfWork : IUnitOfWork
             LeagueRepository.Commit();
             TeamAssignmentInfoRepository.Commit();
             StadiumRepository.Commit();
+            GoalRepository.Commit();
+
             MatchRepository.Commit();
             MatchStatisticsRepository.Commit();
             PlayerMatchAssignmentRepository.Commit();
@@ -176,6 +183,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private bool RemoveMatchStatistics(Guid matchStatisticsId) =>
         MatchStatisticsRepository.Remove(matchStatisticsId);
 
+    private bool RemoveGoal(Guid goalId) =>
+        GoalRepository.Remove(goalId);
+
     public CRUDResult Remove(Guid id, Type type) => type.Name switch
     {
         "Player" => RemovePlayer(id),
@@ -184,9 +194,9 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "PlayerAssignmentInfo" => DeassignPlayer(id),
         "League" => RemoveLeague(id),
         "TeamAssignmentInfo" => DeassignTeam(id),
-        "Stadium" => RemoveTeam(id),
         "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
+        "Goal" => RemoveGoal(id),
         "MatchStatistics" => RemoveMatchStatistics(id),
         _ => false
     } ? Commit() : RequestReload();
@@ -207,6 +217,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "League" => LeagueRepository.AddOrUpdate(entity as League),
         "TeamAssignmentInfo" => TeamAssignmentInfoRepository.AddOrUpdate(entity as TeamAssignmentInfo),
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
+        "Goal" => GoalRepository.AddOrUpdate(entity as Goal),
         "Match" => MatchRepository.AddOrUpdate(entity as Match),
         "MatchStatistics" => MatchStatisticsRepository.AddOrUpdate(entity as MatchStatistics),
         _ => false

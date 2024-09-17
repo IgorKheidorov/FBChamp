@@ -14,10 +14,15 @@ public static class TestDataFactory
     public static TeamAssignmentInfo? TeamAssignmentInfoOne { get; private set; }
     public static TeamAssignmentInfo? TeamAssignmentInfoTwo { get; private set; }
 
-    public static Match? Match1 {  get; private set; }
+    public static Match? Match1 { get; private set; }
     public static Match? Match2 { get; private set; }
-    public static Stadium? Stadium {  get; private set; }
-    public static MatchStatistics? MatchStatistics1 {  get; private set; }
+    public static Stadium? Stadium { get; private set; }
+    public static MatchStatistics? MatchStatistics1 { get; private set; }
+    public static Coach? Coach1 { get; private set; }
+    public static Player? Player1 {  get; private set; }
+   
+    public static CoachAssignmentInfo? CoachAssignmentInfo1 {  get; private set; }
+    public static PlayerMatchAssignment? PlayerMatchAssignment1 { get; private set; }
 
 
     public static void SeedEntity(IUnitOfWork _unitOfWork)
@@ -44,6 +49,12 @@ public static class TestDataFactory
 
         MatchStatistics1 = new MatchStatistics(Guid.NewGuid(), Match1.Id, 10);
 
+        Coach1 = new Coach(Guid.NewGuid(), "Coach1", new DateTime(1987, 2, 10), photo);
+        CoachAssignmentInfo1 = new CoachAssignmentInfo(Coach1.Id, Team1.Id, "Trainer");
+
+        Player1 = new Player(Guid.NewGuid(), "Player1", new DateTime(1999, 12, 15), 158, Guid.NewGuid(), photo);
+        PlayerMatchAssignment1 = new PlayerMatchAssignment(Player1.Id, Match1.Id, DateTime.Now, DateTime.Now.AddMinutes(45), "ST");
+
         _unitOfWork.Commit(League1);
         _unitOfWork.Commit(League2);
         _unitOfWork.Commit(Team1);
@@ -54,5 +65,9 @@ public static class TestDataFactory
         _unitOfWork.Commit(Match1);
         _unitOfWork.Commit(Match2);
         _unitOfWork.Commit(MatchStatistics1);
+        _unitOfWork.Commit(Coach1);
+        _unitOfWork.Commit(CoachAssignmentInfo1);
+        _unitOfWork.Commit(Player1);
+        _unitOfWork.Commit(PlayerMatchAssignment1);
     }
 }
