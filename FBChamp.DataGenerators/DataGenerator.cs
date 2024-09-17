@@ -15,7 +15,6 @@ public class DataGenerator : IDataGenerator
 
         // Add entity generators to the HashSet
         _generators.Add(new PlayerGenerator(_unitOfWork));
-        _generators.Add(new PlayerPositionGenerator());
     }
 
     /// <summary>
@@ -30,19 +29,9 @@ public class DataGenerator : IDataGenerator
     /// </param>
     public void GeneratePlayer(Dictionary<string, string>? options)
     {
-        GeneratePlayerPosition(null);
+        // GeneratePlayerPosition(null);
 
         var entities = _generators.Single(x => x.GetType() == typeof(PlayerGenerator)).Generate(options);
-
-        foreach (var entity in entities)
-        {
-            _unitOfWork.Commit(entity);
-        }
-    }
-
-    public void GeneratePlayerPosition(Dictionary<string, string>? options)
-    {
-        var entities = _generators.Single(x => x.GetType() == typeof(PlayerPositionGenerator)).Generate(options);
 
         foreach (var entity in entities)
         {

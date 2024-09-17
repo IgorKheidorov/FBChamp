@@ -28,23 +28,32 @@ internal class PlayerGenerator(IUnitOfWork unitOfWork) : IEntityGenerator
     {
         if (options is null)
         {
-            return new List<Player> { GenerateEntity() };
+            return new List<Player> { GeneratePlayer() };
         }
 
         var players = new List<Player>();
 
         foreach (var option in options)
         {
-            if (string.Equals(option.Key, "Count"))
+            switch (option.Key)
             {
-                for (var i = 0; i < int.Parse(option.Value); i++)
-                {
-                    players.Add(GenerateEntity());
-                    _playerCount++;
-                }
-            }
+                case "Count":
+                    if (int.TryParse(option.Value, out var count))
+                    {
+                        AddPlayersToList(int.Parse(option.Value), players);
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Invalid value for 'Count': {option.Value}");
+                    }
 
-            // Other options for generation can be handled here
+                    break;
+
+                // Other options for generation can be handled here
+
+                default:
+                    throw new ArgumentException($"Unknown option: {option.Key}");
+            }
         }
 
         return players;
@@ -58,16 +67,27 @@ internal class PlayerGenerator(IUnitOfWork unitOfWork) : IEntityGenerator
     ///     to the name. This helps avoid validation issues caused by duplicate names.
     /// </remarks>
     /// <returns>A newly created <see cref="Player" /> entity with random values.</returns>
-    private Player GenerateEntity()
+    private Player GeneratePlayer()
     {
         var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
         var photo = _photoGenerator.Generate(300, 500);
-
-        return new Player(Guid.NewGuid(),
+        var player = new Player(Guid.NewGuid(),
             $"Player{_playerCount}",
             new DateTime(2000, 1, 1),
             180,
             positionId,
             photo);
+
+        _playerCount++;
+
+        return player;
+    }
+
+    private void AddPlayersToList(int count, List<Player> players)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            players.Add(GeneratePlayer());
+        }
     }
 }
