@@ -18,7 +18,6 @@ public class PlayerModel : EntityModel
 
     public PlayerModel(Player player, string position, string currentTeam, string playingNumber)
     {
-        ArgumentNullException.ThrowIfNull(player);
         Player = player;
         Position = position ?? "No position";
         CurrentTeam = currentTeam ?? "No assignment";
