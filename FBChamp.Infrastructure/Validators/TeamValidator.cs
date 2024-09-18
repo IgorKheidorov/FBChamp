@@ -22,7 +22,8 @@ internal class TeamValidator : IValidateEntity
     private bool ValidateProperties(Team team) =>
         ValidateNameLength(team.Name) &&
         ValidatePhoto(team.Photo) &&
-        ValidateDescriptionLength(team.Description);
+        ValidateDescriptionLength(team.Description) &&
+        ValidateLocation(team.LocationId);
 
     private bool ValidateNameLength(string name) =>
     name.Length < DataRestrictions.NameLengthMax;
@@ -38,4 +39,7 @@ internal class TeamValidator : IValidateEntity
             DataRestrictions.PersonPhotoWidth,
             DataRestrictions.PersonPhotoHeight);
     }
+
+    private bool ValidateLocation(Guid teamId) =>
+        teamId != Guid.Empty;
 }
