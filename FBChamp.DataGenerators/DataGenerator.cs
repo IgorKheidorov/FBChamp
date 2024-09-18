@@ -15,6 +15,17 @@ public class DataGenerator : IDataGenerator
 
         // Add entity generators to the HashSet
         _generators.Add(new PlayerGenerator(_unitOfWork));
+        _generators.Add(new CoachGenerator());
+    }
+
+    public void GenerateCoach(Dictionary<string, string>? options)
+    {
+        var entities = _generators.Single(x => x.GetType() == typeof(CoachGenerator)).Generate(options);
+
+        foreach (var entity in entities)
+        {
+            _unitOfWork.Commit(entity);
+        }
     }
 
     /// <summary>
