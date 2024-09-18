@@ -1,4 +1,5 @@
-﻿using FBChamp.Core.UnitOfWork;
+﻿using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.UnitOfWork;
 using FBChamp.DataGenerators.EntityGenerators;
 using FBChamp.DataGenerators.Interfaces;
 
@@ -16,6 +17,7 @@ public class DataGenerator : IDataGenerator
         // Add entity generators to the HashSet
         _generators.Add(new PlayerGenerator(_unitOfWork));
         _generators.Add(new CoachGenerator());
+        _generators.Add(new LeagueGenerator());
     }
 
     public void GenerateCoach(Dictionary<string, string>? options)
@@ -25,6 +27,51 @@ public class DataGenerator : IDataGenerator
         foreach (var entity in entities)
         {
             _unitOfWork.Commit(entity);
+        }
+    }
+
+    /// <summary>
+    /// Generates leagues based on the provided options, commits them,
+    /// and assigns unassigned teams to the newly created leagues.
+    /// 
+    /// The number of teams assigned is based on the 'NumberOfTeams' property of the league.
+    /// Unassigned teams are retrieved and committed, followed by the creation of 
+    /// TeamAssignmentInfo entries to link teams to their respective leagues.
+    /// 
+    /// Note: The team generation logic is currently commented out and should be
+    ///       uncommented and integrated when the TeamGenerator is implemented.
+    /// </summary>
+    /// <param name="options">
+    ///    A dictionary of options that determine the number of leagues to generate (e.g., {"Count", "3"}).
+    /// </param>
+
+    public void GenerateLeague(Dictionary<string, string>? options)
+    {
+        var entities = _generators.Single(x => x.GetType() == typeof(LeagueGenerator)).Generate(options);
+
+        foreach(var entity in entities)
+        {
+            var league = entity as League;
+
+            if(league is not null)
+            {
+                _unitOfWork.Commit(league);
+
+                // NOTE: Uncomment and integrate when TeamGenerator is implemented
+                //   GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
+
+                var teams = _unitOfWork.GetUnassignedTeamModel();
+
+                foreach (var teamModel in teams)
+                {
+                    var team = teamModel.Team;
+
+                    _unitOfWork.Commit(team);
+
+                    var teamAssignment = new TeamAssignmentInfo(teamId: teamModel.Team.Id, leagueId: league.Id);
+                    _unitOfWork.Commit(teamAssignment);
+                }
+            }
         }
     }
 
