@@ -6,5 +6,7 @@ internal interface IDataGenerator
 
     void GenerateCoach(Dictionary<string, string>? options);
 
+    void GenerateTeam(Dictionary<string, string>? options);
+
     // Add additional entity generation methods here
 }
