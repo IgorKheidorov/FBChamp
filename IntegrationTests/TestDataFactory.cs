@@ -42,10 +42,10 @@ public static class TestDataFactory
         Stadium = new Stadium(Guid.NewGuid(), "Stadium Name", Guid.NewGuid());
 
         Match1 = new Match(Guid.NewGuid(), Stadium.Id, League1.Id,
-                          MatchStatus.InProgress, DateTime.UtcNow, Team1.Id, Team2.Id);
+                          MatchStatus.InProgress, Team1.Id, Team2.Id, DateTime.UtcNow);
 
         Match2 = new Match(Guid.NewGuid(), Stadium.Id, League1.Id,
-                           MatchStatus.InProgress, DateTime.Now.AddHours(2), Team2.Id, Team1.Id);
+                           MatchStatus.InProgress, Team2.Id, Team1.Id, DateTime.Now.AddHours(2));
 
         MatchStatistics1 = new MatchStatistics(Guid.NewGuid(), Match1.Id, 10);
 
