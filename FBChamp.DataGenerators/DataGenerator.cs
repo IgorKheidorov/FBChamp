@@ -19,6 +19,7 @@ public class DataGenerator : IDataGenerator
         _generators.Add(new CoachGenerator());
         _generators.Add(new LeagueGenerator());
         _generators.Add(new MatchGenerator());
+        _generators.Add(new GoalGenerator());
     }
 
     public void GenerateCoach(Dictionary<string, string>? options)
@@ -28,6 +29,49 @@ public class DataGenerator : IDataGenerator
         foreach (var entity in entities)
         {
             _unitOfWork.Commit(entity);
+        }
+    }
+
+    /// <summary>
+    /// Generates goals for matches using the provided options. 
+    /// The method first generates a match by calling the <see cref="GenerateMatch"/> method, 
+    /// then retrieves the match models. For each match, it assigns a goal to the first player as the author, 
+    /// the last player as the assistant, and assigns the scoring team based on the host team.
+    /// The generated goal is then committed to the database.
+    /// </summary>
+    /// <param name="options">
+    /// A dictionary of options used to configure the goal generation. Typically includes the count of goals to generate.
+    /// </param>
+    /// <remarks>
+    /// This method expects that matches, players, and player assignments are already generated.
+    /// </remarks>
+
+    public void GenerateGoal(Dictionary<string, string>? options)
+    {
+        var entities = _generators.Single(x => x.GetType() == typeof(GoalGenerator)).Generate(options);
+
+        foreach(var  entity in entities)
+        {
+            var goal = entity as Goal;
+
+            GenerateMatch(new Dictionary<string, string> { { "Count", "1" } });
+
+            var matches = _unitOfWork.GetAllMatchModels();
+
+            foreach(var matchModel in matches)
+            {
+                var match = matchModel.Match;
+
+                goal!.MatchId = match.Id;
+                goal.GoalAuthorId = matchModel.PlayerMatchAssignments.First().PlayerMatchAssignment.Id;
+                goal.AssistantIds = new List<Guid> { matchModel.PlayerMatchAssignments.Last().PlayerMatchAssignment.Id };
+                goal.ScoringTeamId = matchModel.HostTeam.Team.Id;
+
+                if(goal is not null)
+                {
+                    _unitOfWork.Commit(goal);
+                }
+            }
         }
     }
 
