@@ -77,17 +77,21 @@ public class DataGenerator : IDataGenerator
     }
 
     /// <summary>
-    /// Generates a new match or set of matches based on the provided options.
+    /// Generates a new match or set of matches based on the provided options. 
     /// The method first generates leagues using the <see cref="GenerateLeague"/> method 
     /// and retrieves the league models. For each league, it assigns the first and last 
-    /// teams as the host and guest teams for the match. The generated match is then committed.
+    /// teams as the host and guest teams for the match, and commits the generated match. 
+    /// 
+    /// After the match generation, the method generates a set of players using the <see cref="GeneratePlayer"/> method 
+    /// and assigns 12 players to the match, each with a specific role (e.g., Goalkeeper, Defender, Midfielder, Striker). 
+    /// Player roles are assigned in a round-robin fashion from a predefined list of roles, 
+    /// and the player assignments are then committed.
     /// </summary>
     /// <param name="options">
     /// A dictionary of options to configure the match generation. Typically includes the count of matches to generate.
     /// </param>
     /// <remarks>
     /// This method expects that leagues and teams are generated first, and that there are enough teams in each league 
-    /// to create matches. The league's teams are used to assign host and guest team IDs to the match.
     /// </remarks>
 
     public void GenerateMatch(Dictionary<string, string>? options)
@@ -114,6 +118,37 @@ public class DataGenerator : IDataGenerator
                 if(match is not null)
                 {
                     _unitOfWork.Commit(match);
+                }
+
+                GeneratePlayer(new Dictionary<string, string> { { "Count", "12" } });
+
+                var players = _unitOfWork.GetUnassignedPlayerModels().Take(12);
+
+                var roles = new List<string>
+                {
+                    "Goalkeeper", "Defender", "Defender", "Defender",
+                    "Defender", "Midfielder", "Midfielder", "Midfielder",
+                    "Midfielder", "Striker", "Striker", "Striker"
+                };
+
+                int index = 0;
+
+                foreach(var playerModel in players)
+                {
+                    var player = playerModel.Player;
+
+                    var role = roles[index % roles.Count];
+
+                    var playerAssignment = new PlayerMatchAssignment(
+                        playerId: player.Id,
+                        matchId: match!.Id,
+                        startTime: new DateTime(2024, 09, 19, 16, 30, 00),
+                        finishTime: new DateTime(2024, 9, 19, 18, 00, 00),
+                        role: role);
+
+                    _unitOfWork.Commit(playerAssignment);
+
+                    index++;
                 }
             }
         }
