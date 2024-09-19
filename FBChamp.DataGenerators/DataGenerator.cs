@@ -120,14 +120,14 @@ public class DataGenerator : IDataGenerator
                     _unitOfWork.Commit(match);
                 }
 
-                GeneratePlayer(new Dictionary<string, string> { { "Count", "12" } });
+                GeneratePlayer(new Dictionary<string, string> { { "Count", "11" } });
 
-                var players = _unitOfWork.GetUnassignedPlayerModels().Take(12);
+                var players = _unitOfWork.GetUnassignedPlayerModels().Take(11);
 
                 var roles = new List<string>
                 {
                     "Goalkeeper", "Defender", "Defender", "Defender",
-                    "Defender", "Midfielder", "Midfielder", "Midfielder",
+                    "Defender", "Midfielder", "Midfielder",
                     "Midfielder", "Striker", "Striker", "Striker"
                 };
 
