@@ -19,7 +19,7 @@ public class PlayerMatchAssignment : Entity<Guid>
     {
         Id = playerId;
         MatchId = matchId;
-        StartTime = startTime;
+        StartTime = startTime == default ? DateTime.Now : startTime;
         FinishTime = finishTime;
         Role = role;
     }
