@@ -184,9 +184,18 @@ public sealed partial class UnitOfWork : IUnitOfWork
     public bool AssignPlayerToMatch(PlayerMatchAssignment playerMatchAssignment) =>
         PlayerMatchAssignmentRepository.AddOrUpdate(playerMatchAssignment);
 
-    public bool DeAssignPlayerFromMatch(Guid playerId) =>
-        PlayerMatchAssignmentRepository.Find(playerId) is not null &&
-        PlayerMatchAssignmentRepository.Remove(playerId);
+    public bool DeAssignPlayerFromMatch(Guid playerId, DateTime dateTime = default)
+    {
+        var playerMatchAssignment = PlayerMatchAssignmentRepository.Find(playerId);
+
+        if (playerMatchAssignment == null)
+        {
+            return false;
+        }
+
+        playerMatchAssignment.FinishTime = dateTime == default ? DateTime.Now : dateTime;
+        return PlayerMatchAssignmentRepository.Remove(playerId);
+    }
 
     public bool GetPlayerFromMatch(Guid playerId) =>
         PlayerMatchAssignmentRepository.Find(playerId) is not null;
