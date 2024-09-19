@@ -18,6 +18,7 @@ public class DataGenerator : IDataGenerator
         _generators.Add(new PlayerGenerator(_unitOfWork));
         _generators.Add(new CoachGenerator());
         _generators.Add(new LeagueGenerator());
+        _generators.Add(new MatchGenerator());
     }
 
     public void GenerateCoach(Dictionary<string, string>? options)
@@ -70,6 +71,49 @@ public class DataGenerator : IDataGenerator
 
                     var teamAssignment = new TeamAssignmentInfo(teamId: teamModel.Team.Id, leagueId: league.Id);
                     _unitOfWork.Commit(teamAssignment);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Generates a new match or set of matches based on the provided options.
+    /// The method first generates leagues using the <see cref="GenerateLeague"/> method 
+    /// and retrieves the league models. For each league, it assigns the first and last 
+    /// teams as the host and guest teams for the match. The generated match is then committed.
+    /// </summary>
+    /// <param name="options">
+    /// A dictionary of options to configure the match generation. Typically includes the count of matches to generate.
+    /// </param>
+    /// <remarks>
+    /// This method expects that leagues and teams are generated first, and that there are enough teams in each league 
+    /// to create matches. The league's teams are used to assign host and guest team IDs to the match.
+    /// </remarks>
+
+    public void GenerateMatch(Dictionary<string, string>? options)
+    {
+        var entities = _generators.Single(x => x.GetType() == typeof(MatchGenerator)).Generate(options);
+
+        foreach(var entity in entities)
+        {
+            var match = entity as Match;
+            var numberOfLeagues = 1;
+
+            GenerateLeague(new Dictionary<string, string> { { "Count", numberOfLeagues.ToString() } });
+
+            var leagues = _unitOfWork.GetAllLeagueModels();
+
+            foreach(var leagueModel  in leagues)
+            {
+                var league = leagueModel.League;
+
+                match!.LeagueId = league.Id;
+                match.HostTeamId = leagueModel.Teams.First().Team.Id;
+                match.GuestTeamId = leagueModel.Teams.Last().Team.Id;
+
+                if(match is not null)
+                {
+                    _unitOfWork.Commit(match);
                 }
             }
         }
