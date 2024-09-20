@@ -1,7 +1,5 @@
-﻿using System.Globalization;
-using FBChamp.Core.Entities.Soccer;
-using FBChamp.Core.UnitOfWork;
-using FBChamp.Infrastructure;
+﻿using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using IntegrationTests.Helpers;
 
 namespace IntegrationTests.PlayerTests;
@@ -9,31 +7,35 @@ namespace IntegrationTests.PlayerTests;
 [TestClass]
 public class PlayerValidatorTests
 {
+    private IUnitOfWork? _unitOfWork;
+    private DataGenerator? _dataGenerator;
+    private PhotoGenerator? _photoGenerator;
+
     [TestInitialize]
     public void Initialize()
     {
         Infrastructure.CleanUp();
+
+        _dataGenerator = new DataGenerator(_unitOfWork!);
+        _photoGenerator = new PhotoGenerator();
+
+        _dataGenerator.GeneratePlayer(new Dictionary<string, string>
+        {
+            {"Count", "1" }
+        });
     }
 
     [TestMethod]
     [DataRow(257)]
     [DataRow(300)]
-    public void PlayerInvalidNameLengthTest(int nameLength)
+    public void AddPlayer_ShouldReturnEntityValidationFailed_WhenNameIsInvalid(int nameLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            new string('a', nameLength),
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo);
-
-        var result = unitOfWork.Commit(player);
+        player.Player.FullName = new string('a', nameLength);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
@@ -42,22 +44,14 @@ public class PlayerValidatorTests
     [DataRow(255)]
     [DataRow(100)]
     [DataRow(20)]
-    public void PlayerValidNameLengthTest(int nameLength)
+    public void AddPlayer_ShouldReturnSuccess_WhenPlayerNameIsValid(int nameLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            new string('a', nameLength),
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo);
-
-        var result = unitOfWork.Commit(player);
+        player.Player.FullName = new string('a', nameLength);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.Success, result);
     }
@@ -65,23 +59,17 @@ public class PlayerValidatorTests
     [TestMethod]
     [DataRow(1950, 2, 1)]
     [DataRow(2015, 2, 1)]
-    public void PlayerInvalidAgeTest(int year, int month, int day)
+    public void AddPlayer_ShouldReturnEntityValidationFailed_WhenAgeIsInvalid(int year, int month, int day)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
+
         var birthDate = new DateTime(year, month, day);
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            birthDate,
-            180,
-            positionId,
-            photo);
+        player.Player.BirthDate = birthDate;
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
@@ -90,23 +78,17 @@ public class PlayerValidatorTests
     [DataRow(2000, 2, 1)]
     [DataRow(1985, 2, 1)]
     [DataRow(2008, 2, 1)]
-    public void PlayerValidAgeTest(int year, int month, int day)
+    public void AddPlayer_ShouldReturnSuccess_WhenAgeIsValid(int year, int month, int day)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
-        var birthDay = new DateTime(year, month, day);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            birthDay,
-            180,
-            positionId,
-            photo);
+        var birthDate = new DateTime(year, month, day);
 
-        var result = unitOfWork.Commit(player);
+        player.Player.BirthDate = birthDate;
+
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.Success, result);
     }
@@ -116,22 +98,15 @@ public class PlayerValidatorTests
     [DataRow(350)]
     [DataRow(115)]
     [DataRow(149)]
-    public void PlayerInvalidHeightTest(int height)
+    public void AddPlayer_ShouldReturnEntityValidationFailed_WhenHeightIsInvalid(int height)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            height,
-            positionId,
-            photo);
+        player.Player.Height = height;
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
@@ -139,22 +114,15 @@ public class PlayerValidatorTests
     [TestMethod]
     [DataRow(170)]
     [DataRow(209)]
-    public void PlayerValidHeightTest(int height)
+    public void AddPlayer_ShouldReturnSuccess_WhenHeightIsValid(int height)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            height,
-            positionId,
-            photo);
+        player.Player.Height = height;
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.Success, result);
     }
@@ -162,23 +130,15 @@ public class PlayerValidatorTests
     [TestMethod]
     [DataRow(257)]
     [DataRow(400)]
-    public void PlayerInvalidDescriptionLengthTest(int descriptionLength)
+    public void AddPlayer_ShouldReturnEntityValidationFailed_WhenDescriptionLengthIsInvalid(int descriptionLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+         var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo,
-            new string('a', descriptionLength));
+        player.Player.Description = new string('a',descriptionLength);
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
@@ -187,66 +147,45 @@ public class PlayerValidatorTests
     [DataRow(255)]
     [DataRow(100)]
     [DataRow(20)]
-    public void PlayerValidDescriptionLengthTest(int descriptionLength)
+    public void AddPlayer_ShouldReturnSuccess_WhenDescriptionLengthIsValid(int descriptionLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo,
-            new string('a', descriptionLength));
+        player.Player.Description = new string('a', descriptionLength);
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.Success, result);
     }
 
     [TestMethod]
-    public void PlayerInvalidPositionTest()
+    public void AddPlayer_ShouldReturnEntityValidationFailed_WhenPositionIsInvalid()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
 
-        var positionId = Guid.Empty;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo);
+        player.Player.PositionId = Guid.Empty;
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
 
     [TestMethod]
     [DataRow]
-    public void PlayerValidPositionTest()
+    public void AddPlayer_ShouldReturnSuccess_WhenPositionIdIsValid()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
+        var positionId = _unitOfWork.GetAllPlayerPositions().First().Id;
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo);
+        player.Player.PositionId = positionId;
 
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.Success, result);
     }
@@ -255,43 +194,29 @@ public class PlayerValidatorTests
     [DataRow(100, 100)]
     [DataRow(100, 500)]
     [DataRow(300, 100)]
-    public void PlayerInvalidPhotoSizeTest(int width, int height)
+    public void AddPlayer_ShouldReturnEntityValidationFailed_WhenPhotoSizeIsInvalid(int width, int height)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
+        var photoSize = _photoGenerator!.Generate(width, height);
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(width, height);
+        var player = players.First();
+        player.Player.Photo = photoSize;
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1),
-            180,
-            positionId,
-            photo);
-
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
 
     [TestMethod]
-    public void PlayerValidPhotoSizeTest()
+    public void AddPlayer_ShouldReturnSuccess_WhenPhotoSizeIsValid()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var players = _unitOfWork!.GetAllPlayerModels();
+        var photoSize = _photoGenerator!.Generate(300, 500);
 
-        var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        var photo = photoGenerator.Generate(300, 500);
+        var player = players.First();
+        player.Player.Photo = photoSize;
 
-        var player = new Player(Guid.NewGuid(),
-            "Name",
-            new DateTime(2000, 2, 1, new GregorianCalendar()),
-            180,
-            positionId,
-            photo);
-
-        var result = unitOfWork.Commit(player);
+        var result = _unitOfWork.Commit(player.Player);
 
         Assert.AreEqual(CRUDResult.Success, result);
     }
