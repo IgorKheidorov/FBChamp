@@ -17,6 +17,7 @@ public class DataGenerator : IDataGenerator
         // Add entity generators to the HashSet
         _generators.Add(new PlayerGenerator(_unitOfWork));
         _generators.Add(new CoachGenerator());
+        _generators.Add(new TeamGenerator(_unitOfWork));
         _generators.Add(new LeagueGenerator());
         _generators.Add(new MatchGenerator());
         _generators.Add(new GoalGenerator());
@@ -218,6 +219,47 @@ public class DataGenerator : IDataGenerator
         foreach (var entity in entities)
         {
             _unitOfWork.Commit(entity);
+        }
+    }
+
+    public void GenerateTeam(Dictionary<string, string>? options)
+    {
+        var entities = _generators.Single(x => x.GetType() == typeof(TeamGenerator)).Generate(options);
+
+        foreach (var entity in entities)
+        {
+            _unitOfWork.Commit(entity);
+
+            var team = entity as Team;
+
+            GenerateCoach(null);
+
+            var coaches = _unitOfWork.GetAllCoachModels();
+
+            foreach (var coachModel in coaches)
+            {
+                var coach = coachModel.Coach;
+                _unitOfWork.Commit(coach);
+
+                var coachAssignment = new CoachAssignmentInfo(coach.Id, team!.Id, "Role");
+                _unitOfWork.Commit(coachAssignment);
+            }
+
+            GeneratePlayer(new Dictionary<string, string> { { "Count", "11" } });
+
+            var players = _unitOfWork.GetUnassignedPlayerModels();
+            uint playingNumber = 1;
+
+            foreach (var playerModel in players)
+            {
+                var player = playerModel.Player;
+
+                _unitOfWork.Commit(player);
+
+                var playerAssignment = new PlayerAssignmentInfo(player.Id, team!.Id, playingNumber);
+                playingNumber++;
+                _unitOfWork.Commit(playerAssignment);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ internal interface IDataGenerator
 
     void GenerateCoach(Dictionary<string, string>? options);
 
+    void GenerateTeam(Dictionary<string, string>? options);
     void GenerateLeague(Dictionary<string, string>? options); 
 
     void GenerateMatch(Dictionary<string, string>? options);
