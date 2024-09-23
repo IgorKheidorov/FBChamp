@@ -49,7 +49,7 @@ internal class TeamGenerator(IUnitOfWork unitOfWork) : IEntityGenerator
     private Team GenerateTeam()
     {
         var locationId = Guid.NewGuid();
-        var stadiumId = unitOfWork.GetAllStadiumModels().First().Stadium.Id;
+        var stadiumId = Guid.NewGuid();
         var photo = _photoGenerator.Generate(300, 500);
 
         var team = new Team(Guid.NewGuid(),

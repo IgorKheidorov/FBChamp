@@ -55,8 +55,7 @@ public class DataGenerator : IDataGenerator
         {
             var goal = entity as Goal;
 
-            // Note: The GenerateMatch method should be uncommented once the GenerateMatch implementation is added to the Development branch
-            // GenerateMatch(new Dictionary<string, string> { { "Count", "1" } });
+             GenerateMatch(new Dictionary<string, string> { { "Count", "1" } });
 
             var matches = _unitOfWork.GetAllMatchModels();
 
@@ -104,8 +103,7 @@ public class DataGenerator : IDataGenerator
             {
                 _unitOfWork.Commit(league);
 
-                // NOTE: Uncomment and integrate when TeamGenerator is implemented
-                //   GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
+                   GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
 
                 var teams = _unitOfWork.GetUnassignedTeamModel();
 
@@ -228,13 +226,26 @@ public class DataGenerator : IDataGenerator
 
         foreach (var entity in entities)
         {
-            _unitOfWork.Commit(entity);
+            // Take Id from the Location.json, becouse it's hard coded
+            var locationId = Guid.Parse("3b45cb09-8cc4-4f5f-bbb1-4a0622ff0a1a");
+
+            var stadium = new Stadium(id:Guid.NewGuid(),"StadiumOne",locationId:locationId);
+
+            _unitOfWork.Commit(stadium);
 
             var team = entity as Team;
 
-            GenerateCoach(null);
+            team!.StadiumId = stadium.Id;
+            team.LocationId = locationId;
 
-            var coaches = _unitOfWork.GetAllCoachModels();
+            if(team is not null)
+            {
+                _unitOfWork.Commit(team);
+            }
+
+            GenerateCoach(new Dictionary<string, string> { { "Count", "1" } });
+
+            var coaches = _unitOfWork.GetUnassignedCoachModels();
 
             foreach (var coachModel in coaches)
             {
