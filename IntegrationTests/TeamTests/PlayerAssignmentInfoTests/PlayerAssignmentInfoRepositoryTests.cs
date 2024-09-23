@@ -2,7 +2,7 @@
 using FBChamp.Infrastructure;
 using IntegrationTests.Helpers;
 
-namespace IntegrationTests.PlayerTests.AssignmentInfoTests;
+namespace IntegrationTests.TeamTests.AssignmentInfoTests;
 
 [TestClass]
 public class PlayerAssignmentInfoRepositoryTests
