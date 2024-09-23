@@ -226,7 +226,7 @@ public class DataGenerator : IDataGenerator
 
         foreach (var entity in entities)
         {
-            // Take Id from the Location.json, becouse it's hard coded
+            // Get LocationId from Location.json instead of using a hardcoded value
             var locationId = Guid.Parse("3b45cb09-8cc4-4f5f-bbb1-4a0622ff0a1a");
 
             var stadium = new Stadium(id:Guid.NewGuid(),"StadiumOne",locationId:locationId);
