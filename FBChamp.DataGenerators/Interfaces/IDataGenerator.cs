@@ -8,6 +8,7 @@ internal interface IDataGenerator
 
     void GenerateLeague(Dictionary<string, string>? options); 
 
+    void GenerateMatch(Dictionary<string, string>? options);
     void GenerateGoal(Dictionary<string, string>? options);
 
     // Add additional entity generation methods here
