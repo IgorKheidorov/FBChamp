@@ -1,4 +1,6 @@
 ﻿using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using FBChamp.Infrastructure;
 using IntegrationTests.Helpers;
 
@@ -7,16 +9,26 @@ namespace IntegrationTests.TeamTests;
 [TestClass]
 public class TeamRepositoryTests
 {
+    private IUnitOfWork? _unitOfWork;
+    private DataGenerator? _dataGenerator;
+
     [TestInitialize]
     public void Initialize()
     {
         Infrastructure.CleanUp();
+        _unitOfWork = new UnitOfWork();
+        _dataGenerator = new DataGenerator(_unitOfWork);
+
+        _dataGenerator.GenerateTeam(new Dictionary<string, string>
+        {
+            { "Count", "1" }
+        });
     }
 
     [TestMethod]
     public void AddTeams()
     {
-        UnitOfWork unitOfWork = new UnitOfWork();
+        UnitOfWork unitOfWork = (_unitOfWork as UnitOfWork)!;
         var initialCount = unitOfWork.GetAllTeamModels().Count;
 
         Guid teamId = Guid.NewGuid();
@@ -41,10 +53,9 @@ public class TeamRepositoryTests
     }
 
     [TestMethod]
-    public void AddUniqueStadiums()
+    public void AddUniqueTeams()
     {
-        UnitOfWork unitOfWork = new UnitOfWork();
-        var initialCount = unitOfWork.GetAllTeamModels().Count;
+        var initialCount = _unitOfWork!.GetAllTeamModels().Count;
         var photoGenerator = new PhotoGenerator();
         var photo = photoGenerator.Generate(300, 500);
 
@@ -52,13 +63,13 @@ public class TeamRepositoryTests
             .Select(x => new Team(Guid.NewGuid(), "Name" + x, Guid.NewGuid(), photo, Guid.NewGuid()))
             .Select(x => new Task(() =>
             {
-                unitOfWork.Commit(x);
+                _unitOfWork.Commit(x);
             })).ToList();
 
         tasks.ForEach(x => x.Start());
         Task.WaitAll(tasks.ToArray());
 
-        var realCount = unitOfWork.GetAllTeamModels().Count;
+        var realCount = _unitOfWork.GetAllTeamModels().Count;
 
         Assert.AreEqual(initialCount + 100, realCount);
     }
@@ -66,68 +77,37 @@ public class TeamRepositoryTests
     [TestMethod]
     public void GetTeamById()
     {
-        UnitOfWork unitOfWork = new UnitOfWork();
-        var teamId = Guid.NewGuid();
-        Guid locationId = Guid.NewGuid();
-        Guid stadiumId = Guid.NewGuid();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
-
-        var team = new Team(teamId, "Name", locationId, photo, stadiumId);
-        unitOfWork.Commit(team);
-        var retrievedTeam = unitOfWork.GetTeamModel(teamId);
+        var teamModel = _unitOfWork!.GetAllTeamModels().First();
+        var teamId = teamModel.Team.Id;
+        var retrievedTeam = _unitOfWork.GetTeamModel(teamId);
 
         Assert.IsNotNull(retrievedTeam);
         Assert.AreEqual(teamId, retrievedTeam.Team.Id);
-        Assert.AreEqual("Name", retrievedTeam.Team.Name);
-        Assert.AreEqual(photo, retrievedTeam.Team.Photo);
+        Assert.AreEqual(teamModel.Team, retrievedTeam.Team);
     }
 
     [TestMethod]
     public void UpdateTeam()
     {
-        UnitOfWork unitOfWork = new UnitOfWork();
-        var teamId = Guid.NewGuid();
-        Guid locationId = Guid.NewGuid();
-        Guid stadiumId = Guid.NewGuid();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
+        var teamModel = _unitOfWork!.GetAllTeamModels().First();
+        var teamId = teamModel.Team.Id;
 
-        var team = new Team(teamId, "Name", locationId, photo, stadiumId);
-        unitOfWork.Commit(team);
-        var retrievedTeam = unitOfWork.GetTeamModel(teamId);
-
-        Guid newLocationId = Guid.NewGuid();
-        Guid newStadiumId = Guid.NewGuid();
-        retrievedTeam.Team.Name = "NewName";
-        retrievedTeam.Team.LocationId = newLocationId;
-        retrievedTeam.Team.StadiumId = newStadiumId;
-
-        unitOfWork.Commit(retrievedTeam.Team);
-        var updatedTeam = unitOfWork.GetTeamModel(teamId);
+        teamModel.Team.Name = "NewName";
+        _unitOfWork.Commit(teamModel.Team);
+        var updatedTeam = _unitOfWork.GetTeamModel(teamId);
 
         Assert.IsNotNull(updatedTeam);
         Assert.AreEqual("NewName", updatedTeam.Team.Name);
-        Assert.AreEqual(newLocationId, updatedTeam.Team.LocationId);
-        Assert.AreEqual(newStadiumId, updatedTeam.Team.StadiumId);
     }
 
     [TestMethod]
     public void DeleteTeam()
     {
-        UnitOfWork unitOfWork = new UnitOfWork();
-        var teamId = Guid.NewGuid();
-        Guid locationId = Guid.NewGuid();
-        Guid stadiumId = Guid.NewGuid();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
+        var initialCount = _unitOfWork!.GetAllTeamModels().Count;
+        var teamId = _unitOfWork.GetAllTeamModels().First().Team.Id;
 
-        var team = new Team(teamId, "Name", locationId, photo, stadiumId);
-        unitOfWork.Commit(team);
-        var initialCount = unitOfWork.GetAllTeamModels().Count;
-
-        unitOfWork.Remove(teamId, typeof(Team));
-        var realCount = unitOfWork.GetAllTeamModels().Count;
+        _unitOfWork.Remove(teamId, typeof(Team));
+        var realCount = _unitOfWork.GetAllTeamModels().Count;
 
         Assert.AreEqual(initialCount - 1, realCount);
     }
