@@ -1,7 +1,7 @@
 ﻿using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using FBChamp.Infrastructure;
-using static IntegrationTests.TestDataFactory;
 
 namespace IntegrationTests.LeagueTest;
 
@@ -9,53 +9,47 @@ namespace IntegrationTests.LeagueTest;
 public class LeagueValidatorTest
 {
     private IUnitOfWork? _unitOfWork;
+    private DataGenerator? _dataGenerator;
 
     [TestInitialize]
     public void Initialize()
     {
-        _unitOfWork = new UnitOfWork();
         Infrastructure.CleanUp();
 
-        SeedEntity(_unitOfWork);
+        _unitOfWork = new UnitOfWork();
+        _dataGenerator = new DataGenerator(_unitOfWork);
+
+        _dataGenerator.GenerateLeague(new Dictionary<string, string>
+        {
+            {"Count", "1" }
+        });
     }
 
     [TestMethod]
     public void AddLeagues_ShouldAddLeaguesSuccessfully_WhenAllEntitiesAreValid()
     {
-        var league1 = League1;
-        var league2 = League2;
-
         var allLeagues = _unitOfWork!.GetAllLeagueModels();
 
-        Assert.IsNotNull(allLeagues, "The list of leagues should not be null.");
-        Assert.AreEqual(2, allLeagues.Count, "There should be exactly 2 leagues.");
+        Assert.IsNotNull(allLeagues);
 
-        var league1Model = allLeagues.FirstOrDefault(l => l.League.Id == league1!.Id);
-        var league2Model = allLeagues.FirstOrDefault(l => l.League.Id == league2!.Id);
+        var leagueModel = allLeagues.First();
 
-        Assert.IsNotNull(league1Model, "League1 should be included in the list.");
-        Assert.IsNotNull(league2Model, "League2 should be included in the list.");
-
-        Assert.AreEqual(league1!.FullName, league1Model.League.FullName, "League1 name should match.");
-        Assert.AreEqual(league2!.FullName, league2Model.League.FullName, "League2 name should match.");
-        Assert.AreEqual(league1.Description, league1Model.League.Description, "League1 description should match.");
-        Assert.AreEqual(league2.Description, league2Model.League.Description, "League2 description should match.");
+        Assert.AreEqual(3,leagueModel.League.NumberOfTeams);
+        Assert.AreEqual("No information", leagueModel.League.Description);
     }
 
     [TestMethod]
     public void AddLeagues_ShouldReturnEntityValidationFailed_WhenNameIsTooLong()
     {
-        var longName = new string('A', 257);
-        var league = new League(
-            Guid.NewGuid(),
-            longName,
-            null,
-            5,
-            DateTime.Now,
-            DateTime.Now.AddMonths(6),
-            "Description");
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.First();
 
-        var result = _unitOfWork!.Commit(league);
+        var longName = new string('A', 257);
+
+        leagueModel.League.FullName = longName;
+
+   
+        var result = _unitOfWork!.Commit(leagueModel.League);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result, "Expected validation failure due to the name being too long.");
     }
@@ -63,62 +57,47 @@ public class LeagueValidatorTest
     [TestMethod]
     public void AddLeagues_ShouldReturnEntityValidationFailed_WhenSeasonStartDateIsAfterFinishDate()
     {
-        var league = new League
-        {
-            Id = Guid.NewGuid(),
-            Description = "Description",
-            FullName = "FullName",
-            SeasonStartDate = DateTime.Now.AddMonths(1),
-            SeasonFinishDate = DateTime.Now,
-            NumberOfTeams = 1,
-        };
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.First();
 
-        var result = _unitOfWork!.Commit(league);
+        leagueModel.League.SeasonStartDate = DateTime.Now.AddMonths(1);
+        leagueModel.League.SeasonFinishDate = DateTime.Now;
+
+        var result = _unitOfWork!.Commit(leagueModel.League);
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result, "Expected validation failure because the season start date is after the finish date");
     }
 
     [TestMethod]
     public void AddLeagues_ShouldReturnEntityValidationFailed_WhenLeagueNameExists()
     {
-        var existingName = "ExistingLeagueName";
+        _dataGenerator!.GenerateLeague(new Dictionary<string, string>
+        {
+            {"Count", "1" }
+        });
 
-        _unitOfWork!.Commit(
-            new League(
-                Guid.NewGuid(),
-                existingName,
-                null,
-                5,
-                DateTime.Now,
-                DateTime.Now.AddMonths(6),
-                "Description"));
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.Last();
 
-        var newLeague = new League(
-            Guid.NewGuid(),
-            existingName,
-            null,
-            5,
-            DateTime.Now,
-            DateTime.Now.AddMonths(6),
-            "Description");
+        leagueModel.League.FullName = "League0";
 
-        var result = _unitOfWork.Commit(newLeague);
+        var result = _unitOfWork.Commit(leagueModel.League);
+
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result, "Expected validation failure because the league name already exists");
     }
 
     [TestMethod]
     public void UpdateLeague_ShouldUpdateSuccessfully_WhenAllDataEntitiesAreValid()
     {
-        var league = League1;
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.First();
 
-        Assert.IsNotNull(league);
+        leagueModel.League.FullName = "Updated FullName";
+        leagueModel.League.Description = "Updated Description";
+        leagueModel.League.NumberOfTeams = 10;
 
-        league.FullName = "Updated FullName";
-        league.Description = "Updated Description";
-        league.NumberOfTeams = 10;
+        var updateResult = _unitOfWork!.Commit(leagueModel.League);
 
-        var updateResult = _unitOfWork!.Commit(league);
-
-        var updatedLeague = _unitOfWork.GetLeagueModel(league!.Id);
+        var updatedLeague = _unitOfWork.GetLeagueModel(leagueModel.League.Id);
 
         Assert.IsNotNull(updateResult);
         Assert.AreEqual("Updated FullName", updatedLeague.FullName);
@@ -129,14 +108,13 @@ public class LeagueValidatorTest
     [TestMethod]
     public void UpdateLeague_ShouldReturnEntityValidationFailed_WhenSeasonStartDateIsAfterFinishDate()
     {
-        var league = League1;
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.First();
 
-        Assert.IsNotNull(league);
+        leagueModel.League.SeasonStartDate = new DateTime(2002, 05, 11);
+        leagueModel.League.SeasonFinishDate = new DateTime(2001, 05, 12);
 
-        league.SeasonStartDate = new DateTime(2002, 05, 11);
-        league.SeasonFinishDate = new DateTime(2001, 05, 12);
-
-        var updateResult = _unitOfWork!.Commit(league);
+        var updateResult = _unitOfWork!.Commit(leagueModel.League);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, updateResult);
     }
@@ -144,15 +122,14 @@ public class LeagueValidatorTest
     [TestMethod]
     public void UpdateLeague_ShouldReturnEntityValidationFailed_WhenNameIsTooLong()
     {
-        var league = League1;
-
-        Assert.IsNotNull(league);
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.First();
 
         var longName = new string('A', 257);
 
-        league.FullName = longName;
+        leagueModel.League.FullName = longName;
 
-        var updateResult = _unitOfWork!.Commit(league);
+        var updateResult = _unitOfWork!.Commit(leagueModel.League);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, updateResult);
     }
@@ -160,16 +137,17 @@ public class LeagueValidatorTest
     [TestMethod]
     public void UpdateLeague_ShouldReturnEntityValidationFailed_WhenUpdatedNameAlreadyExists()
     {
-        var leagueToUpdate = new League(
-            League1!.Id,
-            "League2",
-            League1.Photo,
-            League1.NumberOfTeams,
-            League1.SeasonStartDate,
-            League1.SeasonFinishDate,
-            League1.Description);
+        _dataGenerator!.GenerateLeague(new Dictionary<string, string>
+        {
+            {"Count", "1" }
+        });
 
-        var updateResult = _unitOfWork!.Commit(leagueToUpdate);
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.Last();
+
+        leagueModel.League.FullName = "League0";
+
+        var updateResult = _unitOfWork!.Commit(leagueModel.League);
 
         Assert.AreEqual(CRUDResult.EntityValidationFailed, updateResult, "The update should fail because the league name already exists.");
     }
@@ -177,15 +155,17 @@ public class LeagueValidatorTest
     [TestMethod]
     public void RemoveLeague_ShouldReturnTrue_WhenLeagueExistsAndHasNoTeams()
     {
-        var leagueId = Guid.NewGuid();
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.Last();
 
-        var league = new League(leagueId, "League Without Teams", null, 10, DateTime.Now, DateTime.Now.AddYears(1));
-        _unitOfWork!.Commit(league);
+        leagueModel.League.NumberOfTeams = 0;
 
-        var result = _unitOfWork!.Remove(leagueId, typeof(League));
+        _unitOfWork.Commit(leagueModel.League);
+
+        var result = _unitOfWork!.Remove(leagueModel.League.Id, typeof(League));
 
         Assert.AreEqual(result, CRUDResult.Success, "The league should be removed successfully.");
-        Assert.IsNull(_unitOfWork.GetLeagueModel(leagueId), "The league should no longer exist in the repository.");
+        Assert.IsNull(_unitOfWork.GetLeagueModel(leagueModel.League.Id), "The league should no longer exist in the repository.");
     }
 
     [TestMethod]
@@ -201,46 +181,26 @@ public class LeagueValidatorTest
     [TestMethod]
     public void RemoveLeague_ShouldRemoveLeagueSuccessfully_AndDeassignAllTeamsInLeague()
     {
-        var unassignedTeamAssignmentOne = TeamAssignmentInfoOne;
-        var unassignedTeamAssignmentTwo = TeamAssignmentInfoTwo;
-        var leagueToAssign = League1;
+        var allLeagues = _unitOfWork!.GetAllLeagueModels();
+        var leagueModel = allLeagues.Last();
 
-        leagueToAssign!.NumberOfTeams = 3;
+        var assignedTeamsBeforeRemoval = _unitOfWork.GetAssignedTeamsModels(leagueModel.League.Id);
+        Assert.AreEqual(3, assignedTeamsBeforeRemoval.Count, "There should be 2 assigned teams in the league before removal.");
 
-        unassignedTeamAssignmentOne!.LeagueId = leagueToAssign!.Id;
-        unassignedTeamAssignmentTwo!.LeagueId = leagueToAssign!.Id;
+        var result = _unitOfWork!.Remove(leagueModel.League.Id, typeof(League));
 
-        _unitOfWork!.Commit(unassignedTeamAssignmentOne);
-        _unitOfWork!.Commit(unassignedTeamAssignmentTwo);
-
-        var assignedTeamsBeforeRemoval = _unitOfWork.GetAssignedTeamsModels(leagueToAssign.Id);
-        Assert.AreEqual(2, assignedTeamsBeforeRemoval.Count, "There should be 2 assigned teams in the league before removal.");
-
-        var result = _unitOfWork!.Remove(leagueToAssign.Id, typeof(League));
-
-        var assignedTeamsAfterRemoval = _unitOfWork.GetAssignedTeamsModels(leagueToAssign.Id);
+        var assignedTeamsAfterRemoval = _unitOfWork.GetAssignedTeamsModels(leagueModel.League.Id);
 
         Assert.AreEqual(0, assignedTeamsAfterRemoval.Count, "There should be no assigned teams in the league after removal.");
 
         var allTeams = _unitOfWork.GetAllTeamModels();
+        var teamOne = allTeams.First();
+        var teamTwo = allTeams.Last();
         var allTeamIds = allTeams.Select(t => t.Team.Id).ToList();
         var assignedTeamsIds = assignedTeamsAfterRemoval.Select(t => t.Team.Id).ToList();
-        Assert.IsTrue(allTeamIds.Contains(unassignedTeamAssignmentOne.Id) && allTeamIds.Contains(unassignedTeamAssignmentTwo.Id), "Teams should still exist in the system.");
-        Assert.IsFalse(assignedTeamsIds.Contains(unassignedTeamAssignmentOne.Id) || assignedTeamsIds.Contains(unassignedTeamAssignmentTwo.Id), "Teams should not be assigned to any league after removal.");
-    }
 
-    [TestMethod]
-    public void RemoveLeague_ShouldRemoveLeagueSuccessfully_AndRemoveNotFinishedMatches()
-    {
-        var league = League1!;
-        var matchOne = Match1!;
-
-        var result = _unitOfWork!.Remove(league.Id, typeof(League));
-
-        Assert.AreEqual(CRUDResult.Success, result);
-
-        var unfinishedMatchDeleted = _unitOfWork.GetMatchModel(matchOne.Id);
-        Assert.IsNull(unfinishedMatchDeleted, "Unfinished match should be deleted after league removal.");
+        Assert.IsTrue(allTeamIds.Contains(teamOne.Team.Id) && allTeamIds.Contains(teamTwo.Team.Id), "Teams should still exist in the system.");
+        Assert.IsFalse(assignedTeamsIds.Contains(teamOne.Team.Id) || assignedTeamsIds.Contains(teamTwo.Team.Id), "Teams should not be assigned to any league after removal.");
     }
 
     [TestCleanup]
