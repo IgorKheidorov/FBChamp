@@ -24,7 +24,7 @@ public class MatchValidator(IUnitOfWork unitOfWork) : IValidateEntity
           IsTeamExists(match.GuestTeamId) &&
           IsLeagueExists(match.LeagueId) &&
           IsStadiumExists(match.StadiumId) &&
-          IsFinishTimeValid(match.Id);
+          IsFinishTimeValid(match);
 
     private bool IsTeamExists(Guid teamId) =>
         _unitOfWork.Exists(teamId, typeof(Team));
@@ -35,11 +35,8 @@ public class MatchValidator(IUnitOfWork unitOfWork) : IValidateEntity
     private bool IsStadiumExists(Guid stadiumId) =>
         _unitOfWork.Exists(stadiumId, typeof(Stadium));
 
-    private bool IsFinishTimeValid(Guid id)
+    private bool IsFinishTimeValid(Match match)
     {
-        var match = _unitOfWork.GetMatchModel(id).Match;
         return match.FinishTimeOfMatch == default || match.FinishTimeOfMatch > match.StartTimeOfMatch;
-
     }
-
 }

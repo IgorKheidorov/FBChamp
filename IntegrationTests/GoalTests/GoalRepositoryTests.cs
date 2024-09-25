@@ -1,148 +1,98 @@
 ﻿using FBChamp.Core.Entities.Soccer;
-using FBChamp.Core.Entities.Soccer.Enums;
+using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using FBChamp.Infrastructure;
-using IntegrationTests.Helpers;
 
 namespace IntegrationTests.GoalTests;
 
 [TestClass]
 public class GoalRepositoryTests
 {
-    // TODO: Proceed with unit tests after player assignment to a match is ready
+    private IUnitOfWork? _unitOfWork;
+    private DataGenerator? _dataGenerator;
+
     [TestInitialize]
     public void Initialize()
     {
         Infrastructure.CleanUp();
+
+        _unitOfWork = new UnitOfWork();
+        _dataGenerator = new DataGenerator(_unitOfWork);
     }
 
     [TestMethod]
-    public void AddGoalTest()
+    public void AddGoal_ShouldAddGoalSuccessfully()
     {
-       // var unitOfWork = new UnitOfWork();
-       // var photoGenerator = new PhotoGenerator();
-       // var initialCount = unitOfWork.GetAllGoalModels().Count;
-       //
-       // var photo = photoGenerator.Generate(300, 500);
-       // var stadium = new Stadium(Guid.NewGuid(), "Name", Guid.NewGuid());
-       // var team = new Team(Guid.NewGuid(), "Team", Guid.NewGuid(), photo, stadium.Id);
-       // var team2 = new Team(Guid.NewGuid(), "Team2", Guid.NewGuid(), photo, stadium.Id);
-       // var league = new League(Guid.NewGuid(), "Leagure", photo, 2, new DateTime(2024, 9, 1),
-       //     new DateTime(2024, 9, 25));
-       // var match = new Match(Guid.NewGuid(), stadium.Id, league.Id, MatchStatus.Scheduled,
-       //     new DateTime(2024, 9, 15), team.Id, team2.Id);
-       //
-       //
-       // var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-       // var goalAuthor = new Player(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), 180f, positionId, photo);
-       // var assistant = new Player(Guid.NewGuid(), "Assistant", new DateTime(2000, 1, 1), 180f, positionId, photo);
-       // var goal = new Goal(Guid.NewGuid(), match.Id, goalAuthor.Id, [assistant.Id], GoalType.Normal, team2.Id,
-       //     new DateTime(2024, 9, 15));
-       //
-       // var goalAuthorAssignment = new PlayerAssignmentInfo(goalAuthor.Id, team.Id, 2);
-       // var assistantAssignment = new PlayerAssignmentInfo(assistant.Id, team.Id, 3);
-       // var role = unitOfWork.GetAllPlayerPositions().First().Name;
-       //
-       // var goalAuthorAssignmentToMatch = new PlayerMatchAssignment(goalAuthor.Id, match.Id, new DateTime(2024, 9, 15),
-       //     new DateTime(2024, 9, 15), role);
-       // var assistantAssignmentToMatch = new PlayerMatchAssignment(goalAuthor.Id, match.Id, new DateTime(2024, 9, 15),
-       //     new DateTime(2024, 9, 15), role);
-       //
-       // unitOfWork.Commit(team);
-       // unitOfWork.Commit(team2);
-       // unitOfWork.Commit(league);
-       // unitOfWork.Commit(stadium);
-       // unitOfWork.Commit(match);
-       // unitOfWork.Commit(goalAuthor);
-       // unitOfWork.Commit(assistant);
-       // unitOfWork.Commit(goalAuthorAssignment);
-       // unitOfWork.Commit(assistantAssignment);
-       // unitOfWork.Commit(goalAuthorAssignmentToMatch);
-       // unitOfWork.Commit(assistantAssignmentToMatch);
-       // unitOfWork.Commit(goal);
-       //
-       // var result = unitOfWork.GetAllGoalModels().Count;
-       //
-       // Assert.AreEqual(initialCount + 1, result);
+        var initialCount = _unitOfWork!.GetAllGoalModels().Count;
+
+        _dataGenerator!.GenerateGoal(new Dictionary<string, string>
+        {
+            {"Count","1" }
+        });
+
+        var result = _unitOfWork.GetAllGoalModels().Count;
+        Assert.AreEqual(initialCount + 1, result);
     }
 
     [TestMethod]
-    public void GetGoalByIdTest()
+    public void GetGoalById_ShouldReturnCorrectIdOfGoal()
     {
-        // var unitOfWork = new UnitOfWork();
-        // var photoGenerator = new PhotoGenerator();
-        //
-        // var photo = photoGenerator.Generate(300, 500);
-        // var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        // var goalAuthor = new Player(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        // var assistant = new Player(Guid.NewGuid(), "Assistant", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        // var goal = new Goal(Guid.NewGuid(), Guid.NewGuid(), goalAuthor.Id, [assistant.Id], DateTime.Now);
-        //
-        // unitOfWork.Commit(goalAuthor);
-        // unitOfWork.Commit(assistant);
-        // unitOfWork.Commit(goal);
-        //
-        // var result = unitOfWork.GetGoalModel(goal.Id);
-        //
-        // Assert.IsNotNull(result);
-        // Assert.AreEqual(goal.GoalAuthorId, result.GoalAuthor.Id);
+        _dataGenerator!.GenerateGoal(new Dictionary<string, string>
+        {
+            {"Count","1" }
+        });
+
+        var goals = _unitOfWork!.GetAllGoalModels();
+        var goal = goals.First();
+
+        var result = _unitOfWork.GetGoalModel(goal.Goal.Id);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(goal.Goal.GoalAuthorId, result.Goal.GoalAuthorId);
+        Assert.AreEqual(goal.Goal.MatchId, result.Goal.MatchId);
+        Assert.AreEqual(goal.Goal.ScoringTeamId, result.Goal.ScoringTeamId);
+        Assert.AreEqual(goal.Goal.Type, result.Goal.Type);
     }
 
     [TestMethod]
-    public void UpdateGoalTest()
+    public void UpdateGoal_ShouldUpdateGoalSuccessfully()
     {
-        //  var unitOfWork = new UnitOfWork();
-        //  var photoGenerator = new PhotoGenerator();
-        //
-        //  var photo = photoGenerator.Generate(300, 500);
-        //  var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        //  var goalAuthor = new Player(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        //  var updateGoalAuthor = new Player(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        //
-        //  var assistant = new Player(Guid.NewGuid(), "Assistant", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        //  var goal = new Goal(Guid.NewGuid(), Guid.NewGuid(), goalAuthor.Id, [assistant.Id], DateTime.Now);
-        //
-        //  unitOfWork.Commit(goalAuthor);
-        //  unitOfWork.Commit(assistant);
-        //  unitOfWork.Commit(updateGoalAuthor);
-        //  unitOfWork.Commit(goal);
-        //
-        //  var retrievedGoal = unitOfWork.GetGoalModel(goal.Id);
-        //
-        //  Assert.IsNotNull(retrievedGoal);
-        //  Assert.AreEqual(goalAuthor.Id, retrievedGoal.GoalAuthor.Id);
-        //
-        //  retrievedGoal.Goal.GoalAuthorId = updateGoalAuthor.Id;
-        //
-        //  unitOfWork.Commit(retrievedGoal.Goal);
-        //
-        //  var updatedGoal = unitOfWork.GetGoalModel(goal.Id);
-        //
-        //  Assert.IsNotNull(updatedGoal);
-        //  Assert.AreEqual(updateGoalAuthor.Id, updatedGoal.GoalAuthor.Id);
+        _dataGenerator!.GenerateGoal(new Dictionary<string, string>
+        {
+            {"Count","1" }
+        });
+
+        var goals = _unitOfWork!.GetAllGoalModels();
+        var goal = goals.First();
+        var matches = _unitOfWork.GetAllMatchModels();
+        var match = matches.First();
+
+        goal.Goal.ScoringTeamId = match.HostTeam.Team.Id;
+        goal.Goal.AssistantIds = new List<Guid> { match.HostTeam.Players.First().Player.Id };
+        goal.Goal.GoalAuthorId = match.HostTeam.Players.Last().Player.Id;  
+
+        var result = _unitOfWork.Commit(goal.Goal);
+
+        Assert.AreEqual(CRUDResult.Success, result);
+        Assert.AreEqual(goal.Goal.ScoringTeamId, goal.Match.HostTeamId);
     }
 
     [TestMethod]
     public void RemoveGoalTest()
     {
-        //   var unitOfWork = new UnitOfWork();
-        //   var photoGenerator = new PhotoGenerator();
-        //
-        //   var photo = photoGenerator.Generate(300, 500);
-        //   var positionId = unitOfWork.GetAllPlayerPositions().First().Id;
-        //   var goalAuthor = new Player(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        //   var assistant = new Player(Guid.NewGuid(), "Assistant", new DateTime(2000, 1, 1), 180f, positionId, photo);
-        //   var goal = new Goal(Guid.NewGuid(), Guid.NewGuid(), goalAuthor.Id, [assistant.Id], DateTime.Now);
-        //
-        //   unitOfWork.Commit(goalAuthor);
-        //   unitOfWork.Commit(assistant);
-        //   unitOfWork.Commit(goal);
-        //
-        //   var initialCount = unitOfWork.GetAllGoalModels().Count;
-        //
-        //   unitOfWork.Remove(goal.Id, typeof(Goal));
-        //
-        //   var resultCount = unitOfWork.GetAllGoalModels().Count;
-        //
-        //   Assert.AreEqual(initialCount - 1, resultCount);
+        _dataGenerator!.GenerateGoal(new Dictionary<string, string>
+        {
+            {"Count","1" }
+        });
+
+        var goals = _unitOfWork!.GetAllGoalModels();
+        var goal = goals.First();
+
+        var initialCount = _unitOfWork!.GetAllGoalModels().Count;
+
+        _unitOfWork.Remove(goal.Goal.Id, typeof(Goal));
+
+        var resultCount = _unitOfWork.GetAllGoalModels().Count;
+        Assert.AreEqual(initialCount - 1, resultCount);
     }
 }
