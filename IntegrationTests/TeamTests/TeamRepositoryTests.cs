@@ -28,26 +28,20 @@ public class TeamRepositoryTests
     [TestMethod]
     public void AddTeams()
     {
-        UnitOfWork unitOfWork = (_unitOfWork as UnitOfWork)!;
-        var initialCount = unitOfWork.GetAllTeamModels().Count;
-
-        Guid teamId = Guid.NewGuid();
-        Guid locationId = Guid.NewGuid();
-        Guid stadiumId = Guid.NewGuid();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
+        var initialCount = _unitOfWork!.GetAllTeamModels().Count;
+        _dataGenerator!.GenerateTeam(new Dictionary<string, string> { { "Count", "1" } });
+        var team = _unitOfWork.GetAllTeamModels().First().Team;
 
         List<Task> tasks = Enumerable.Range(0, 100)
-            .Select(x => new Team(teamId, "Name" + x, locationId, photo, stadiumId))
             .Select(x => new Task(() =>
             {
-                unitOfWork.Commit(x);
+                _unitOfWork.Commit(team);
             })).ToList();
 
         tasks.ForEach(x => x.Start());
         Task.WaitAll(tasks.ToArray());
 
-        var realCount = unitOfWork.GetAllTeamModels().Count;
+        var realCount = _unitOfWork.GetAllTeamModels().Count;
 
         Assert.AreEqual(initialCount + 1, realCount);
     }
@@ -56,21 +50,9 @@ public class TeamRepositoryTests
     public void AddUniqueTeams()
     {
         var initialCount = _unitOfWork!.GetAllTeamModels().Count;
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
-
-        List<Task> tasks = Enumerable.Range(0, 100)
-            .Select(x => new Team(Guid.NewGuid(), "Name" + x, Guid.NewGuid(), photo, Guid.NewGuid()))
-            .Select(x => new Task(() =>
-            {
-                _unitOfWork.Commit(x);
-            })).ToList();
-
-        tasks.ForEach(x => x.Start());
-        Task.WaitAll(tasks.ToArray());
+        _dataGenerator!.GenerateTeam(new Dictionary<string, string> { { "Count", "100" } });
 
         var realCount = _unitOfWork.GetAllTeamModels().Count;
-
         Assert.AreEqual(initialCount + 100, realCount);
     }
 

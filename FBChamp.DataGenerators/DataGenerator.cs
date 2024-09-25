@@ -96,11 +96,11 @@ public class DataGenerator : IDataGenerator
     {
         var entities = _generators.Single(x => x.GetType() == typeof(LeagueGenerator)).Generate(options);
 
-        foreach(var entity in entities)
+        foreach (var entity in entities)
         {
             var league = entity as League;
 
-            if(league is not null)
+            if (league is not null)
             {
                 _unitOfWork.Commit(league);
 
@@ -144,7 +144,7 @@ public class DataGenerator : IDataGenerator
     {
         var entities = _generators.Single(x => x.GetType() == typeof(MatchGenerator)).Generate(options);
 
-        foreach(var entity in entities)
+        foreach (var entity in entities)
         {
             var match = entity as Match;
             var numberOfLeagues = 1;
@@ -153,7 +153,7 @@ public class DataGenerator : IDataGenerator
 
             var leagues = _unitOfWork.GetAllLeagueModels();
 
-            foreach(var leagueModel  in leagues)
+            foreach (var leagueModel in leagues)
             {
                 var league = leagueModel.League;
 
@@ -161,7 +161,7 @@ public class DataGenerator : IDataGenerator
                 match.HostTeamId = leagueModel.Teams.First().Team.Id;
                 match.GuestTeamId = leagueModel.Teams.Last().Team.Id;
 
-                if(match is not null)
+                if (match is not null)
                 {
                     _unitOfWork.Commit(match);
                 }
@@ -179,7 +179,7 @@ public class DataGenerator : IDataGenerator
 
                 int index = 0;
 
-                foreach(var playerModel in players)
+                foreach (var playerModel in players)
                 {
                     var player = playerModel.Player;
 
@@ -234,7 +234,7 @@ public class DataGenerator : IDataGenerator
 
             GenerateCoach(null);
 
-            var coaches = _unitOfWork.GetAllCoachModels();
+            var coaches = _unitOfWork.GetUnassignedCoachModels();
 
             foreach (var coachModel in coaches)
             {
