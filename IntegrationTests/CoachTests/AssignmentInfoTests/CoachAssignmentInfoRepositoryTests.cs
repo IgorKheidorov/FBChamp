@@ -1,4 +1,6 @@
 ﻿using FBChamp.Core.Entities.Soccer;
+using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using FBChamp.Infrastructure;
 using IntegrationTests.Helpers;
 
@@ -7,30 +9,38 @@ namespace IntegrationTests.CoachTests.AssignmentInfoTests;
 [TestClass]
 public class CoachAssignmentInfoRepositoryTests
 {
+    private IUnitOfWork? _unitOfWork;
+    private DataGenerator? _dataGenerator;
+
     [TestInitialize]
     public void Initialize()
     {
         Infrastructure.CleanUp();
+        _unitOfWork = new UnitOfWork();
+        _dataGenerator = new DataGenerator(_unitOfWork);
+
+        _dataGenerator.GenerateTeam(new Dictionary<string, string>
+        {
+            { "Count", "1" }
+        });
+
+        _dataGenerator.GenerateCoach(new Dictionary<string, string>
+        {
+            { "Count", "1" }
+        });
     }
 
     [TestMethod]
     public void AddCoachAssignmentInfoTest()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Coach", new DateTime(2000, 1, 1), photo);
-        var team = new Team(Guid.NewGuid(), "Team", Guid.NewGuid(), photo, Guid.NewGuid(), "description");
+        var coach = _unitOfWork!.GetUnassignedCoachModels().First().Coach;
+        var team = _unitOfWork.GetAllTeamModels().First().Team;
+        var initialCount = _unitOfWork.GetAssignedCoachModels(team.Id).Count;
         var coachAssignmentInfo = new CoachAssignmentInfo(coach.Id, team.Id, "Coach");
 
-        var initialCount = unitOfWork.GetAssignedCoachModels(team.Id).Count;
+        _unitOfWork.Commit(coachAssignmentInfo);
 
-        unitOfWork.Commit(coach);
-        unitOfWork.Commit(team);
-        unitOfWork.Commit(coachAssignmentInfo);
-
-        var resultCount = unitOfWork.GetAssignedCoachModels(team.Id).Count;
+        var resultCount = _unitOfWork.GetAssignedCoachModels(team.Id).Count;
 
         Assert.AreEqual(initialCount + 1, resultCount);
     }
@@ -38,19 +48,14 @@ public class CoachAssignmentInfoRepositoryTests
     [TestMethod]
     public void GetCoachAssignmentInfoTest()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Coach", new DateTime(2000, 1, 1), photo);
-        var team = new Team(Guid.NewGuid(), "Team", Guid.NewGuid(), photo, Guid.NewGuid(), "description");
+        var coach = _unitOfWork!.GetUnassignedCoachModels().First().Coach;
+        var team = _unitOfWork.GetAllTeamModels().First().Team;
+        var initialCount = _unitOfWork.GetAssignedCoachModels(team.Id).Count;
         var coachAssignmentInfo = new CoachAssignmentInfo(coach.Id, team.Id, "Coach");
 
-        unitOfWork.Commit(coach);
-        unitOfWork.Commit(team);
-        unitOfWork.Commit(coachAssignmentInfo);
+        _unitOfWork.Commit(coachAssignmentInfo);
 
-        var result = unitOfWork.GetAssignedCoachModel(team.Id);
+        var result = _unitOfWork.GetAssignedCoachModels(team.Id).Where(c => c.Role.Equals("Coach")).First();
 
         Assert.AreEqual(coach.Id, result.Coach.Id);
         Assert.AreEqual(coach.FullName, result.Coach.FullName);
@@ -62,23 +67,17 @@ public class CoachAssignmentInfoRepositoryTests
     [TestMethod]
     public void RemoveCoachAssignmentInfoTest()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Coach", new DateTime(2000, 1, 1), photo);
-        var team = new Team(Guid.NewGuid(), "Team", Guid.NewGuid(), photo, Guid.NewGuid(), "description");
+        var coach = _unitOfWork!.GetUnassignedCoachModels().First().Coach;
+        var team = _unitOfWork.GetAllTeamModels().First().Team;
         var coachAssignmentInfo = new CoachAssignmentInfo(coach.Id, team.Id, "Coach");
 
-        unitOfWork.Commit(coach);
-        unitOfWork.Commit(team);
-        unitOfWork.Commit(coachAssignmentInfo);
+        _unitOfWork.Commit(coachAssignmentInfo);
 
-        var initialCount = unitOfWork.GetAssignedCoachModels(team.Id).Count;
+        var initialCount = _unitOfWork.GetAssignedCoachModels(team.Id).Count;
 
-        unitOfWork.Remove(coach.Id, typeof(CoachAssignmentInfo));
+        _unitOfWork.Remove(coach.Id, typeof(CoachAssignmentInfo));
 
-        var result = unitOfWork.GetAssignedCoachModels(team.Id).Count;
+        var result = _unitOfWork.GetAssignedCoachModels(team.Id).Count;
 
         Assert.AreEqual(initialCount - 1, result);
     }

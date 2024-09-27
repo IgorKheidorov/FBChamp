@@ -1,5 +1,6 @@
 ﻿using FBChamp.Core.Entities.Soccer;
 using FBChamp.Core.UnitOfWork;
+using FBChamp.DataGenerators;
 using FBChamp.Infrastructure;
 using IntegrationTests.Helpers;
 
@@ -8,10 +9,20 @@ namespace IntegrationTests.CoachTests;
 [TestClass]
 public class CoachValidatorTests
 {
+    private IUnitOfWork? _unitOfWork;
+    private DataGenerator? _dataGenerator;
+
     [TestInitialize]
     public void Initialize()
     {
         Infrastructure.CleanUp();
+        _unitOfWork = new UnitOfWork();
+        _dataGenerator = new DataGenerator(_unitOfWork);
+
+        _dataGenerator.GenerateCoach(new Dictionary<string, string>
+        {
+            { "Count", "1" }
+        });
     }
 
     [TestMethod]
@@ -19,15 +30,10 @@ public class CoachValidatorTests
     [DataRow(300)]
     public void CoachInvalidNameLengthTest(int nameLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        coach.FullName = new string('a', nameLength);
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), new string('a', nameLength), new DateTime(2000, 1, 1), photo);
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
 
@@ -37,15 +43,10 @@ public class CoachValidatorTests
     [DataRow(20)]
     public void CoachValidNameLengthTest(int nameLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        coach.FullName = new string('a', nameLength);
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), new string('a', nameLength), new DateTime(2000, 1, 1), photo);
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.Success, result);
     }
 
@@ -54,15 +55,10 @@ public class CoachValidatorTests
     [DataRow(1888, 1, 1)]
     public void CoachInvalidAgeTest(int year, int month, int day)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        coach.BirthDate = new DateTime(year, month, day);
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Name", new DateTime(year, month, day), photo);
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
 
@@ -71,15 +67,10 @@ public class CoachValidatorTests
     [DataRow(1995, 1, 1)]
     public void CoachValidAgeTest(int year, int month, int day)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        coach.BirthDate = new DateTime(year, month, day);
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Name", new DateTime(year, month, day), photo);
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.Success, result);
     }
 
@@ -89,30 +80,22 @@ public class CoachValidatorTests
     [DataRow(300, 100)]
     public void CoachInvalidPhotoTest(int width, int height)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        var photo = new PhotoGenerator().Generate(width, height);
+        coach.Photo = photo;
 
-        var photo = photoGenerator.Generate(width, height);
-
-        var coach = new Coach(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), photo);
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
 
     [TestMethod]
     public void CoachValidPhotoTest()
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        var photo = new PhotoGenerator().Generate(300, 500);
+        coach.Photo = photo;
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), photo);
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.Success, result);
     }
 
@@ -121,16 +104,10 @@ public class CoachValidatorTests
     [DataRow(400)]
     public void CoachInvalidDescriptionLength(int descriptionLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        coach.Description = new string('a', descriptionLength);
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), photo,
-            new string('a', descriptionLength));
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.EntityValidationFailed, result);
     }
 
@@ -140,16 +117,10 @@ public class CoachValidatorTests
     [DataRow(20)]
     public void CoachValidDescriptionLength(int descriptionLength)
     {
-        var unitOfWork = new UnitOfWork();
-        var photoGenerator = new PhotoGenerator();
+        var coach = _unitOfWork!.GetAllCoachModels().First().Coach;
+        coach.Description = new string('a', descriptionLength);
 
-        var photo = photoGenerator.Generate(300, 500);
-
-        var coach = new Coach(Guid.NewGuid(), "Name", new DateTime(2000, 1, 1), photo,
-            new string('a', descriptionLength));
-
-        var result = unitOfWork.Commit(coach);
-
+        var result = _unitOfWork.Commit(coach);
         Assert.AreEqual(CRUDResult.Success, result);
     }
 }
