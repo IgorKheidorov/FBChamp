@@ -16,6 +16,7 @@ public class PlayerMatchAssignmentModel : EntityModel
 
     public PlayerMatchAssignmentModel(PlayerMatchAssignment playerMatchAssignment)
     {
+        PlayerMatchAssignment = playerMatchAssignment;
         Role = playerMatchAssignment.Role;
     }
 

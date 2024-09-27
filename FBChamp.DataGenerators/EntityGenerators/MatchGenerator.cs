@@ -58,6 +58,7 @@ public class MatchGenerator : IEntityGenerator
             leagueId: Guid.NewGuid(),
             status: MatchStatus.InProgress,
             startTimeOfMatch: new DateTime(2024, 09, 19, 15, 30, 00),
+            finishTimeOfMatch:new DateTime(2024, 09, 19, 17, 00, 00),
             hostTeamId: Guid.NewGuid(),
             guestTeamId: Guid.NewGuid());
 

@@ -64,9 +64,9 @@ public class DataGenerator : IDataGenerator
                 var match = matchModel.Match;
 
                 goal!.MatchId = match.Id;
-                goal.GoalAuthorId = matchModel.PlayerMatchAssignments.First().PlayerMatchAssignment.Id;
-                goal.AssistantIds = new List<Guid> { matchModel.PlayerMatchAssignments.Last().PlayerMatchAssignment.Id };
-                goal.ScoringTeamId = matchModel.HostTeam.Team.Id;
+                goal.GoalAuthorId = matchModel.GuestTeam.Players.First().Player.Id;
+                goal.AssistantIds = new List<Guid> { matchModel.GuestTeam.Players.Last().Player.Id };
+                goal.ScoringTeamId = matchModel.GuestTeam.Team.Id;
 
                 if (goal is not null)
                 {
@@ -103,7 +103,7 @@ public class DataGenerator : IDataGenerator
             {
                 _unitOfWork.Commit(league);
 
-                   GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
+                GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
 
                 var teams = _unitOfWork.GetUnassignedTeamModel();
 
@@ -158,15 +158,22 @@ public class DataGenerator : IDataGenerator
                 match!.LeagueId = league.Id;
                 match.HostTeamId = leagueModel.Teams.First().Team.Id;
                 match.GuestTeamId = leagueModel.Teams.Last().Team.Id;
+                match.StadiumId = leagueModel.Teams.First().Team.StadiumId;
 
                 if(match is not null)
                 {
                     _unitOfWork.Commit(match);
                 }
 
-                GeneratePlayer(new Dictionary<string, string> { { "Count", "11" } });
+                GenerateTeam(new Dictionary<string, string> { { "Count", "2" } });
 
-                var players = _unitOfWork.GetUnassignedPlayerModels().Take(11);
+                var hostPlayers = leagueModel.Teams.First().Players.ToList();
+                var guestPlayers = leagueModel.Teams.Last().Players.ToList();
+
+                if (hostPlayers.Count < 11 || guestPlayers.Count < 11)
+                {
+                    throw new InvalidOperationException("Not enough players in one of the teams.");
+                }
 
                 var roles = new List<string>
                 {
@@ -177,7 +184,7 @@ public class DataGenerator : IDataGenerator
 
                 int index = 0;
 
-                foreach(var playerModel in players)
+                foreach (var playerModel in hostPlayers.Take(11).Concat(guestPlayers.Take(11)))
                 {
                     var player = playerModel.Player;
 
@@ -188,10 +195,10 @@ public class DataGenerator : IDataGenerator
                         matchId: match!.Id,
                         startTime: new DateTime(2024, 09, 19, 16, 30, 00),
                         finishTime: new DateTime(2024, 9, 19, 18, 00, 00),
-                        role: role);
+                        role: role
+                    );
 
                     _unitOfWork.Commit(playerAssignment);
-
                     index++;
                 }
             }
