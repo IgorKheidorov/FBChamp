@@ -6,9 +6,9 @@ public class PlayerAssignmentInfo : Entity<Guid>
 
     public uint PlayingNumber { get; set; }
 
-    public PlayerAssignmentInfo(Guid playerId, Guid teamId, uint playingNumber)
+    public PlayerAssignmentInfo(Guid id, Guid teamId, uint playingNumber)
     {
-        Id = playerId;
+        Id = id;
         TeamId = teamId;
         PlayingNumber = playingNumber;
     }
