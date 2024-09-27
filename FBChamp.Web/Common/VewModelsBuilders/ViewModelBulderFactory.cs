@@ -18,6 +18,9 @@ public class ViewModelBuildersFactory(IUnitOfWork unitOfWork)
     private PlayerViewModelBuilder _playerViewModelBuilder;
     private TeamsPageModelBuilder _teamsPageModelBuilder;
     private TeamCreateEditModelBuilder _teamViewEditModelBuilder;
+    private LeaguesPageModelBuilder _leaguesPageModelBuilder;
+    private LeagueCreateEditModelBuilder _leagueCreateEditModelBuilder;
+    private LeagueViewModelBuilder _leagueViewModelBuilder;
 
     public IViewModelBuilder GetBuilder(string builderType) =>
         builderType switch
@@ -32,6 +35,9 @@ public class ViewModelBuildersFactory(IUnitOfWork unitOfWork)
             "CoachViewModel" => _coachViewModelBuilder ??= new CoachViewModelBuilder(unitOfWork),
             "CoachAssignModel" => _coachAssignModelBuilder ??= new CoachAssignModelBuilder(unitOfWork, this),
             "CoachCreateEditModel" => _coachCreateEditModelBuilder ??= new CoachCreateEditModelBuilder(unitOfWork),
+            "LeaguesPageModel" => _leaguesPageModelBuilder ??=new LeaguesPageModelBuilder(unitOfWork),
+            "LeagueCreateEditModel" => _leagueCreateEditModelBuilder ??=new LeagueCreateEditModelBuilder(unitOfWork, this),
+            "LeagueViewModel" => _leagueViewModelBuilder ??=new LeagueViewModelBuilder(unitOfWork),
             _ => null
         };
 }

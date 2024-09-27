@@ -5,14 +5,9 @@ using FBChamp.Core.UnitOfWork;
 
 namespace FBChamp.Infrastructure.Validators;
 
-public class MatchValidator : IValidateEntity
+public class MatchValidator(IUnitOfWork unitOfWork) : IValidateEntity
 {
-    private IUnitOfWork _unitOfWork;
-
-    public MatchValidator(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public Type GetValidatedType() => typeof(Match);
 
@@ -28,7 +23,8 @@ public class MatchValidator : IValidateEntity
           IsTeamExists(match.HostTeamId) &&
           IsTeamExists(match.GuestTeamId) &&
           IsLeagueExists(match.LeagueId) &&
-          IsStadiumExists(match.StadiumId);
+          IsStadiumExists(match.StadiumId) &&
+          IsFinishTimeValid(match);
 
     private bool IsTeamExists(Guid teamId) =>
         _unitOfWork.Exists(teamId, typeof(Team));
@@ -38,4 +34,9 @@ public class MatchValidator : IValidateEntity
 
     private bool IsStadiumExists(Guid stadiumId) =>
         _unitOfWork.Exists(stadiumId, typeof(Stadium));
+
+    private bool IsFinishTimeValid(Match match)
+    {
+        return match.FinishTimeOfMatch == default || match.FinishTimeOfMatch > match.StartTimeOfMatch;
+    }
 }

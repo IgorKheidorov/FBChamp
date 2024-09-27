@@ -11,6 +11,8 @@ public class Match : Entity<Guid>
     public MatchStatus Status { get; set; }
 
     public DateTime StartTimeOfMatch { get; set; }
+    
+    public DateTime FinishTimeOfMatch { get; set; }
 
     public Guid HostTeamId { get; set; }
 
@@ -20,14 +22,15 @@ public class Match : Entity<Guid>
     {
     }
 
-    public Match(Guid matchId, Guid stadiumId, Guid leagueId, MatchStatus status,
-                DateTime startTimeOfMatch, Guid hostTeamId, Guid guestTeamId)
+    public Match(Guid matchId, Guid stadiumId, Guid leagueId, MatchStatus status, 
+        Guid hostTeamId, Guid guestTeamId, DateTime startTimeOfMatch = default, DateTime finishTimeOfMatch = default)
     {
         Id = matchId;
         StadiumId = stadiumId;
         LeagueId = leagueId;
         Status = status;
-        StartTimeOfMatch = startTimeOfMatch;
+        StartTimeOfMatch = startTimeOfMatch == default ? DateTime.Now : startTimeOfMatch;
+        FinishTimeOfMatch = finishTimeOfMatch;
         HostTeamId = hostTeamId;
         GuestTeamId = guestTeamId;
     }

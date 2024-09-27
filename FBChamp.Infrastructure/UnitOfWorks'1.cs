@@ -95,6 +95,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         _matchRepository = null;
         _matchStatisticsRepository = null;
         _playerPositionRepository = null;
+        _playerMatchAssignmentRepository = null;
         // false is to indicate the fail
         return CRUDResult.Failed;
     }
@@ -180,6 +181,25 @@ public sealed partial class UnitOfWork : IUnitOfWork
     private bool RemoveMatch(Guid matchId) =>
         MatchRepository.Remove(matchId);
 
+    public bool AssignPlayerToMatch(PlayerMatchAssignment playerMatchAssignment) =>
+        PlayerMatchAssignmentRepository.AddOrUpdate(playerMatchAssignment);
+
+    public bool DeAssignPlayerFromMatch(Guid playerId, DateTime dateTime = default)
+    {
+        var playerMatchAssignment = PlayerMatchAssignmentRepository.Find(playerId);
+
+        if (playerMatchAssignment == null)
+        {
+            return false;
+        }
+
+        playerMatchAssignment.FinishTime = dateTime == default ? DateTime.Now : dateTime;
+        return PlayerMatchAssignmentRepository.Remove(playerId);
+    }
+
+    public bool GetPlayerFromMatch(Guid playerId) =>
+        PlayerMatchAssignmentRepository.Find(playerId) is not null;
+        
     private bool RemoveMatchStatistics(Guid matchStatisticsId) =>
         MatchStatisticsRepository.Remove(matchStatisticsId);
 
@@ -196,6 +216,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "TeamAssignmentInfo" => DeassignTeam(id),
         "Match" => RemoveMatch(id),
         "CoachAssignmentInfo" => DeassignCoach(id),
+        "PlayerMatchAssignment" => DeAssignPlayerFromMatch(id),
         "Goal" => RemoveGoal(id),
         "MatchStatistics" => RemoveMatchStatistics(id),
         _ => false
@@ -219,6 +240,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
         "Stadium" => StadiumRepository.AddOrUpdate(entity as Stadium),
         "Goal" => GoalRepository.AddOrUpdate(entity as Goal),
         "Match" => MatchRepository.AddOrUpdate(entity as Match),
+        "PlayerMatchAssignment" => PlayerMatchAssignmentRepository.AddOrUpdate(entity as PlayerMatchAssignment),
         "MatchStatistics" => MatchStatisticsRepository.AddOrUpdate(entity as MatchStatistics),
         _ => false
     };
@@ -245,6 +267,7 @@ public sealed partial class UnitOfWork : IUnitOfWork
             nameof(Match) => Exists(id, MatchRepository),
             nameof(League) => Exists(id, LeagueRepository),
             nameof(Stadium) => Exists(id, StadiumRepository),
+            nameof(PlayerMatchAssignment) => Exists(id, PlayerMatchAssignmentRepository),
             _ => false
         };
 

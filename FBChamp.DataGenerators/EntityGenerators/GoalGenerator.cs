@@ -59,7 +59,7 @@ public class GoalGenerator : IEntityGenerator
             assistantIds: new List<Guid>(),
             type: GoalType.Normal,
             scoringTeamId: Guid.NewGuid(),
-            time: DateTime.Now);
+            time: new DateTime(2024,09,19,17,00,00));
 
         _goalCount++;
         return goal;

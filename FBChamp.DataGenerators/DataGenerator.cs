@@ -55,8 +55,7 @@ public class DataGenerator : IDataGenerator
         {
             var goal = entity as Goal;
 
-            // Note: The GenerateMatch method should be uncommented once the GenerateMatch implementation is added to the Development branch
-            // GenerateMatch(new Dictionary<string, string> { { "Count", "1" } });
+             GenerateMatch(new Dictionary<string, string> { { "Count", "1" } });
 
             var matches = _unitOfWork.GetAllMatchModels();
 
@@ -65,9 +64,9 @@ public class DataGenerator : IDataGenerator
                 var match = matchModel.Match;
 
                 goal!.MatchId = match.Id;
-                goal.GoalAuthorId = matchModel.PlayerMatchAssignments.First().PlayerMatchAssignment.Id;
-                goal.AssistantIds = new List<Guid> { matchModel.PlayerMatchAssignments.Last().PlayerMatchAssignment.Id };
-                goal.ScoringTeamId = matchModel.HostTeam.Team.Id;
+                goal.GoalAuthorId = matchModel.GuestTeam.Players.First().Player.Id;
+                goal.AssistantIds = new List<Guid> { matchModel.GuestTeam.Players.Last().Player.Id };
+                goal.ScoringTeamId = matchModel.GuestTeam.Team.Id;
 
                 if (goal is not null)
                 {
@@ -104,8 +103,7 @@ public class DataGenerator : IDataGenerator
             {
                 _unitOfWork.Commit(league);
 
-                // NOTE: Uncomment and integrate when TeamGenerator is implemented
-                //   GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
+                GenerateTeam(new Dictionary<string, string> { { "Count", league.NumberOfTeams.ToString() } });
 
                 var teams = _unitOfWork.GetUnassignedTeamModel();
 
@@ -160,15 +158,22 @@ public class DataGenerator : IDataGenerator
                 match!.LeagueId = league.Id;
                 match.HostTeamId = leagueModel.Teams.First().Team.Id;
                 match.GuestTeamId = leagueModel.Teams.Last().Team.Id;
+                match.StadiumId = leagueModel.Teams.First().Team.StadiumId;
 
                 if (match is not null)
                 {
                     _unitOfWork.Commit(match);
                 }
 
-                GeneratePlayer(new Dictionary<string, string> { { "Count", "11" } });
+                GenerateTeam(new Dictionary<string, string> { { "Count", "2" } });
 
-                var players = _unitOfWork.GetUnassignedPlayerModels().Take(11);
+                var hostPlayers = leagueModel.Teams.First().Players.ToList();
+                var guestPlayers = leagueModel.Teams.Last().Players.ToList();
+
+                if (hostPlayers.Count < 11 || guestPlayers.Count < 11)
+                {
+                    throw new InvalidOperationException("Not enough players in one of the teams.");
+                }
 
                 var roles = new List<string>
                 {
@@ -179,7 +184,7 @@ public class DataGenerator : IDataGenerator
 
                 int index = 0;
 
-                foreach (var playerModel in players)
+                foreach (var playerModel in hostPlayers.Take(11).Concat(guestPlayers.Take(11)))
                 {
                     var player = playerModel.Player;
 
@@ -190,10 +195,10 @@ public class DataGenerator : IDataGenerator
                         matchId: match!.Id,
                         startTime: new DateTime(2024, 09, 19, 16, 30, 00),
                         finishTime: new DateTime(2024, 9, 19, 18, 00, 00),
-                        role: role);
+                        role: role
+                    );
 
                     _unitOfWork.Commit(playerAssignment);
-
                     index++;
                 }
             }
@@ -228,11 +233,24 @@ public class DataGenerator : IDataGenerator
 
         foreach (var entity in entities)
         {
-            _unitOfWork.Commit(entity);
+            // Get LocationId from Location.json instead of using a hardcoded value
+            var locationId = Guid.Parse("3b45cb09-8cc4-4f5f-bbb1-4a0622ff0a1a");
+
+            var stadium = new Stadium(id:Guid.NewGuid(),"StadiumOne",locationId:locationId);
+
+            _unitOfWork.Commit(stadium);
 
             var team = entity as Team;
 
-            GenerateCoach(null);
+            team!.StadiumId = stadium.Id;
+            team.LocationId = locationId;
+
+            if(team is not null)
+            {
+                _unitOfWork.Commit(team);
+            }
+
+            GenerateCoach(new Dictionary<string, string> { { "Count", "1" } });
 
             var coaches = _unitOfWork.GetUnassignedCoachModels();
 
