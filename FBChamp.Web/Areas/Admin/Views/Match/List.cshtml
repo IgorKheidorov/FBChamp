@@ -1,0 +1,68 @@
+﻿@model EntityPageModel<MatchModel>
+@{
+    ViewBag.Title = "Matches";
+}
+<div class="d-sm-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-dark mb-4">Matches</h3>
+    <a asp-action="Create" class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button">
+        <i class="fas fa-plus-square text-white-50"></i>
+        Add match
+    </a>
+</div>
+<div class="card shadow">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <page-list model="@Model.List" page-url-filter="@Model.Filter">
+                </page-list>
+            </div>
+            <div class="col-md-auto">
+                <form asp-action="List" method="get">
+                    <div class="input-group">
+                        <input class="bg-light form-control border-0 small" name="filter" placeholder="Search for ..." type="search" value="@Model.Filter" />
+                        <button class="btn btn-primary py-0" type="submit" title="Search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="table-responsive table mt-2">
+            <table class="table my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Host team</th>
+                        <th>Status</th>
+                        <th>Guest team</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in Model.List.Items)
+                    {
+                        <tr style="vertical-align: middle;">
+                            <td>@match.HostTeam.FullName</td>
+                            <td>@match.Match.Status</td>
+                            <td>@match.GuestTeam.FullName</td>
+                            <td>
+                                @{
+                                    ViewBag.PanelType = "Update";
+                                    <partial name="_ActivityPanel" model="@match.Match.Id" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col">
+                <page-list model="@Model.List" page-url-filter="@Model.Filter">
+                </page-list>
+            </div>
+            <div>
+                <partial name="_ShowFromToLabel" model="@Model.List" />
+            </div>
+        </div>
+    </div>
+</div>
