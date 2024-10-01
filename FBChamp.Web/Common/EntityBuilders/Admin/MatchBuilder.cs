@@ -15,8 +15,12 @@ public class MatchBuilder(IUnitOfWork unitOfWork)
             return CRUDResult.Failed;
         }
 
+        //change to get ids from unit of work by team names
+        var hostTeamId = Guid.NewGuid();
+        var guestTeamId = Guid.NewGuid();
+
         return UnitOfWork.Commit(new Match(matchModel.Id, Guid.NewGuid(), Guid.NewGuid(),
-                                            matchModel.Status, matchModel.HostTeamId, matchModel.GuestTeamId,
+                                            matchModel.Status, hostTeamId, guestTeamId,
                                             matchModel.StartTimeOfMatch, matchModel.FinishTimeOfMatch));
     }
 

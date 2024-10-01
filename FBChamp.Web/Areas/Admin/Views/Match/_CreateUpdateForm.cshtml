@@ -19,22 +19,27 @@
                 <tbody>
                     <tr style="vertical-align: top;">
                         <td>
-                            <div class="d-sm-flex justify-content-start align-items-start mb-4" asp-validation-summary="All" class="text-danger">
+                            <div class="col-md-12 col-lg-9 col-xl-6 col-xxl-5" asp-validation-summary="All" class="text-danger">
                                 <form asp-action="@ViewBag.Action" encrypt="multipart/form-data">
                                     <div class="mb-3">
-                                        <label asp-for="HostTeamId" class="form-label">HostTeamId</label>
-                                        <input asp-for="HostTeamId" asp-item="Model.HostTeamId" class="form-control" />
-                                        <span asp-validation-for="HostTeamId" class="text-danger"></span>
+                                        <label asp-for="HostTeamName" class="form-label">HostTeam</label>
+                                        <input asp-for="HostTeamName" asp-item="Model.HostTeamId" class="form-control" />
+                                        <span asp-validation-for="HostTeamName" class="text-danger"></span>
                                     </div>
                                     <div class="mb-3">
-                                        <label asp-for="GuestTeamId" class="form-label">GuestTeamId</label>
-                                        <input asp-for="GuestTeamId" asp-item="Model.GuestTeamId" class="form-control" />
-                                        <span asp-validation-for="GuestTeamId" class="text-danger"></span>
+                                        <label asp-for="GuestTeamName" class="form-label">GuestTeam</label>
+                                        <input asp-for="GuestTeamName" asp-item="Model.GuestTeamId" class="form-control" />
+                                        <span asp-validation-for="GuestTeamName" class="text-danger"></span>
                                     </div>
                                     <div class="mb-3">
                                         <label asp-for="Status" class="form-label">Status</label>
                                         <select class="form-select" asp-for="Status" asp-items="@Html.GetEnumSelectList<MatchStatus>()"></select>
                                         <input type="hidden" asp-for="Status" asp-item="Model.Status" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="StadiumName" class="form-label">Stadium</label>
+                                        <input asp-for="StadiumName" asp-item="Model.GuestTeamId" class="form-control" />
+                                        <span asp-validation-for="StadiumName" class="text-danger"></span>
                                     </div>
                                     <div class="mb-3">
                                         <label asp-for="StartTimeOfMatch" class="form-label"></label>

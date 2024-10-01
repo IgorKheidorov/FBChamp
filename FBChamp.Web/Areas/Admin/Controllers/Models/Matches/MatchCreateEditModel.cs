@@ -15,10 +15,13 @@ public class MatchCreateEditModel : EntityModel
     public MatchStatus Status { get; set; }
 
     [Required]
-    public Guid HostTeamId { get; set; }
+    public string HostTeamName { get; set; }
 
     [Required]
-    public Guid GuestTeamId { get; set; }
+    public string GuestTeamName { get; set; }
+
+    [Required]
+    public string StadiumName { get; set; }
 
     [Required]
     [DataType(DataType.DateTime)]
@@ -39,8 +42,9 @@ public class MatchCreateEditModel : EntityModel
         ArgumentNullException.ThrowIfNull(match);
         Id = match.Match.Id;
         Status = match.Match.Status;
-        HostTeamId = match.Match.HostTeamId;
-        GuestTeamId = match.Match.GuestTeamId;
+        HostTeamName = match.HostTeam.FullName;
+        GuestTeamName = match.GuestTeam.FullName;
+        StadiumName = match.Stadium.FullName;
         StartTimeOfMatch = match.Match.StartTimeOfMatch;
         FinishTimeOfMatch = match.Match.FinishTimeOfMatch;
     }
