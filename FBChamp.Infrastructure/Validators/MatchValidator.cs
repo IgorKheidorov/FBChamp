@@ -35,8 +35,5 @@ public class MatchValidator(IUnitOfWork unitOfWork) : IValidateEntity
     private bool IsStadiumExists(Guid stadiumId) =>
         _unitOfWork.Exists(stadiumId, typeof(Stadium));
 
-    private bool IsFinishTimeValid(Match match)
-    {
-        return match.FinishTimeOfMatch == default || match.FinishTimeOfMatch > match.StartTimeOfMatch;
-    }
+    private bool IsFinishTimeValid(Match match) => match.FinishTimeOfMatch == default || match.FinishTimeOfMatch > match.StartTimeOfMatch;
 }
