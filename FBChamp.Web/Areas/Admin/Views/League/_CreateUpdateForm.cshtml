@@ -66,12 +66,6 @@
                         @if (ViewBag.Action != "Create")
                         {
                             <td>
-                                <div class="d-sm-flex justify-content-start align-items-start mb-4">
-                                    <a asp-action="AddTeam" asp-route-id="@Model.Id" class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button">
-                                        <i class="fas fa-plus-square text-white-50"></i>
-                                        Add Team
-                                    </a>
-                                </div>
                                 <div>
                                     <partial name="~/Areas/Admin/Views/Team/List.cshtml" model="@Model.TeamsPageModel" />
                                 </div>
