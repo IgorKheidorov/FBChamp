@@ -13,6 +13,7 @@ public class EntityBuildersFactory(IUnitOfWork unitOfWork)
     private PlayerBuilder _playerBuilder;
     private TeamBuilder _teamsBuilder;
     private LeagueBuilder _leagueBuilder;
+    private MatchBuilder _matchBuilder;
 
     public IEntityBuilder GetBuilder(string viewModelType) =>
         viewModelType switch
@@ -23,6 +24,7 @@ public class EntityBuildersFactory(IUnitOfWork unitOfWork)
             "Coach" => _coachBuilder ??= new CoachBuilder(unitOfWork),
             "CoachAssignmentInfo" => _coachAssignmentInfoBuilder ??= new CoachAssignmentInfoBuilder(unitOfWork),
             "League" => _leagueBuilder ??= new LeagueBuilder(unitOfWork),
+            "Match" => _matchBuilder ??= new MatchBuilder(unitOfWork),
             _ => null
         };
 }

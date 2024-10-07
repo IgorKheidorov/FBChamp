@@ -1,0 +1,78 @@
+﻿@using FBChamp.Core.Entities.Soccer.Enums
+
+@model MatchCreateEditModel
+@{
+    ViewBag.Title = "Matches";
+}
+
+<h3 class="text-dark mb-4">@ViewBag.Action match</h3>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive table mt-2">
+            <table class="table my-0" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Match info</th>
+                        <th>Match statistics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="vertical-align: top;">
+                        <td>
+                            <div class="col-md-12 col-lg-9 col-xl-6 col-xxl-5" asp-validation-summary="All" class="text-danger">
+                                <form asp-action="@ViewBag.Action" encrypt="multipart/form-data">
+                                    <div>
+                                        <input type="hidden" asp-for="LeagueId" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="HostTeamName" class="form-label">HostTeam</label>
+                                        <input asp-for="HostTeamName" asp-item="Model.HostTeamId" class="form-control" />
+                                        <span asp-validation-for="HostTeamName" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="GuestTeamName" class="form-label">GuestTeam</label>
+                                        <input asp-for="GuestTeamName" asp-item="Model.GuestTeamId" class="form-control" />
+                                        <span asp-validation-for="GuestTeamName" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="Status" class="form-label">Status</label>
+                                        <select class="form-select" asp-for="Status" asp-items="@Html.GetEnumSelectList<MatchStatus>()"></select>
+                                        <input type="hidden" asp-for="Status" asp-item="Model.Status" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="StadiumName" class="form-label">Stadium</label>
+                                        <input asp-for="StadiumName" asp-item="Model.GuestTeamId" class="form-control" />
+                                        <span asp-validation-for="StadiumName" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="StartTimeOfMatch" class="form-label"></label>
+                                        <input asp-for="StartTimeOfMatch" asp-item="Model.StartTimeOfMatch" type="datetime-local" class="form-control" />
+                                        <span asp-validation-for="StartTimeOfMatch" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="FinishTimeOfMatch" class="form-label"></label>
+                                        <input asp-for="FinishTimeOfMatch" asp-item="Model.FinishTimeOfMatch" type="datetime-local" class="form-control" />
+                                        <span asp-validation-for="FinishTimeOfMatch" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <button class="btn btn-primary btn-sm" type="submit">
+                                            @ViewBag.Action
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            Match statistics
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScripts" />
+}

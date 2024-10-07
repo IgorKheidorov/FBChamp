@@ -1,0 +1,116 @@
+﻿@model MatchModel
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+<h3 class="text-dark mb-4">@Model.HostTeam.FullName - @Model.GuestTeam.FullName</h3>
+<div style="display:grid; grid-template-columns: 1fr 1fr">
+    <div class="card shadow mb-4" style="max-width: 540px; height:fit-content">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive table mt-2">
+                    <table class="table my-0" id="dataTable">
+                        <tbody>
+                            <tr>
+                                <td><p class="card-text">HostTeam</p></td>
+                                <td><p class="card-text">@Model.HostTeam.FullName</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text">GuestTeam</p></td>
+                                <td><p class="card-text">@Model.GuestTeam.FullName</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text">Status</p></td>
+                                <td><p class="card-text">@Model.Match.Status</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text">Stadium</p></td>
+                                <td><p class="card-text">@Model.Stadium.FullName</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text">Date</p></td>
+                                <td><p class="card-text">@Model.Match.StartTimeOfMatch.ToShortDateString()</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text">StartTime</p></td>
+                                <td><p class="card-text">@Model.Match.StartTimeOfMatch.Hour:@Model.Match.StartTimeOfMatch.Minute</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow mb-4" style="max-width: 540px;">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="table-responsive table mt-2">
+                    <table class="table my-0" style="table-layout:fixed" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="text-center">@Model.HostTeam.FullName</th>
+                                <th class="text-center">TEAM STATS</th>
+                                <th class="text-center">@Model.GuestTeam.FullName</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text  text-center">Shots</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Shots on target</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Possession</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Passes</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Pass accuracy</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Fouls</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Yellow cards</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Res cards</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Offsides</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="card-text"></p></td>
+                                <td><p class="card-text text-center">Corners</p></td>
+                                <td><p class="card-text"></p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<back-link>Back to List</back-link>
