@@ -21,6 +21,9 @@
                         <td>
                             <div class="col-md-12 col-lg-9 col-xl-6 col-xxl-5" asp-validation-summary="All" class="text-danger">
                                 <form asp-action="@ViewBag.Action" encrypt="multipart/form-data">
+                                    <div>
+                                        <input type="hidden" asp-for="LeagueId" />
+                                    </div>
                                     <div class="mb-3">
                                         <label asp-for="HostTeamName" class="form-label">HostTeam</label>
                                         <input asp-for="HostTeamName" asp-item="Model.HostTeamId" class="form-control" />

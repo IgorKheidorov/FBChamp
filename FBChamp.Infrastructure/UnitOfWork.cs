@@ -275,6 +275,10 @@ public sealed partial class UnitOfWork : IUnitOfWork
 
     public ReadOnlyCollection<PlayerPosition> GetAllPlayerPositions() => PlayerPositionsRepository.All().ToList().AsReadOnly();
 
+    public Guid GetTeamIdByName(string name) => TeamRepository.All().FirstOrDefault(t => t.Name.Equals(name)).Id;
+
+    public Guid GetStadiumIdByName(string name) => StadiumRepository.All().FirstOrDefault(t => t.Name.Equals(name)).Id;
+
     #region Goal
 
     public GoalModel GetGoalModel(Guid id)

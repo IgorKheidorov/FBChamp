@@ -19,6 +19,10 @@ public interface IUnitOfWork : IDisposable
 
     bool Exists(Guid id, Type type);
 
+    Guid GetTeamIdByName(string name);
+
+    Guid GetStadiumIdByName(string name);
+
     #region Player
 
     PlayerModel GetPlayerModel(Guid id);

@@ -15,11 +15,11 @@ public class MatchBuilder(IUnitOfWork unitOfWork)
             return CRUDResult.Failed;
         }
 
-        //change to get ids from unit of work by team names
-        var hostTeamId = Guid.NewGuid();
-        var guestTeamId = Guid.NewGuid();
+        var hostTeamId = UnitOfWork.GetTeamIdByName(matchModel.HostTeamName);
+        var guestTeamId = UnitOfWork.GetTeamIdByName(matchModel.GuestTeamName);
+        var stadiumId = UnitOfWork.GetStadiumIdByName(matchModel.StadiumName);
 
-        return UnitOfWork.Commit(new Match(matchModel.Id, Guid.NewGuid(), Guid.NewGuid(),
+        return UnitOfWork.Commit(new Match(matchModel.Id, stadiumId, matchModel.LeagueId,
                                             matchModel.Status, hostTeamId, guestTeamId,
                                             matchModel.StartTimeOfMatch, matchModel.FinishTimeOfMatch));
     }
