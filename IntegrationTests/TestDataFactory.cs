@@ -39,7 +39,7 @@ public static class TestDataFactory
         TeamAssignmentInfoOne = new TeamAssignmentInfo(Team1.Id, Guid.NewGuid());
         TeamAssignmentInfoTwo = new TeamAssignmentInfo(Team2.Id, Guid.NewGuid());
 
-        Stadium = new Stadium(Guid.NewGuid(), "Stadium Name", Guid.NewGuid());
+        Stadium = new Stadium(Guid.NewGuid(), "Stadium Name", Guid.Parse("3b45cb09-8cc4-4f5f-bbb1-4a0622ff0a1a"));
 
         Match1 = new Match(Guid.NewGuid(), Stadium.Id, League1.Id,
                           MatchStatus.InProgress, Team1.Id, Team2.Id, DateTime.UtcNow);

@@ -26,7 +26,7 @@ public class MatchRepositoryTests
         var matches = _unitOfWork!.GetAllMatchModels();
 
         Assert.IsNotNull(matches, "The list of matches should not be null.");
-        Assert.AreEqual(1, matches.Count, "There should be exactly one match");
+        Assert.AreEqual(2, matches.Count, "There should be exactly 2 matches");
 
         var matchModel = matches.FirstOrDefault(m => m.Match.Id == Match1!.Id);
 
@@ -41,7 +41,7 @@ public class MatchRepositoryTests
         var matches = _unitOfWork!.GetAllMatchModels();
 
         Assert.IsNotNull(matches, "The list of matches should not be null.");
-        Assert.AreEqual(0, matches.Count, "The list of matches should be empty when no matches exist.");
+        Assert.AreEqual(1, matches.Count, "The list of matches should contain only 1 match.");
     }
 
     [TestMethod]

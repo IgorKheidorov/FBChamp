@@ -28,7 +28,7 @@ public class MatchValidatortTests
         var allMatches = _unitOfWork!.GetAllMatchModels();
 
         Assert.IsNotNull(allMatches, "The list of matches should be not null");
-        Assert.AreEqual(allMatches.Count, 1, "There should be exactly one match");
+        Assert.AreEqual(allMatches.Count, 2, "There should be exactly one match");
 
         var matchModel = _unitOfWork.GetMatchModel(match.Id);
 

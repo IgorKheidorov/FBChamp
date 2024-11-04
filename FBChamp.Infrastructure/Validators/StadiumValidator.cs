@@ -19,7 +19,8 @@ internal class StadiumValidator : IValidateEntity
     public CRUDResult Validate(Entity entity) =>
         entity switch
         {
-            Stadium stadium when ValidateLocation(stadium.LocationId) => CRUDResult.Success,
+            Stadium stadium 
+            when ValidateLocation(stadium.LocationId) => CRUDResult.Success,
             Stadium _ => CRUDResult.EntityValidationFailed,
             _ => CRUDResult.InvalidOperation,
         };
